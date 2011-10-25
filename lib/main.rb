@@ -10,8 +10,25 @@ def require_folder(path, files)
   end
 end
 
+begin
+  require 'rubygems' unless defined? OSX_EXECUTABLE
+rescue LoadError
+end
+
+begin
+  require 'bundler/setup' unless defined?(OSX_EXECUTABLE) or ENV['OCRA_EXECUTABLE']
+
+rescue LoadError
+  $stderr.puts "Bundler gem not installed. To install:\n  gem install bundler"
+  exit
+rescue Exception
+  $stderr.puts "Gem dependencies not met. To install:\n  bundle install"
+  exit
+end
+
 require 'gosu'
 require 'chingu'
+require 'fidgit'
 require 'texplay'
 require_folder('texplay_ext', %w[color image window])
 
@@ -49,7 +66,7 @@ end
 class GameWindow < Chingu::Window
   def setup
     enable_undocumented_retrofication
-    #self.cursor = true
+    self.cursor = true
     push_game_state World
   end
 end
