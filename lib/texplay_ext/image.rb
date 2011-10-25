@@ -100,7 +100,7 @@ module Gosu
     end
 
 
-    THIN_OUTLINE_SCALE = 0.25
+    THIN_OUTLINE_SCALE = 0.5
     TRANSPARENT_PROXY_COLOR = [1, 0, 1, 1]
     def thin_outline
       unless defined? @thin_outline

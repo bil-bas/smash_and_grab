@@ -25,9 +25,9 @@ class WorldObject < GameObject
   attr_accessor :z
 
   OUTLINE_SCALE = Image::THIN_OUTLINE_SCALE
-  OUTLINE_OFFSET_X = OUTLINE_SCALE * -0.5
-  OUTLINE_OFFSET_Y = OUTLINE_SCALE * 0.75
-  OUTLINE_COLOR = Color.rgb(200, 200, 200)
+  OUTLINE_OFFSET_X = OUTLINE_SCALE * -0.25
+  OUTLINE_OFFSET_Y = 1 + OUTLINE_SCALE * 0.75
+  OUTLINE_COLOR = Color.rgb(50, 50, 50)
   
   def initialize(options = {})    
     options = {
@@ -57,11 +57,11 @@ class WorldObject < GameObject
   end
  
   def draw
-    @@shadow.draw_rot x, y, y - z, 0, 0.5, 0.5, 0.6, 0.3
-    @image.draw_rot x, y, y - z, 0, 0.5, 1
+    @@shadow.draw_rot x, y, y - z, 0, 0.5, 0.5, 1, 0.5
+    @image.draw_rot x, y + 1, y - z, 0, 0.5, 1, factor_x
 
     @image.thin_outline.draw_rot x + OUTLINE_OFFSET_X, y + OUTLINE_OFFSET_Y, y - z, 0, 0.5, 1,
-                                 OUTLINE_SCALE, OUTLINE_SCALE, OUTLINE_COLOR
+                                 OUTLINE_SCALE * factor_x, OUTLINE_SCALE, OUTLINE_COLOR
   end
 end
 
@@ -98,8 +98,12 @@ end
 
 class Tree < StaticObject
   def initialize(grid_position, options = {})
+    unless defined? @@sprites
+      @@sprites = Image.load_tiles($window, File.expand_path("media/images/characters_32x32.png", EXTRACT_PATH), 32, 32, true)
+    end
+
     options = {
-        image: Image["characters/#{["ring_master", "reporter", "spandexman", "octobrain", "boss_cigar1"].sample}.png"],
+        image: @@sprites.sample,
         factor_x: [-1, 1].sample,
     }.merge! options
      
@@ -188,12 +192,15 @@ class Tile < GameObject
   class Concrete < Tile
   end
   
-  WIDTH, HEIGHT = 16, 8
+  WIDTH, HEIGHT = 32, 16
     
   attr_reader :objects, :z
   
   def initialize(grid_position, options = {})
-    options[:image] = Image["tiles/#{Inflector.underscore(Inflector.demodulize(self.class.name))}.png"]
+    unless defined? @@sprites
+      @@sprites = Image.load_tiles($window, File.expand_path("media/images/tiles.png", EXTRACT_PATH), 16, 16, true)
+    end
+    options[:image] = ([@@sprites[0]]+ [@@sprites[1]] * 5).sample
     @grid_position = grid_position
     options[:x] = (@grid_position[1] + @grid_position[0]) * WIDTH / 2
     options[:y] = (@grid_position[1] - @grid_position[0]) * HEIGHT / 2
@@ -244,16 +251,16 @@ class World < GameState
     @fps_text = ""
 
     @camera_offset_x, @camera_offset_y = [0, @map.to_rect.center_y]
-    @zoom = 4
+    @zoom = 2
 
     @font = Font.new $window, default_font_name, 24
 
     on_input :wheel_down do
-      @zoom /= 2 if @zoom > 2
+      @zoom /= 2 if @zoom > 1
     end
 
     on_input :wheel_up do
-      @zoom *= 2 if @zoom < 8
+      @zoom *= 2 if @zoom < 4
     end
   end
   
