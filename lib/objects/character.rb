@@ -34,4 +34,10 @@ class Character < StaticObject
 
     tiles
   end
+
+  def move_to(tile)
+    @tile.remove_object self
+    tile.add_object self
+    @tile = tile
+  end
 end

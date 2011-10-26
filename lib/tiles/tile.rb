@@ -56,6 +56,16 @@ class Tile < GameObject
 
     @objects << object
     object.x, object.y = [x, y]
+
+    object
+  end
+
+  def remove_object(object)
+    raise "can't remove object" unless @objects.include? object
+
+    @objects.delete object
+
+    object
   end
   
   def draw
@@ -65,5 +75,19 @@ class Tile < GameObject
                         x + WIDTH / 2, y,  color, # Right
                         x, y + HEIGHT / 2, color, # Bottom
                         zorder
+  end
+
+  class PathNode
+    def initialize(path, to, cost)
+      @path, @to = path, to
+    end
+  end
+
+  def path_to(other, character)
+    closed_tiles = []
+    open_paths = []
+
+    open_paths += adjacent_passable(character).map {|tile| PathNode(tiles, tile) }
+    closed_tiles.push self
   end
 end
