@@ -28,7 +28,7 @@ end
 
 require 'gosu'
 require 'chingu'
-require 'fidgit'
+#require 'fidgit'
 require 'texplay'
 require_folder('texplay_ext', %w[color image window])
 

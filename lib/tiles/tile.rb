@@ -1,8 +1,6 @@
 class Tile < GameObject
   class Grass < Tile
-    def passable?(character)
-      false
-    end
+    def cost; Float::INFINITY; end
     def sprite; @@sprites[0]; end
   end
   
@@ -14,8 +12,11 @@ class Tile < GameObject
   ADJACENT_POSITIONS = [[-1, 0], [0, -1], [1, 0], [0, 1]]
   #ADJACENT_POSITIONS = [[-1, 0], [0, -1], [1, 0], [0, 1], [-1, -1], [-1, 1], [1, -1], [1, 1]]
     
-  attr_reader :objects, :grid_x, :grid_y
+  attr_reader :objects, :grid_x, :grid_y, :cost
+
   def map; parent.map; end
+
+  def to_s; "<#{self.class.name} [#{grid_x}, #{grid_y}]>"; end
   
   def initialize(grid_x, grid_y, options = {})
     @grid_x, @grid_y = grid_x, grid_y
@@ -29,13 +30,15 @@ class Tile < GameObject
     options[:rotation_center] = :center_center
     options[:zorder] = options[:y]
 
+    @cost = 1
+
     @objects = []
 
     super(options)
   end
 
   def passable?(character)
-    @objects.empty?
+    cost < Float::INFINITY
   end
 
   # List of squares directly adjacent to the character that are potentially passable.
@@ -69,25 +72,21 @@ class Tile < GameObject
   end
   
   def draw
-    color = Color::WHITE
-    @image.draw_as_quad x - WIDTH / 2, y,  color, # Left
-                        x, y - HEIGHT / 2, color, # Top
-                        x + WIDTH / 2, y,  color, # Right
-                        x, y + HEIGHT / 2, color, # Bottom
-                        zorder
+    draw_isometric_image @image, zorder
+
   end
 
-  class PathNode
-    def initialize(path, to, cost)
-      @path, @to = path, to
-    end
-  end
+  def draw_isometric_image(image, zorder, options = {})
+    options = {
+        color: Color::WHITE,
+        mode: :default,
+    }.merge! options
 
-  def path_to(other, character)
-    closed_tiles = []
-    open_paths = []
-
-    open_paths += adjacent_passable(character).map {|tile| PathNode(tiles, tile) }
-    closed_tiles.push self
+    color = options[:color]
+    image.draw_as_quad x - WIDTH / 2, y,  color, # Left
+                       x, y - HEIGHT / 2, color, # Top
+                       x + WIDTH / 2, y,  color, # Right
+                       x, y + HEIGHT / 2, color, # Bottom
+                       zorder, options[:mode]
   end
 end

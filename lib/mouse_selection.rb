@@ -5,13 +5,15 @@ class MouseSelection < GameObject
   NO_MOVE_COLOR = Color.rgba(255, 0, 0, 25)
   
   def initialize(options = {})
-    options = {
-        image: Image["tile_selection.png"],
-    }.merge! options
-
     @potential_moves = []
 
+    @selected_image = Image["tile_selection.png"]
+    @partial_move_image = Image["partial_move.png"]
+    @final_move_image = Image["final_move.png"]
+
     @selected_tile = @hover_tile = nil
+
+    @path = []
 
     super(options)
 
@@ -27,8 +29,16 @@ class MouseSelection < GameObject
   def update
     super
 
+    @path.clear
+
     if @selected_tile
       @potential_moves = @selected_tile.objects[0].potential_moves if @potential_moves.empty?
+
+      if @hover_tile != @selected_tile and @potential_moves.include? @hover_tile
+        @path = @selected_tile.objects.last.path_to(@hover_tile)
+        @path.shift # Remove the starting square.
+        @path.pop # Remove the last square.
+      end
     elsif @hover_tile and @hover_tile.objects.any?
       @potential_moves = @hover_tile.objects[0].potential_moves if @potential_moves.empty?
     else
@@ -37,15 +47,25 @@ class MouseSelection < GameObject
   end
   
   def draw
-    @image.draw_rot @selected_tile.x, @selected_tile.y - 0.5, ZOrder::TILE_SELECTION, 0 if @selected_tile
+    # Draw a disc under the selected object.
+    if @selected_tile
+      selected_color = Color::GREEN # Assume everyone is a friend for now.
+      @selected_tile.draw_isometric_image @selected_image, ZOrder::TILE_SELECTION, color: selected_color
 
-    pixel = $window.pixel
-    @potential_moves.each do |tile|
-      pixel.draw_as_quad tile.x - Tile::WIDTH / 2, tile.y,  MOVE_COLOR, # Left
-                    tile.x, tile.y - Tile::HEIGHT / 2, MOVE_COLOR, # Top
-                    tile.x + Tile::WIDTH / 2, tile.y,  MOVE_COLOR, # Right
-                    tile.x, tile.y + Tile::HEIGHT / 2, MOVE_COLOR, # Bottom
-                    ZOrder::TILE_SELECTION, :additive
+      # Highlight all pixels that character can travel to.
+      pixel = $window.pixel
+      @potential_moves.each do |tile|
+        tile.draw_isometric_image pixel, ZOrder::TILE_SELECTION, color: MOVE_COLOR, mode: :additive
+      end
+
+      # Show path and end of the move-path chosen.
+      if @potential_moves.include? @hover_tile
+        @path.each do |tile|
+          tile.draw_isometric_image @partial_move_image, ZOrder::TILE_SELECTION
+        end
+
+        @hover_tile.draw_isometric_image @final_move_image, ZOrder::TILE_SELECTION
+      end
     end
   end
 
