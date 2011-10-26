@@ -44,7 +44,7 @@ Font.autoload_dirs.unshift File.join(media_dir, 'fonts')
 
 # Include other files.
 require_folder("", %w[map mouse_selection])
-require_folder("objects", %w[static_object dynamic_object])
+require_folder("objects", %w[static_object dynamic_object character])
 require_folder("tiles", %w[tile])
 require_folder("states", %w[world])
 
@@ -57,20 +57,7 @@ class ZOrder
   GUI = Float::INFINITY
 end
 
-class Tree < StaticObject
-  def initialize(grid_position, options = {})
-    unless defined? @@sprites
-      @@sprites = Image.load_tiles($window, File.expand_path("media/images/characters.png", EXTRACT_PATH), 32, 32, true)
-    end
 
-    options = {
-        image: @@sprites.sample,
-        factor_x: [-1, 1].sample,
-    }.merge! options
-     
-    super(grid_position, options)
-  end  
-end
 
 class GameWindow < Chingu::Window
   def setup

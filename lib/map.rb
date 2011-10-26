@@ -14,7 +14,7 @@ class Map
 
     @grid_height.times do |y|
       @grid_width.times do |x|
-        @tiles[y][x] = possible_tiles.sample.new [x, y]
+        @tiles[y][x] = possible_tiles.sample.new x, y
       end
     end
 

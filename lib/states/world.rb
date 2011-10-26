@@ -13,16 +13,10 @@ class World < GameState
     init_fps
 
     @map = Map.new 50, 50
-=begin
-    # Make some animated objects.
-    #100.times do |i|
-    #  Enemy.new(self, [i * 16, rand * window.size.height])
-    #end
-=end
 
-    # Make some static objects.
+    # Make some characters.
     200.times do
-      add_object Tree.new([rand(@map.grid_width), rand(@map.grid_height)])
+      add_object Character.new(rand(@map.grid_width), rand(@map.grid_height))
     end
 
     @fps_text = ""
@@ -56,19 +50,20 @@ class World < GameState
     start_at = Time.now
 
     if holding? :left
-      @camera_offset_x -= 10.0 / zoom
+      @camera_offset_x -= 10.0
     elsif holding? :right
-      @camera_offset_x += 10.0 / zoom
+      @camera_offset_x += 10.0
     end
 
     if holding? :up
-      @camera_offset_y -= 10.0 / zoom
+      @camera_offset_y -= 10.0
     elsif holding? :down
-      @camera_offset_y += 10.0 / zoom
+      @camera_offset_y += 10.0
     end
 
     @mouse_selection.tile = @map.tile_at_position((@camera_offset_x + $window.mouse_x) / @zoom.to_f,
                                                   (@camera_offset_y + $window.mouse_y) / @zoom.to_f)
+    @mouse_selection.update
 
     @used_time += (Time.now - start_at).to_f
     recalculate_fps
