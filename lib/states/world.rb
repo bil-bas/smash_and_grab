@@ -10,6 +10,8 @@ class World < GameState
   def setup
     @objects = [] # Objects that need #update
 
+    init_fps
+
     @map = Map.new 50, 50
 =begin
     # Make some animated objects.
@@ -51,6 +53,8 @@ class World < GameState
   end
     
   def update
+    start_at = Time.now
+
     if holding? :left
       @camera_offset_x -= 10.0 / zoom
     elsif holding? :right
@@ -63,14 +67,13 @@ class World < GameState
       @camera_offset_y += 10.0 / zoom
     end
 
-    p [[@camera_offset_x, @camera_offset_y],
-    [($window.mouse_x / @zoom.to_f),
-
-      ($window.mouse_y / @zoom.to_f)]]
     @mouse_selection.tile = @map.tile_at_position((@camera_offset_x + $window.mouse_x) / @zoom.to_f,
                                                   (@camera_offset_y + $window.mouse_y) / @zoom.to_f)
 
-    @fps_text = "Zoom: #{zoom} FPS: #{fps.round}"
+    @used_time += (Time.now - start_at).to_f
+    recalculate_fps
+
+    @fps_text = "Zoom: #{zoom} FPS: #{@fps.round} [#{@potential_fps.round}]"
 
   rescue => ex
     puts ex
@@ -79,6 +82,8 @@ class World < GameState
   end
   
   def draw
+    start_at = Time.now
+
     # Colour the background.
     $window.draw_quad 0, 0, BACKGROUND_COLOR,
                       $window.width, 0, BACKGROUND_COLOR,
@@ -103,9 +108,32 @@ class World < GameState
 
     @font.draw @fps_text, 0, 0, Float::INFINITY
 
+    @used_time += (Time.now - start_at).to_f
+
   rescue => ex
     puts ex
     puts ex.backtrace
     exit
+  end
+
+  def init_fps
+    @fps_next_calculated_at = Time.now.to_f + 1
+    @fps = @potential_fps = 0
+    @num_frames = 0
+    @used_time = 0
+  end
+
+  def recalculate_fps
+    @num_frames += 1
+
+    if Time.now.to_f >= @fps_next_calculated_at
+      elapsed_time = @fps_next_calculated_at - Time.now.to_f + 1
+      @fps = @num_frames / elapsed_time
+      @potential_fps = @num_frames / [@used_time, 0.0001].max
+
+      @num_frames = 0
+      @fps_next_calculated_at = Time.now.to_f + 1
+      @used_time = 0
+    end
   end
 end
