@@ -24,11 +24,13 @@ class Map
   end
   
   def tile_at_position(x, y)
-    #tile_at_grid(((x - y * 12.0) / 24.0).to_i, (y / 6.0).to_i)
+    x += Tile::WIDTH / 2
+    tile_at_grid([[x / Tile::WIDTH - y / Tile::HEIGHT, 0].max, @grid_width - 1].min.floor,
+                 [[x / Tile::WIDTH + y / Tile::HEIGHT, 0].max, @grid_height - 1].min.floor)
   end
   
   def tile_at_grid(x, y)
-    if x.between?(0, @grid_width - 1) and y.between?(0, @grid_height - 1)
+    if x >= 0 and x < @grid_width and y >= 0 and y < @grid_height
       @tiles[y][x]
     else
       nil
@@ -63,10 +65,8 @@ class Map
     objects
   end
   
-  BACKGROUND_COLOR = Color.rgba(30, 10, 10, 255)
-  
   # Draws all tiles (only) visible in the window.
   def draw(offset_x, offset_y, zoom)
-    @background.draw offset_x, offset_y, -Float::INFINITY, zoom, zoom
+    @background.draw -offset_x, -offset_y, ZOrder::TILES, zoom, zoom
   end
 end

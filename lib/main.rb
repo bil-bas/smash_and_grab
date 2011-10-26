@@ -43,10 +43,19 @@ Song.autoload_dirs.unshift File.join(media_dir, 'music')
 Font.autoload_dirs.unshift File.join(media_dir, 'fonts')
 
 # Include other files.
-require_folder("", %w[map])
+require_folder("", %w[map mouse_selection])
 require_folder("objects", %w[static_object dynamic_object])
 require_folder("tiles", %w[tile])
 require_folder("states", %w[world])
+
+class ZOrder
+  BACKGROUND = -Float::INFINITY
+  TILES = -99999
+  TILE_SELECTION = -99998
+  # Objects -1000 .. +1000
+
+  GUI = Float::INFINITY
+end
 
 class Tree < StaticObject
   def initialize(grid_position, options = {})
