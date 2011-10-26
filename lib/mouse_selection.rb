@@ -10,6 +10,8 @@ class MouseSelection < GameObject
     @selected_image = Image["tile_selection.png"]
     @partial_move_image = Image["partial_move.png"]
     @final_move_image = Image["final_move.png"]
+    @partial_move_too_far_image = Image["partial_move_too_far.png"]
+    @final_move_too_far_image = Image["final_move_too_far.png"]
 
     @selected_tile = @hover_tile = nil
 
@@ -22,28 +24,24 @@ class MouseSelection < GameObject
   end
   
   def tile=(tile)
-    @potential_moves.clear if tile != @hover_tile
     @hover_tile = tile
   end
 
   def update
     super
 
-    @path.clear
-
     if @selected_tile
-      @potential_moves = @selected_tile.objects[0].potential_moves if @potential_moves.empty?
-
-      if @hover_tile != @selected_tile and @potential_moves.include? @hover_tile
-        @path = @selected_tile.objects.last.path_to(@hover_tile)
+      if @hover_tile != @path.last
+        @path = @selected_tile.objects.last.path_to(@hover_tile) || []
         @path.shift # Remove the starting square.
-        @path.pop # Remove the last square.
       end
-    elsif @hover_tile and @hover_tile.objects.any?
-      @potential_moves = @hover_tile.objects[0].potential_moves if @potential_moves.empty?
     else
       @potential_moves.clear
     end
+  end
+
+  def calculate_potential_moves
+    @potential_moves = @selected_tile.objects[0].potential_moves
   end
   
   def draw
@@ -59,37 +57,43 @@ class MouseSelection < GameObject
       end
 
       # Show path and end of the move-path chosen.
-      if @potential_moves.include? @hover_tile
+      if @hover_tile
         @path.each do |tile|
-          tile.draw_isometric_image @partial_move_image, ZOrder::TILE_SELECTION
+          can_move = @potential_moves.include? tile
+          image = if tile == @path.last
+            can_move ? @final_move_image : @final_move_too_far_image
+          else
+            can_move ? @partial_move_image : @partial_move_too_far_image
+          end
+          tile.draw_isometric_image image, ZOrder::TILE_SELECTION, color: color
         end
-
-        @hover_tile.draw_isometric_image @final_move_image, ZOrder::TILE_SELECTION
       end
     end
   end
 
   def left_click
-    if @hover_tile and @hover_tile.objects.any?
-      # Select a character to move.
-      unless @selected_tile
-        @selected_tile = @hover_tile
-        @potential_moves.clear
-      end
-    elsif @selected_tile
+    if @selected_tile
       # Move the character.
       if @potential_moves.include? @hover_tile
         character = @selected_tile.objects.last
         character.move_to @hover_tile
-        @potential_moves.clear
+        @path.clear
         @selected_tile = @hover_tile
+        calculate_potential_moves
       end
+    elsif @hover_tile and @hover_tile.objects.any?
+      # Select a character to move.
+      @selected_tile = @hover_tile
+      @potential_moves = @selected_tile.objects[0].potential_moves
     end
   end
 
   def right_click
     # Deselect the currently selected character.
-    @potential_moves.clear
-    @selected_tile = nil
+    if @selected_tile
+      @potential_moves.clear
+      @path.clear
+      @selected_tile = nil
+    end
   end
 end

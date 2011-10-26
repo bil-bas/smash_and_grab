@@ -38,7 +38,7 @@ class Tile < GameObject
   end
 
   def passable?(character)
-    cost < Float::INFINITY
+    cost < Float::INFINITY and objects.empty?
   end
 
   # List of squares directly adjacent to the character that are potentially passable.

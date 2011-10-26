@@ -49,15 +49,16 @@ class Character < StaticObject
     options = {
         starting_tile: tile,
         distance: MOVE,
+        ignore: [],
     }.merge! options
 
     starting_tile = options[:starting_tile]
     distance = options[:distance]
 
-    tiles = starting_tile.adjacent_passable(self)
+    tiles = starting_tile.adjacent_passable(self) - options[:ignore]
     tiles.push starting_tile if distance < MOVE
     if distance > 1
-      tiles.map! { |t| potential_moves(starting_tile: t, distance: distance - 1) }
+      tiles.map! { |t| potential_moves(starting_tile: t, distance: distance - 1, ignore: tiles) }
       tiles.flatten!
     end
 
@@ -68,6 +69,8 @@ class Character < StaticObject
 
   # A* path-finding.
   def path_to(destination_tile)
+    return nil unless destination_tile.passable? self
+
     closed_tiles = []
     open_paths = [PathStart.new(tile)]
 
@@ -99,6 +102,8 @@ class Character < StaticObject
   end
 
   def move_to(tile)
+    change_in_x = tile.x - @tile.x
+    self.factor_x = change_in_x > 0 ? 1 : -1 # Turn based on movement.
     @tile.remove_object self
     tile.add_object self
     @tile = tile
