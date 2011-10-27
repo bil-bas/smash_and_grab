@@ -1,11 +1,11 @@
 class Tile < GameObject
   class Grass < Tile
     def cost; Float::INFINITY; end
-    def sprite; @@sprites[0]; end
+    def sprite; @@sprites[1]; end
   end
   
   class Concrete < Tile
-    def sprite; @@sprites[1]; end
+    def sprite; @@sprites[2]; end
   end
   
   WIDTH, HEIGHT = 32, 16
@@ -17,12 +17,15 @@ class Tile < GameObject
   def map; parent.map; end
   def empty?; @objects.empty?; end
   def to_s; "<#{self.class.name} [#{grid_x}, #{grid_y}]>"; end
+
+  # Blank white tile, useful for colourising tiles.
+  def self.blank; @@sprites[0]; end
   
   def initialize(grid_x, grid_y, options = {})
     @grid_x, @grid_y = grid_x, grid_y
 
     unless defined? @@sprites
-      @@sprites = Image.load_tiles($window, File.expand_path("media/images/tiles.png", EXTRACT_PATH), 16, 16, true)
+      @@sprites = Image.load_tiles($window, File.expand_path("media/images/floor_tiles.png", EXTRACT_PATH), WIDTH, HEIGHT, true)
     end
     options[:image] = sprite
     options[:x] = (@grid_y + @grid_x) * WIDTH / 2
@@ -69,23 +72,5 @@ class Tile < GameObject
     @objects.delete object
 
     object
-  end
-  
-  def draw
-    draw_isometric_image @image, zorder
-  end
-
-  def draw_isometric_image(image, zorder, options = {})
-    options = {
-        color: Color::WHITE,
-        mode: :default,
-    }.merge! options
-
-    color = options[:color]
-    image.draw_as_quad x - WIDTH / 2, y,  color, # Left
-                       x, y - HEIGHT / 2, color, # Top
-                       x + WIDTH / 2, y,  color, # Right
-                       x, y + HEIGHT / 2, color, # Bottom
-                       zorder, options[:mode]
   end
 end

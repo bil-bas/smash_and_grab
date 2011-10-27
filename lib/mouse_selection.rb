@@ -48,13 +48,13 @@ class MouseSelection < GameObject
     # Draw a disc under the selected object.
     if @selected_tile
       selected_color = Color::GREEN # Assume everyone is a friend for now.
-      @selected_tile.draw_isometric_image @selected_image, ZOrder::TILE_SELECTION, color: selected_color
+      @selected_image.draw_rot @selected_tile.x, @selected_tile.y, ZOrder::TILE_SELECTION, 0, 0.5, 0.5, 1, 1, selected_color
 
       # Highlight all squares that character can travel to.
       unless @potential_moves.empty?
         @moves_record ||= $window.record do
           @potential_moves.each do |tile|
-            tile.draw_isometric_image $window.pixel, ZOrder::TILE_SELECTION, color: MOVE_COLOR, mode: :additive
+            Tile.blank.draw_rot tile.x, tile.y, ZOrder::TILE_SELECTION, 0, 0.5, 0.5, 1, 1, MOVE_COLOR, :additive
           end
         end
 
@@ -78,7 +78,7 @@ class MouseSelection < GameObject
               can_move ? @partial_move_image : @partial_move_too_far_image
             end
 
-            tile.draw_isometric_image image, ZOrder::TILE_SELECTION, color: color
+            image.draw_rot tile.x, tile.y, ZOrder::TILE_SELECTION, 0, 0.5, 0.5, 1, 1, color
           end
         end
 

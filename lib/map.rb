@@ -37,34 +37,6 @@ class Map
     end
   end
   
-  # Yields every tile visible to the view.
-  def each_visible(view, &block)
-=begin
-    rect = view.rect
-    
-    min_y = [((rect.y - 16) / 8).floor, 0].max
-    max_y = [((rect.y + rect.height) / 4.0).ceil, @tiles.size - 1].min
-  
-  visible_rows = @tiles[min_y..max_y]
-  if visible_rows
-    visible_rows.each do |row|
-      #min_x = [((rect.x - 16) / tile_size).floor, 0].max
-    #max_x = [((rect.x + rect.width) / 24).ceil, @tiles.first.size - 1].min
-    tiles = row#[min_x..max_x]
-    tiles.reverse_each {|tile| yield tile } if tiles
-    end
-  end
-=end
-   @tiles.each {|r| r.reverse_each {|t| yield t } }
-  end
-  
-  # List of all objects visible in the view.
-  def visible_objects(view)
-    objects = []
-    each_visible(view) {|tile| objects.push *tile.objects }
-    objects
-  end
-  
   # Draws all tiles (only) visible in the window.
   def draw(offset_x, offset_y, zoom)
     @background.draw -offset_x, -offset_y, ZOrder::TILES, zoom, zoom

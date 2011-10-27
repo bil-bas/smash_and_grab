@@ -46,6 +46,7 @@ Font.autoload_dirs.unshift File.join(media_dir, 'fonts')
 require_folder("", %w[map mouse_selection])
 require_folder("objects", %w[static_object dynamic_object character])
 require_folder("tiles", %w[tile])
+require_folder("walls", %w[wall])
 require_folder("states", %w[world])
 
 class ZOrder
