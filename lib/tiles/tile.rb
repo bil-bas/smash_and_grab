@@ -15,7 +15,7 @@ class Tile < GameObject
   attr_reader :objects, :grid_x, :grid_y, :cost
 
   def map; parent.map; end
-
+  def empty?; @objects.empty?; end
   def to_s; "<#{self.class.name} [#{grid_x}, #{grid_y}]>"; end
   
   def initialize(grid_x, grid_y, options = {})
@@ -38,7 +38,7 @@ class Tile < GameObject
   end
 
   def passable?(character)
-    cost < Float::INFINITY and objects.empty?
+    cost < Float::INFINITY and objects.all? {|o| o.passable? character }
   end
 
   # List of squares directly adjacent to the character that are potentially passable.
@@ -73,7 +73,6 @@ class Tile < GameObject
   
   def draw
     draw_isometric_image @image, zorder
-
   end
 
   def draw_isometric_image(image, zorder, options = {})

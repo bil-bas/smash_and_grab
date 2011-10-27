@@ -30,6 +30,8 @@ class Character < StaticObject
 
   MOVE = 4
 
+  attr_reader :faction
+
   def initialize(grid_x, grid_y, options = {})
     unless defined? @@sprites
       @@sprites = Image.load_tiles($window, File.expand_path("media/images/characters.png", EXTRACT_PATH), 32, 32, true)
@@ -41,7 +43,21 @@ class Character < StaticObject
     }.merge! options
      
     super(grid_x, grid_y, options)
+
+    # TODO: Obviously, this is dumb way to do factions.
+    # Get a hash of the image, so we can compare it.
+    @faction = @image.hash
   end
+
+  def friend?(character)
+    # TODO: Make this faction-based or something.
+    @faction == character.faction
+  end
+
+  def enemy?(character); not friend?(character); end
+
+  def impassable?(character); enemy? character; end
+  def passable?(character); friend? character; end
 
   def potential_moves(options = {})
     # Todo: Improve this by using Dijkstra's Algorithm instead of this brute-force method.
@@ -70,6 +86,7 @@ class Character < StaticObject
   # A* path-finding.
   def path_to(destination_tile)
     return nil unless destination_tile.passable? self
+    return nil if destination_tile == tile
 
     closed_tiles = []
     open_paths = [PathStart.new(tile)]
@@ -103,7 +120,12 @@ class Character < StaticObject
 
   def move_to(tile)
     change_in_x = tile.x - @tile.x
-    self.factor_x = change_in_x > 0 ? 1 : -1 # Turn based on movement.
+
+    # Turn based on movement.
+    unless change_in_x == 0
+      self.factor_x = change_in_x > 0 ? 1 : -1
+    end
+
     @tile.remove_object self
     tile.add_object self
     @tile = tile

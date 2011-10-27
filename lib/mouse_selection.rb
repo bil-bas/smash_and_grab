@@ -31,7 +31,7 @@ class MouseSelection < GameObject
     super
 
     if @selected_tile
-      if @hover_tile != @path.last
+      if @hover_tile != @selected_tile and @hover_tile != @path.last
         @path = @selected_tile.objects.last.path_to(@hover_tile) || []
         @path.shift # Remove the starting square.
       end
@@ -58,13 +58,19 @@ class MouseSelection < GameObject
 
       # Show path and end of the move-path chosen.
       if @hover_tile
-        @path.each do |tile|
+        tiles = @path.empty? ? [@hover_tile] : @path
+        tiles.each do |tile|
           can_move = @potential_moves.include? tile
-          image = if tile == @path.last
-            can_move ? @final_move_image : @final_move_too_far_image
+          image = if tile == tiles.last
+            if tile.empty?
+              can_move ? @final_move_image : @final_move_too_far_image
+            else
+              @final_move_too_far_image
+            end
           else
             can_move ? @partial_move_image : @partial_move_too_far_image
           end
+
           tile.draw_isometric_image image, ZOrder::TILE_SELECTION, color: color
         end
       end
@@ -74,7 +80,7 @@ class MouseSelection < GameObject
   def left_click
     if @selected_tile
       # Move the character.
-      if @potential_moves.include? @hover_tile
+      if @potential_moves.include? @hover_tile and @hover_tile.empty?
         character = @selected_tile.objects.last
         character.move_to @hover_tile
         @path.clear
