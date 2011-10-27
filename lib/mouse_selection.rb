@@ -1,7 +1,7 @@
 class MouseSelection < GameObject
   attr_reader :selected_tile, :hover_tile
 
-  MOVE_COLOR = Color.rgba(0, 255, 0, 25)
+  MOVE_COLOR = Color.rgba(0, 255, 0, 50)
   NO_MOVE_COLOR = Color.rgba(255, 0, 0, 25)
   
   def initialize(options = {})
@@ -15,6 +15,7 @@ class MouseSelection < GameObject
 
     @selected_tile = @hover_tile = nil
     @path = nil
+    @path_record = @moves_record = nil
 
     super(options)
 
@@ -30,9 +31,9 @@ class MouseSelection < GameObject
     super
 
     if @selected_tile
-      if @hover_tile != @selected_tile and @path and @hover_tile != @path.last
+      if @hover_tile != @selected_tile and (@path.nil? or @hover_tile != @path.current)
         @path = @selected_tile.objects.last.path_to(@hover_tile)
-        @path.shift if @path # Remove the starting square.
+        @path_record = nil
       end
     else
       @potential_moves.clear
@@ -43,35 +44,44 @@ class MouseSelection < GameObject
     @potential_moves = @selected_tile.objects[0].potential_moves
   end
   
-  def draw
+  def draw(offset_x, offset_y, zoom)
     # Draw a disc under the selected object.
     if @selected_tile
       selected_color = Color::GREEN # Assume everyone is a friend for now.
       @selected_tile.draw_isometric_image @selected_image, ZOrder::TILE_SELECTION, color: selected_color
 
-      # Highlight all pixels that character can travel to.
+      # Highlight all squares that character can travel to.
       pixel = $window.pixel
-      @potential_moves.each do |tile|
-        tile.draw_isometric_image pixel, ZOrder::TILE_SELECTION, color: MOVE_COLOR, mode: :additive
+      @moves_record ||= $window.record do
+        @potential_moves.each do |tile|
+          tile.draw_isometric_image pixel, ZOrder::TILE_SELECTION, color: MOVE_COLOR, mode: :additive
+        end
       end
 
-      # Show path and end of the move-path chosen.
-      if @hover_tile
-        tiles = (@path.nil? or @path.empty?) ? [@hover_tile] : @path.tiles
-        tiles.each do |tile|
-          can_move = @potential_moves.include? tile
-          image = if tile == tiles.last
-            if tile.empty?
-              can_move ? @final_move_image : @final_move_too_far_image
-            else
-              @final_move_too_far_image
-            end
-          else
-            can_move ? @partial_move_image : @partial_move_too_far_image
-          end
+      @moves_record.draw -offset_x, -offset_y, ZOrder::TILE_SELECTION, zoom, zoom, Color::WHITE, :additive
 
-          tile.draw_isometric_image image, ZOrder::TILE_SELECTION, color: color
+      # Show path and end of the move-path chosen.
+      if @hover_tile and @hover_tile != @selected_tile
+        @path_record ||= $window.record do
+          tiles = @path.nil? ? [@selected_tile, @hover_tile] : @path.tiles
+          tiles[1..-1].each do |tile|
+            can_move = @potential_moves.include? tile
+
+            image = if tile == tiles.last
+              if tile.empty?
+                can_move ? @final_move_image : @final_move_too_far_image
+              else
+                @final_move_too_far_image
+              end
+            else
+              can_move ? @partial_move_image : @partial_move_too_far_image
+            end
+
+            tile.draw_isometric_image image, ZOrder::TILE_SELECTION, color: color
+          end
         end
+
+        @path_record.draw -offset_x, -offset_y, ZOrder::TILE_SELECTION, zoom, zoom
       end
     end
   end
@@ -83,12 +93,14 @@ class MouseSelection < GameObject
         character = @selected_tile.objects.last
         character.move_to @hover_tile
         @path = nil
+        @moves_record = nil
         @selected_tile = @hover_tile
         calculate_potential_moves
       end
     elsif @hover_tile and @hover_tile.objects.any?
       # Select a character to move.
       @selected_tile = @hover_tile
+      @moves_record = nil
       @potential_moves = @selected_tile.objects[0].potential_moves
     end
   end

@@ -96,7 +96,7 @@ class World < GameState
       $window.scale @zoom do
         1.times do
           @objects.each(&:draw)
-          @mouse_selection.draw
+          @mouse_selection.draw @camera_offset_x, @camera_offset_y, @zoom
         end
       end
     end
