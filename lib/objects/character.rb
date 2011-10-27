@@ -60,25 +60,25 @@ class Character < StaticObject
   def passable?(character); friend? character; end
 
   def potential_moves(options = {})
-    # Todo: Improve this by using Dijkstra's Algorithm instead of this brute-force method.
-
     options = {
         starting_tile: tile,
-        distance: MOVE,
-        ignore: [],
+        tiles: [],
     }.merge! options
 
     starting_tile = options[:starting_tile]
-    distance = options[:distance]
+    tiles = options[:tiles]
 
-    tiles = starting_tile.adjacent_passable(self) - options[:ignore]
-    tiles.push starting_tile if distance < MOVE
-    if distance > 1
-      tiles.map! { |t| potential_moves(starting_tile: t, distance: distance - 1, ignore: tiles) }
-      tiles.flatten!
+    adjacent = starting_tile.adjacent_passable(self) - tiles
+
+    adjacent.each do |t|
+      unless tiles.include? t
+        path = path_to(t)
+        if path and path.move_distance >= t.cost
+          tiles.push t
+          potential_moves(starting_tile: t, tiles: tiles) if MOVE > path.move_distance
+        end
+      end
     end
-
-    tiles.uniq!
 
     tiles
   end
@@ -102,7 +102,7 @@ class Character < StaticObject
       (path.current.adjacent_passable(self) - closed_tiles).each do |tile|
         new_path = Path.new(path, tile, destination_tile)
 
-        return new_path.tiles if tile == destination_tile
+        return new_path if tile == destination_tile
 
         if repeated_path = open_paths.find {|p| p.current == tile }
           if new_path.move_distance < repeated_path.move_distance

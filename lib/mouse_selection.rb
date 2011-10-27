@@ -14,8 +14,7 @@ class MouseSelection < GameObject
     @final_move_too_far_image = Image["final_move_too_far.png"]
 
     @selected_tile = @hover_tile = nil
-
-    @path = []
+    @path = nil
 
     super(options)
 
@@ -31,9 +30,9 @@ class MouseSelection < GameObject
     super
 
     if @selected_tile
-      if @hover_tile != @selected_tile and @hover_tile != @path.last
-        @path = @selected_tile.objects.last.path_to(@hover_tile) || []
-        @path.shift # Remove the starting square.
+      if @hover_tile != @selected_tile and @path and @hover_tile != @path.last
+        @path = @selected_tile.objects.last.path_to(@hover_tile)
+        @path.shift if @path # Remove the starting square.
       end
     else
       @potential_moves.clear
@@ -58,7 +57,7 @@ class MouseSelection < GameObject
 
       # Show path and end of the move-path chosen.
       if @hover_tile
-        tiles = @path.empty? ? [@hover_tile] : @path
+        tiles = (@path.nil? or @path.empty?) ? [@hover_tile] : @path.tiles
         tiles.each do |tile|
           can_move = @potential_moves.include? tile
           image = if tile == tiles.last
@@ -83,7 +82,7 @@ class MouseSelection < GameObject
       if @potential_moves.include? @hover_tile and @hover_tile.empty?
         character = @selected_tile.objects.last
         character.move_to @hover_tile
-        @path.clear
+        @path = nil
         @selected_tile = @hover_tile
         calculate_potential_moves
       end
@@ -98,7 +97,7 @@ class MouseSelection < GameObject
     # Deselect the currently selected character.
     if @selected_tile
       @potential_moves.clear
-      @path.clear
+      @path = nil
       @selected_tile = nil
     end
   end
