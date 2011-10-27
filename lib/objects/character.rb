@@ -34,11 +34,11 @@ class Character < StaticObject
 
   def initialize(grid_x, grid_y, options = {})
     unless defined? @@sprites
-      @@sprites = Image.load_tiles($window, File.expand_path("media/images/characters.png", EXTRACT_PATH), 32, 32, true)
+      @@sprites = SpriteSheet.new("characters.png", 32, 32, 8)
     end
 
     options = {
-        image: @@sprites.sample,
+        image: @@sprites.each.to_a.sample,
         factor_x: [-1, 1].sample,
     }.merge! options
      

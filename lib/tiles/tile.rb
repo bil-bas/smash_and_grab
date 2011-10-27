@@ -1,11 +1,11 @@
 class Tile < GameObject
   class Grass < Tile
     def cost; Float::INFINITY; end
-    def sprite; @@sprites[1]; end
+    def spritesheet_pos; [1, 0]; end
   end
   
   class Concrete < Tile
-    def sprite; @@sprites[2]; end
+    def spritesheet_pos; [2, 0]; end
   end
   
   WIDTH, HEIGHT = 32, 16
@@ -25,9 +25,9 @@ class Tile < GameObject
     @grid_x, @grid_y = grid_x, grid_y
 
     unless defined? @@sprites
-      @@sprites = Image.load_tiles($window, File.expand_path("media/images/floor_tiles.png", EXTRACT_PATH), WIDTH, HEIGHT, true)
+      @@sprites = SpriteSheet.new("floor_tiles.png", WIDTH, HEIGHT, 8)
     end
-    options[:image] = sprite
+    options[:image] = @@sprites[*spritesheet_pos]
     options[:x] = (@grid_y + @grid_x) * WIDTH / 2
     options[:y] = (@grid_y - @grid_x) * HEIGHT / 2
     options[:rotation_center] = :center_center
