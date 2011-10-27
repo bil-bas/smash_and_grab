@@ -51,14 +51,15 @@ class MouseSelection < GameObject
       @selected_tile.draw_isometric_image @selected_image, ZOrder::TILE_SELECTION, color: selected_color
 
       # Highlight all squares that character can travel to.
-      pixel = $window.pixel
-      @moves_record ||= $window.record do
-        @potential_moves.each do |tile|
-          tile.draw_isometric_image pixel, ZOrder::TILE_SELECTION, color: MOVE_COLOR, mode: :additive
+      unless @potential_moves.empty?
+        @moves_record ||= $window.record do
+          @potential_moves.each do |tile|
+            tile.draw_isometric_image $window.pixel, ZOrder::TILE_SELECTION, color: MOVE_COLOR, mode: :additive
+          end
         end
-      end
 
-      @moves_record.draw -offset_x, -offset_y, ZOrder::TILE_SELECTION, zoom, zoom, Color::WHITE, :additive
+        @moves_record.draw -offset_x, -offset_y, ZOrder::TILE_SELECTION, zoom, zoom, Color::WHITE, :additive
+      end
 
       # Show path and end of the move-path chosen.
       if @hover_tile and @hover_tile != @selected_tile
