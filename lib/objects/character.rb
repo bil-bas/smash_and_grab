@@ -128,6 +128,14 @@ class Character < StaticObject
 
     @tile.remove_object self
     tile.add_object self
+
+    [@tile, tile].each {|t| parent.minimap.update_tile t }
+
     @tile = tile
+  end
+
+  def minimap_color
+    # TODO: Friend blue, enemy red.
+    :red
   end
 end

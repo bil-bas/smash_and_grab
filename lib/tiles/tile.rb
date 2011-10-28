@@ -73,4 +73,17 @@ class Tile < GameObject
 
     object
   end
+
+  def minimap_color
+    if empty?
+      # Todo: Passable to local player.
+      if passable?(nil)
+        Color.rgb(200, 200, 200)
+      else
+        Color.rgb(50, 50, 50)
+      end
+    else
+      objects.last.minimap_color
+    end
+  end
 end

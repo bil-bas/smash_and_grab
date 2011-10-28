@@ -1,5 +1,5 @@
 class World < GameState
-  attr_reader :map
+  attr_reader :map, :minimap
 
   MAX_ZOOM = 0.5
   MIN_ZOOM = 4.0
@@ -18,6 +18,8 @@ class World < GameState
     200.times do
       add_object Character.new(rand(@map.grid_width), rand(@map.grid_height))
     end
+
+    @minimap = Minimap.new @map
 
     @fps_text = ""
 
@@ -117,6 +119,8 @@ class World < GameState
         end
       end
     end
+
+    @minimap.draw
 
     @font.draw @fps_text, 0, 0, Float::INFINITY
 
