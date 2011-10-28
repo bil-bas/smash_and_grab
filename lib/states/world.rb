@@ -1,9 +1,9 @@
 class World < GameState
   attr_reader :map
 
-  MAX_ZOOM = 1
-  MIN_ZOOM = 4
-  INITIAL_ZOOM = 2
+  MAX_ZOOM = 0.5
+  MIN_ZOOM = 4.0
+  INITIAL_ZOOM = 2.0
 
   BACKGROUND_COLOR = Color.rgba(30, 10, 10, 255)
   
@@ -30,11 +30,28 @@ class World < GameState
 
     # Zoom in and out.
     on_input :wheel_down do
-      @zoom /= 2 if @zoom > MAX_ZOOM
+      zoom_by 0.5 # Zoom out.
     end
 
     on_input :wheel_up do
-      @zoom *= 2 if @zoom < MIN_ZOOM
+      zoom_by 2.0 # Zoom in.
+    end
+  end
+
+  def zoom_by(factor)
+    if (factor < 1 and @zoom > MAX_ZOOM) or (factor > 1 and @zoom < MIN_ZOOM)
+      # Zoom on the mouse position if it is in the window, else zoom on the center position.
+      focus_x, focus_y = if $window.mouse_x.between?(0, $window.width) and $window.mouse_y.between?(0, $window.height)
+        [$window.mouse_x, $window.mouse_y]
+      else
+        [$window.width / 2, $window.height / 2]
+      end
+
+      x = (@camera_offset_x + focus_x) / @zoom
+      y = (@camera_offset_y + focus_y) / @zoom
+      @zoom *= factor
+      @camera_offset_x = ((@zoom * x) - focus_x).round
+      @camera_offset_y = ((@zoom * y) - focus_y).round
     end
   end
   
@@ -61,8 +78,8 @@ class World < GameState
       @camera_offset_y += 10.0
     end
 
-    @mouse_selection.tile = @map.tile_at_position((@camera_offset_x + $window.mouse_x) / @zoom.to_f,
-                                                  (@camera_offset_y + $window.mouse_y) / @zoom.to_f)
+    @mouse_selection.tile = @map.tile_at_position((@camera_offset_x + $window.mouse_x) / @zoom,
+                                                  (@camera_offset_y + $window.mouse_y) / @zoom)
     @mouse_selection.update
 
     @used_time += (Time.now - start_at).to_f
