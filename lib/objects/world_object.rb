@@ -2,9 +2,6 @@ class WorldObject < GameObject
   attr_accessor :z
 
   OUTLINE_SCALE = Image::THIN_OUTLINE_SCALE
-  OUTLINE_OFFSET_X = 0
-  OUTLINE_OFFSET_Y = 1.25
-  OUTLINE_COLOR = Color.rgb(50, 50, 50)
   
   def initialize(options = {})    
     options = {
@@ -18,7 +15,7 @@ class WorldObject < GameObject
 
     super(options)
 
-    @outline = @image.thin_outline
+    @image = @image.thin_outlined
   end
 
   def create_shadow(position)
@@ -35,9 +32,7 @@ class WorldObject < GameObject
  
   def draw
     @@shadow.draw_rot x, y, y - z, 0, 0.5, 0.5, 1, 0.5
-    @image.draw_rot x, y + 1, y - z, 0, 0.5, 1, factor_x
 
-    @image.thin_outline.draw_rot x + OUTLINE_OFFSET_X, y + OUTLINE_OFFSET_Y, y - z, 0, 0.5, 1,
-                                 OUTLINE_SCALE * factor_x, OUTLINE_SCALE, OUTLINE_COLOR
+    @image.draw_rot x, y + 1.5, y - z, 0, 0.5, 1, OUTLINE_SCALE * factor_x, OUTLINE_SCALE
   end
 end

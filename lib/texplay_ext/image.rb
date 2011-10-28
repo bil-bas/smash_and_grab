@@ -1,5 +1,7 @@
 module Gosu
   class Image
+    OUTLINE_COLOR = Color.rgb(50, 50, 50)
+
     def self.new(*args, &block)
       args[0] = $window # MONKEYPATCH: images created as tiles can't otherwise be duplicated.
 
@@ -101,20 +103,39 @@ module Gosu
 
 
     THIN_OUTLINE_SCALE = 0.5
-    TRANSPARENT_PROXY_COLOR = [1, 0, 1, 1]
-    def thin_outline
-      unless defined? @thin_outline
-        zoomed_image = Image.create width / THIN_OUTLINE_SCALE, height / THIN_OUTLINE_SCALE
-        zoomed_image.clear color: TRANSPARENT_PROXY_COLOR
-        $window.render_to_image zoomed_image do
-          draw 0, 0, 0, 1 / THIN_OUTLINE_SCALE, 1 / THIN_OUTLINE_SCALE
-        end
-        zoomed_image.refresh_cache
-        zoomed_image.clear(dest_select: TRANSPARENT_PROXY_COLOR, color: :alpha)
-        @thin_outline = zoomed_image.outline
+    def thin_outlined
+      unless defined? @thin_outlined
+
+        zoomed_image = enlarge 1 / THIN_OUTLINE_SCALE
+        @thin_outlined = zoomed_image.outline
+        @thin_outlined.clear dest_ignore: :alpha, color: OUTLINE_COLOR
+        @thin_outlined.splice zoomed_image, 1, 1, alpha_blend: true
       end
 
-      @thin_outline
+      @thin_outlined
     end
   end
+end
+
+# Based on Banisterfiend's splice_and_scale macro.
+# http://www.libgosu.org/cgi-bin/mwf/topic_show.pl?tid=237
+
+# Returns a larger copy of the image.
+TexPlay::create_macro(:enlarge) do |factor, options = {}|
+  zoomed_image = Image.create width * factor, height * factor, color: :alpha
+
+  options = {
+    color_control: proc do |c1, c2, x, y|
+      x *= factor
+      y *= factor
+
+      zoomed_image.rect x, y, x + factor, y + factor, color: c2, fill: true
+
+      :none
+    end
+  }.merge!(options)
+
+  zoomed_image.splice self, 0, 0, options
+
+  zoomed_image
 end
