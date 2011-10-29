@@ -32,6 +32,8 @@ class Character < StaticObject
 
   attr_reader :faction
 
+  def to_s; "<#{self.class.name} [#{tile.grid_x}, #{tile.grid_y}]>"; end
+
   def initialize(tile, options = {})
     unless defined? @@sprites
       @@sprites = SpriteSheet.new("characters.png", 32, 32, 8)

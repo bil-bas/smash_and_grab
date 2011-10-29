@@ -13,7 +13,18 @@ class Tile < GameObject
   WIDTH, HEIGHT = 32, 16
   ADJACENT_POSITIONS = [[-1, 0], [0, -1], [1, 0], [0, 1]]
   #ADJACENT_POSITIONS = [[-1, 0], [0, -1], [1, 0], [0, 1], [-1, -1], [-1, 1], [1, -1], [1, 1]]
-    
+
+  WALL_OCCLUSION_POSITIONS = [
+      [[0, 0], :left],
+      [[0, 0], :bottom],
+      [[-1, 1], :left],
+      [[-1, 1], :right],
+      [[-1, 1], :top],
+      [[-1, 1], :bottom],
+      [[-2, 2], :top],
+      [[-2, 2], :right],
+  ]
+
   attr_reader :objects, :grid_x, :grid_y, :cost
 
   def map; parent.map; end
@@ -66,6 +77,8 @@ class Tile < GameObject
     @objects << object
     object.x, object.y = [x, y]
 
+    modify_occlusions +1
+
     object
   end
 
@@ -74,7 +87,19 @@ class Tile < GameObject
 
     @objects.delete object
 
+    modify_occlusions -1
+
     object
+  end
+
+  def modify_occlusions(value)
+    WALL_OCCLUSION_POSITIONS.each do |(offset_x, offset_y), direction|
+      if tile = map.tile_at_grid(grid_x + offset_x, grid_y + offset_y)
+        if wall = tile.wall(direction)
+          wall.occlusions += value
+        end
+      end
+    end
   end
 
   def minimap_color

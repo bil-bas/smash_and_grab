@@ -24,7 +24,9 @@ class MouseSelection < GameObject
   end
   
   def tile=(tile)
+    modify_occlusions [@hover_tile], -1 if @hover_tile
     @hover_tile = tile
+    modify_occlusions [@hover_tile], +1 if @hover_tile
   end
 
   def update
@@ -32,16 +34,29 @@ class MouseSelection < GameObject
 
     if @selected_tile
       if @hover_tile != @selected_tile and (@path.nil? or @hover_tile != @path.current)
+        modify_occlusions @path.tiles, -1 if @path
         @path = @selected_tile.objects.last.path_to(@hover_tile)
+
+        modify_occlusions @path.tiles, +1 if @path
+
         @path_record = nil
       end
     else
+      modify_occlusions @potential_moves, +1
       @potential_moves.clear
     end
   end
 
   def calculate_potential_moves
+    modify_occlusions @potential_moves, -1
     @potential_moves = @selected_tile.objects.last.potential_moves
+    modify_occlusions @potential_moves, +1
+  end
+
+  def modify_occlusions(tiles, amount)
+    tiles.each do |tile|
+      tile.modify_occlusions amount
+    end
   end
   
   def draw(offset_x, offset_y, zoom)
@@ -93,7 +108,10 @@ class MouseSelection < GameObject
       if @potential_moves.include? @hover_tile and @hover_tile.end_turn_on?(@selected_tile.objects.last)
         character = @selected_tile.objects.last
         character.move_to @hover_tile
+
+        modify_occlusions @path.tiles, -1 if @path
         @path = nil
+
         @moves_record = nil
         @selected_tile = @hover_tile
         calculate_potential_moves
@@ -102,15 +120,19 @@ class MouseSelection < GameObject
       # Select a character to move.
       @selected_tile = @hover_tile
       @moves_record = nil
-      @potential_moves = @selected_tile.objects.last.potential_moves
+      calculate_potential_moves
     end
   end
 
   def right_click
     # Deselect the currently selected character.
     if @selected_tile
+      modify_occlusions @potential_moves, -1
       @potential_moves.clear
+
+      modify_occlusions @path.tiles, -1 if @path
       @path = nil
+
       @selected_tile = nil
     end
   end

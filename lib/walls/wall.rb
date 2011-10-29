@@ -1,6 +1,9 @@
 class Wall < GameObject
   SPRITESHEET_HORIZONTAL, SPRITESHEET_VERTICAL = 0, 1
 
+  SEMI_TRANSPARENT_COLOR = Color.rgba(255, 255, 255, 120)
+  OPAQUE_COLOR = Color::WHITE
+
   # No wall - just let the user through.
   class None < self
     def blocks_sight?(person); false; end
@@ -24,13 +27,14 @@ class Wall < GameObject
   WIDTH, HEIGHT = 32, 64
     
   attr_reader :objects, :grid_x, :grid_y, :cost
+  attr_accessor :occlusions
 
   def blocks_sight?(person); true; end
   def blocks_movement?(person); true; end
 
   def zorder; super + 0.01; end
   def to_s; "<#{self.class.name} [#{@tiles[0].grid_x}, #{@tiles[0].grid_y}] <=> [#{@tiles[1].grid_x}, #{@tiles[1].grid_y}]>"; end
-
+  def occludes?; @occlusions > 0; end
   
   def initialize(tile1, tile2, options = {})
     @@sprites ||= SpriteSheet.new("walls.png", WIDTH, HEIGHT, 8)
@@ -45,6 +49,7 @@ class Wall < GameObject
 
     @cost = options[:cost]
     @objects = []
+    @occlusions = 0 # Number of objects occluded by the wall.
 
     super(options)
 
@@ -67,8 +72,7 @@ class Wall < GameObject
 
   def draw
     if @image
-      # TODO: Visibility based on nearby objects.
-      color = Color.rgba(255, 255, 255, 150)
+      color = occludes? ? SEMI_TRANSPARENT_COLOR : OPAQUE_COLOR
       @image.draw_rot @x, @y, @zorder, 0, 0.5, 1, 1, 1, color
     end
   end
