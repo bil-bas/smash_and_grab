@@ -114,28 +114,29 @@ module Gosu
 
       @thin_outlined
     end
+
+    # Based on Banisterfiend's splice_and_scale macro.
+    # http://www.libgosu.org/cgi-bin/mwf/topic_show.pl?tid=237
+
+    # Returns a larger copy of the image.
+    def enlarge(factor, options = {})
+      zoomed_image = Image.create width * factor, height * factor
+
+      options = {
+        color_control: proc do |c1, c2, x, y|
+          x *= factor
+          y *= factor
+
+          zoomed_image.rect x, y, x + factor, y + factor, color: c2, fill: true
+
+          :none
+        end
+      }.merge!(options)
+
+      zoomed_image.splice self, 0, 0, options
+
+      zoomed_image
+    end
   end
 end
 
-# Based on Banisterfiend's splice_and_scale macro.
-# http://www.libgosu.org/cgi-bin/mwf/topic_show.pl?tid=237
-
-# Returns a larger copy of the image.
-TexPlay::create_macro(:enlarge) do |factor, options = {}|
-  zoomed_image = Image.create width * factor, height * factor
-
-  options = {
-    color_control: proc do |c1, c2, x, y|
-      x *= factor
-      y *= factor
-
-      zoomed_image.rect x, y, x + factor, y + factor, color: c2, fill: true
-
-      :none
-    end
-  }.merge!(options)
-
-  zoomed_image.splice self, 0, 0, options
-
-  zoomed_image
-end
