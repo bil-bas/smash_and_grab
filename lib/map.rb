@@ -31,7 +31,7 @@ class Map
     @tiles = Array.new(@grid_height) { Array.new(@grid_width) }
   
     possible_tiles = [
-        *([Tile::Concrete] * 5),
+        *([Tile::Concrete] * 10),
         *([Tile::Grass] * 1),
     ]
 
@@ -46,23 +46,39 @@ class Map
       row.each_with_index do |tile, x|
         # Tile below.
         if y < @grid_height - 1
-          if rand() < 0.1
-            [Wall::HighConcreteWallWindow, Wall::HighConcreteWall].sample.new tile, tile_at_grid(x, y + 1)
-          else
-            Wall::None.new tile, tile_at_grid(x, y + 1)
-          end
+          Wall::None.new tile, tile_at_grid(x, y + 1)
         end
 
         # Tile to right.
         if x < @grid_width - 1
-          if rand() < 0.1
-            [Wall::HighConcreteWallWindow, Wall::HighConcreteWall].sample.new tile, tile_at_grid(x + 1, y)
-          else
-            Wall::None.new tile, tile_at_grid(x + 1, y)
-          end
+          Wall::None.new tile, tile_at_grid(x + 1, y)
         end
       end
     end
+
+    # Back wall.
+    Wall::HighConcreteWall.new tile_at_grid(1, 2), tile_at_grid(1, 3)
+    Wall::HighConcreteWallWindow.new tile_at_grid(2, 2), tile_at_grid(2, 3)
+    Wall::HighConcreteWallWindow.new tile_at_grid(3, 2), tile_at_grid(3, 3)
+    Wall::HighConcreteWall.new tile_at_grid(4, 2), tile_at_grid(4, 3)
+
+    # Left wall
+    Wall::HighConcreteWall.new tile_at_grid(0, 3), tile_at_grid(1, 3)
+    #Wall::HighConcreteWall.new tile_at_grid(0, 4), tile_at_grid(1, 4)
+    Wall::HighConcreteWall.new tile_at_grid(0, 5), tile_at_grid(1, 5)
+    Wall::HighConcreteWall.new tile_at_grid(0, 6), tile_at_grid(1, 6)
+
+    # Front wall.
+    Wall::HighConcreteWall.new tile_at_grid(1, 6), tile_at_grid(1, 7)
+    Wall::HighConcreteWallWindow.new tile_at_grid(2, 6), tile_at_grid(2, 7)
+    Wall::HighConcreteWallWindow.new tile_at_grid(3, 6), tile_at_grid(3, 7)
+    Wall::HighConcreteWall.new tile_at_grid(4, 6), tile_at_grid(4, 7)
+
+    # Right wall
+    Wall::HighConcreteWall.new tile_at_grid(4, 3), tile_at_grid(5, 3)
+    Wall::HighConcreteWall.new tile_at_grid(4, 4), tile_at_grid(5, 4)
+    Wall::HighConcreteWall.new tile_at_grid(4, 5), tile_at_grid(5, 5)
+    Wall::HighConcreteWall.new tile_at_grid(4, 6), tile_at_grid(5, 6)
 
     record
   end
