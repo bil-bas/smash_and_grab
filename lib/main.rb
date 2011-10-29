@@ -1,5 +1,3 @@
-EXTRACT_PATH = File.expand_path('../..', __FILE__)
-
 def require_folder(path, files)
   files.each do |file|
     if path.empty?
@@ -26,11 +24,15 @@ rescue Exception
   exit
 end
 
+require 'syck' # Required for unknown reason, when ocraed!
+
 require 'gosu'
 require 'chingu'
 #require 'fidgit'
+
 require 'texplay'
 require_folder('texplay_ext', %w[color image window])
+TexPlay.set_options(caching: false)
 
 include Gosu
 include Chingu
@@ -49,6 +51,7 @@ require_folder("objects", %w[static_object dynamic_object character])
 require_folder("walls", %w[wall])
 require_folder("states", %w[world])
 
+
 class ZOrder
   BACKGROUND = -Float::INFINITY
   TILES = -99999
@@ -57,7 +60,6 @@ class ZOrder
 
   GUI = Float::INFINITY
 end
-
 
 
 class GameWindow < Chingu::Window
@@ -74,4 +76,4 @@ class GameWindow < Chingu::Window
   end
 end
 
-GameWindow.new.show
+GameWindow.new.show unless defined? Ocra
