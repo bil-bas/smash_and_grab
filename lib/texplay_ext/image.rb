@@ -122,7 +122,7 @@ end
 
 # Returns a larger copy of the image.
 TexPlay::create_macro(:enlarge) do |factor, options = {}|
-  zoomed_image = Image.create width * factor, height * factor, color: :alpha
+  zoomed_image = Image.create width * factor, height * factor
 
   options = {
     color_control: proc do |c1, c2, x, y|

@@ -1,11 +1,12 @@
 class Minimap < GameObject
   def initialize(map, options = {})
     options = {
-        factor: 2,
-        x: 80,
-        y: 100,
+        factor: 3,
+        x: $window.width - 110,
+        y: 110,
         angle: -45,
-        rotation_center: :center_center
+        rotation_center: :center_center,
+        zorder: ZOrder::GUI,
     }.merge! options
 
     @map = map

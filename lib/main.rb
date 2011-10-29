@@ -43,9 +43,9 @@ Song.autoload_dirs.unshift File.join(media_dir, 'music')
 Font.autoload_dirs.unshift File.join(media_dir, 'fonts')
 
 # Include other files.
-require_folder("", %w[sprite_sheet map minimap mouse_selection])
-require_folder("objects", %w[static_object dynamic_object character])
+require_folder("", %w[sprite_sheet z_order_recorder map minimap mouse_selection])
 require_folder("tiles", %w[tile])
+require_folder("objects", %w[static_object dynamic_object character])
 require_folder("walls", %w[wall])
 require_folder("states", %w[world])
 

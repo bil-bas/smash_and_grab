@@ -12,8 +12,8 @@ GEM
       clipboard (~> 0.9.9)
       ffi (~> 1.0.9)
       gosu (~> 0.7.33)
-    gosu (0.7.37)
-    gosu (0.7.37-x86-mingw32)
+    gosu (0.7.38)
+    gosu (0.7.38-x86-mingw32)
     texplay (0.3.5)
       gosu (>= 0.7.25)
     texplay (0.3.5-x86-mingw32)
@@ -26,5 +26,5 @@ PLATFORMS
 DEPENDENCIES
   chingu (~> 0.9rc7)
   fidgit (~> 0.1.8)
-  gosu (~> 0.7.37)
+  gosu (~> 0.7.38)
   texplay (~> 0.3.5)

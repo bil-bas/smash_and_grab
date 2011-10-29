@@ -32,7 +32,7 @@ class Character < StaticObject
 
   attr_reader :faction
 
-  def initialize(grid_x, grid_y, options = {})
+  def initialize(tile, options = {})
     unless defined? @@sprites
       @@sprites = SpriteSheet.new("characters.png", 32, 32, 8)
     end
@@ -42,7 +42,7 @@ class Character < StaticObject
         factor_x: [-1, 1].sample,
     }.merge! options
      
-    super(grid_x, grid_y, options)
+    super(tile, options)
 
     # TODO: Obviously, this is dumb way to do factions.
     # Get a hash of the image, so we can compare it.
@@ -56,6 +56,7 @@ class Character < StaticObject
 
   def enemy?(character); not friend?(character); end
 
+  def end_turn_on?(person); false; end
   def impassable?(character); enemy? character; end
   def passable?(character); friend? character; end
 
@@ -69,7 +70,6 @@ class Character < StaticObject
     tiles = options[:tiles]
 
     adjacent = starting_tile.adjacent_passable(self) - tiles
-
     adjacent.each do |t|
       unless tiles.include? t
         path = path_to(t)

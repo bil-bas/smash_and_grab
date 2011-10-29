@@ -27,34 +27,35 @@ class Tile < GameObject
     unless defined? @@sprites
       @@sprites = SpriteSheet.new("floor_tiles.png", WIDTH, HEIGHT, 8)
     end
-    options[:image] = @@sprites[*spritesheet_pos]
-    options[:x] = (@grid_y + @grid_x) * WIDTH / 2
-    options[:y] = (@grid_y - @grid_x) * HEIGHT / 2
-    options[:rotation_center] = :center_center
-    options[:zorder] = options[:y]
 
-    @cost = 1
-
-    @objects = []
+    options = {
+        image: @@sprites[*spritesheet_pos],
+        x: (@grid_y + @grid_x) * WIDTH / 2,
+        y: (@grid_y - @grid_x) * HEIGHT / 2,
+        rotation_center: :center_center,
+        zorder: options[:y],
+    }.merge! options
 
     super(options)
+
+    @cost = 1
+    @objects = []
+    @walls = {}
   end
 
-  def passable?(character)
-    cost < Float::INFINITY and objects.all? {|o| o.passable? character }
+  def passable?(person)
+    cost < Float::INFINITY and objects.all? {|o| o.passable? person }
   end
 
-  # List of squares directly adjacent to the character that are potentially passable.
-  def adjacent_passable(character)
-    tiles = ADJACENT_POSITIONS.map do |offset_x, offset_y|
-      map.tile_at_grid(grid_x + offset_x, grid_y + offset_y)
-    end
+  def end_turn_on?(person)
+    passable?(person) and @objects.all? {|o| o.end_turn_on?(person) }
+  end
 
-    tiles.compact!
-
-    tiles.select! {|tile| tile.passable?(character) }
-
-    tiles
+  # List of squares that can be entered from this tile.
+  def adjacent_passable(person)
+    walls = @walls.values.delete_if {|w| w.blocks_movement?(person) }
+    tiles = walls.map {|w| w.destination(self, person) }
+    tiles.select {|t| t.passable?(person) }
   end
 
   def add_object(object)
@@ -85,5 +86,10 @@ class Tile < GameObject
     else
       objects.last.minimap_color
     end
+  end
+
+  def add_wall(direction, wall)
+    raise "Bad direction #{direction}" unless [:left, :right, :top, :bottom].include? direction
+    @walls[direction] = wall
   end
 end

@@ -15,7 +15,7 @@ class WorldObject < GameObject
 
     super(options)
 
-    @image = @image.thin_outlined
+    @image = @image.thin_outlined if @image
   end
 
   def create_shadow(position)

@@ -13,10 +13,12 @@ class World < GameState
     init_fps
 
     @map = Map.new 50, 50
+    empty_tiles = @map.passable_tiles.shuffle
 
     # Make some characters.
     200.times do
-      add_object Character.new(rand(@map.grid_width), rand(@map.grid_height))
+      tile = empty_tiles.pop
+      add_object Character.new(tile)
     end
 
     @minimap = Minimap.new @map

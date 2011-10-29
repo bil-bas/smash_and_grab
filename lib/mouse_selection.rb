@@ -41,7 +41,7 @@ class MouseSelection < GameObject
   end
 
   def calculate_potential_moves
-    @potential_moves = @selected_tile.objects[0].potential_moves
+    @potential_moves = @selected_tile.objects.last.potential_moves
   end
   
   def draw(offset_x, offset_y, zoom)
@@ -69,10 +69,10 @@ class MouseSelection < GameObject
             can_move = @potential_moves.include? tile
 
             image = if tile == tiles.last
-              if tile.empty?
-                can_move ? @final_move_image : @final_move_too_far_image
-              else
+              if tile.objects.last.is_a? Character
                 @final_move_too_far_image
+              else
+                can_move ? @final_move_image : @final_move_too_far_image
               end
             else
               can_move ? @partial_move_image : @partial_move_too_far_image
@@ -90,7 +90,7 @@ class MouseSelection < GameObject
   def left_click
     if @selected_tile
       # Move the character.
-      if @potential_moves.include? @hover_tile and @hover_tile.empty?
+      if @potential_moves.include? @hover_tile and @hover_tile.end_turn_on?(@selected_tile.objects.last)
         character = @selected_tile.objects.last
         character.move_to @hover_tile
         @path = nil
@@ -98,11 +98,11 @@ class MouseSelection < GameObject
         @selected_tile = @hover_tile
         calculate_potential_moves
       end
-    elsif @hover_tile and @hover_tile.objects.any?
+    elsif @hover_tile and @hover_tile.objects.last.is_a? Character
       # Select a character to move.
       @selected_tile = @hover_tile
       @moves_record = nil
-      @potential_moves = @selected_tile.objects[0].potential_moves
+      @potential_moves = @selected_tile.objects.last.potential_moves
     end
   end
 
