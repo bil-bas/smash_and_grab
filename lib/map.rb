@@ -31,8 +31,9 @@ class Map
     @tiles = Array.new(@grid_height) { Array.new(@grid_width) }
   
     possible_tiles = [
-        *([Tile::Concrete] * 10),
-        *([Tile::Grass] * 1),
+        *([Tile::Concrete] * 20),
+        *([Tile::Grass] * 4),
+        *([Tile::Lava] * 1),
     ]
 
     @grid_height.times do |y|

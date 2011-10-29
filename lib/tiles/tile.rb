@@ -1,13 +1,19 @@
 class Tile < GameObject
   class Grass < Tile
-    def cost; Float::INFINITY; end
+    def cost; 2; end
     def spritesheet_pos; [1, 0]; end
-    def minimap_color; Color.rgb(50, 50, 50); end
+    def minimap_color; Color.rgb(0, 200, 0); end
   end
   
   class Concrete < Tile
     def spritesheet_pos; [2, 0]; end
     def minimap_color; Color.rgb(200, 200, 200); end
+  end
+
+  class Lava < Tile
+    def cost; Float::INFINITY; end
+    def spritesheet_pos; [3, 0]; end
+    def minimap_color; Color.rgb(255, 200, 0); end
   end
   
   WIDTH, HEIGHT = 32, 16
