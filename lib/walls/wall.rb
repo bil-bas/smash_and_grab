@@ -6,16 +6,19 @@ class Wall < GameObject
     def blocks_sight?(person); false; end
     def blocks_movement?(person); false; end
     def spritesheet_pos; nil; end
+    def minimap_color; Color::NONE; end
   end
 
   # Concrete walls.
   class HighConcreteWall < self
     def spritesheet_pos; [[1, 0], [2, 0]]; end
+    def minimap_color; Color.rgb(100, 100, 100); end
   end
 
   class HighConcreteWallWindow < self
     def blocks_sight?(person); false; end
     def spritesheet_pos; [[1, 1], [2, 1]]; end
+    def minimap_color; Color.rgb(150, 150, 150); end
   end
   
   WIDTH, HEIGHT = 32, 64
@@ -27,7 +30,7 @@ class Wall < GameObject
 
   def zorder; super + 0.01; end
   def to_s; "<#{self.class.name} [#{@tiles[0].grid_x}, #{@tiles[0].grid_y}] <=> [#{@tiles[1].grid_x}, #{@tiles[1].grid_y}]>"; end
-  def minimap_color; Color.rgb(120, 120, 120); end
+
   
   def initialize(tile1, tile2, options = {})
     @@sprites ||= SpriteSheet.new("walls.png", WIDTH, HEIGHT, 8)
@@ -50,8 +53,8 @@ class Wall < GameObject
       @tiles.first.add_wall :bottom, self
       @image = spritesheet_pos ? @@sprites[*spritesheet_pos[SPRITESHEET_VERTICAL]] : nil
     else
-      @tiles.last.add_wall :left, self
-      @tiles.first.add_wall :right, self
+      @tiles.last.add_wall :right, self
+      @tiles.first.add_wall :left, self
       @image = spritesheet_pos ? @@sprites[*spritesheet_pos[SPRITESHEET_HORIZONTAL]] : nil
     end
 

@@ -2,10 +2,12 @@ class Tile < GameObject
   class Grass < Tile
     def cost; Float::INFINITY; end
     def spritesheet_pos; [1, 0]; end
+    def minimap_color; Color.rgb(50, 50, 50); end
   end
   
   class Concrete < Tile
     def spritesheet_pos; [2, 0]; end
+    def minimap_color; Color.rgb(200, 200, 200); end
   end
   
   WIDTH, HEIGHT = 32, 16
@@ -76,20 +78,20 @@ class Tile < GameObject
   end
 
   def minimap_color
+    # Todo: Passable to local player.
     if empty?
-      # Todo: Passable to local player.
-      if passable?(nil)
-        Color.rgb(200, 200, 200)
-      else
-        Color.rgb(50, 50, 50)
-      end
+      Color.rgb(200, 200, 200)
     else
-      objects.last.minimap_color
+      Color.rgb(50, 50, 50)
     end
   end
 
   def add_wall(direction, wall)
     raise "Bad direction #{direction}" unless [:left, :right, :top, :bottom].include? direction
     @walls[direction] = wall
+  end
+
+  def wall(direction)
+    @walls[direction]
   end
 end

@@ -1,11 +1,13 @@
 class Minimap < GameObject
+  TILE_WIDTH = 3
+  MARGIN = TILE_WIDTH * 2
+  MARGIN_COLOR = Color.rgba(50, 50, 50, 200)
+
   def initialize(map, options = {})
     options = {
-        factor: 3,
-        x: $window.width - 110,
-        y: 110,
-        angle: -45,
-        rotation_center: :center_center,
+        x: $window.width - 10,
+        y: 10,
+        rotation_center: :top_right,
         zorder: ZOrder::GUI,
     }.merge! options
 
@@ -13,7 +15,8 @@ class Minimap < GameObject
 
     super options
 
-    self.image = Image.create @map.grid_width, @map.grid_height
+    @image = Image.create @map.grid_width * TILE_WIDTH + MARGIN * 2, @map.grid_height * TILE_WIDTH + MARGIN * 2
+    @image.clear color: MARGIN_COLOR
 
     refresh
   end
@@ -28,7 +31,24 @@ class Minimap < GameObject
   end
 
   def update_tile(tile)
-    self.image.set_pixel tile.grid_x, tile.grid_y, color: tile.minimap_color
+    x, y = tile.grid_x * TILE_WIDTH + MARGIN, tile.grid_y * TILE_WIDTH + MARGIN
+
+    # Draw the tile
+    self.image.rect x, y, x + TILE_WIDTH - 1, y + TILE_WIDTH - 1, color: tile.minimap_color, fill: true
+
+    # Draw the two walls.
+    if wall = tile.wall(:bottom) and wall.minimap_color != Color::NONE
+      @image.line x, y + TILE_WIDTH - 1, x + TILE_WIDTH, y + TILE_WIDTH - 1, color: wall.minimap_color
+    end
+
+    if wall = tile.wall(:left) and wall.minimap_color != Color::NONE
+      @image.line x, y, x, y + TILE_WIDTH, color: wall.minimap_color
+    end
+
+    # Draw the tile object.
+    unless tile.empty?
+      self.image.rect x + 1, y, x + TILE_WIDTH - 1, y + TILE_WIDTH - 2, color: tile.objects.last.minimap_color, fill: true
+    end
 
     tile
   end
