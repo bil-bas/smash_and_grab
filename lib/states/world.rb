@@ -40,6 +40,11 @@ class World < GameState
     on_input :wheel_up do
       zoom_by 2.0 # Zoom in.
     end
+
+    on_input :escape do
+      @objects.each {|o| o.turn_reset if o.respond_to? :turn_reset }
+      @mouse_selection.turn_reset
+    end
   end
 
   def zoom_by(factor)

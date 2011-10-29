@@ -71,6 +71,8 @@ class GameWindow < Chingu::Window
     @pixel = Image.create 1, 1
     @pixel.clear color: :white
 
+    self.caption = "Smash and Grab - By Spooner - Press escape to reset turn."
+
     self.cursor = true
     push_game_state World
   end

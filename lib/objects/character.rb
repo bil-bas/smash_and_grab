@@ -28,9 +28,9 @@ class Character < StaticObject
     end
   end
 
-  MOVE = 4
+  MOVE = 5
 
-  attr_reader :faction
+  attr_reader :faction, :movement_points
 
   def to_s; "<#{self.class.name} [#{tile.grid_x}, #{tile.grid_y}]>"; end
 
@@ -49,6 +49,12 @@ class Character < StaticObject
     # TODO: Obviously, this is dumb way to do factions.
     # Get a hash of the image, so we can compare it.
     @faction = @image.hash
+
+    turn_reset
+  end
+
+  def turn_reset
+    @movement_points = MOVE
   end
 
   def friend?(character)
@@ -58,6 +64,7 @@ class Character < StaticObject
 
   def enemy?(character); not friend?(character); end
 
+  def move?; @movement_points > 0; end
   def end_turn_on?(person); false; end
   def impassable?(character); enemy? character; end
   def passable?(character); friend? character; end
@@ -75,9 +82,9 @@ class Character < StaticObject
     adjacent.each do |t|
       unless tiles.include? t
         path = path_to(t)
-        if path and path.move_distance >= t.cost
+        if path and path.move_distance <= @movement_points and path.move_distance >= t.cost
           tiles.push t
-          potential_moves(starting_tile: t, tiles: tiles) if MOVE > path.move_distance
+          potential_moves(starting_tile: t, tiles: tiles) if @movement_points > path.move_distance
         end
       end
     end
@@ -120,7 +127,11 @@ class Character < StaticObject
     nil # Failed to connect at all.
   end
 
-  def move_to(tile)
+  def move_to(tile, movement_cost)
+    raise "Not enough movement points" unless movement_cost <= @movement_points
+
+    @movement_points -= movement_cost
+
     change_in_x = tile.x - @tile.x
 
     # Turn based on movement.

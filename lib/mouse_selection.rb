@@ -62,7 +62,8 @@ class MouseSelection < GameObject
   def draw(offset_x, offset_y, zoom)
     # Draw a disc under the selected object.
     if @selected_tile
-      selected_color = Color::GREEN # Assume everyone is a friend for now.
+
+      selected_color = @selected_tile.objects.last.move? ? Color::GREEN : Color::BLACK
       @selected_image.draw_rot @selected_tile.x, @selected_tile.y, ZOrder::TILE_SELECTION, 0, 0.5, 0.5, 1, 1, selected_color
 
       # Highlight all squares that character can travel to.
@@ -107,7 +108,7 @@ class MouseSelection < GameObject
       # Move the character.
       if @potential_moves.include? @hover_tile and @hover_tile.end_turn_on?(@selected_tile.objects.last)
         character = @selected_tile.objects.last
-        character.move_to @hover_tile
+        character.move_to @hover_tile, @path.move_distance
 
         modify_occlusions @path.tiles, -1 if @path
         @path = nil
@@ -134,6 +135,16 @@ class MouseSelection < GameObject
       @path = nil
 
       @selected_tile = nil
+    end
+  end
+
+  def turn_reset
+    if @selected_tile
+      current_tile = @selected_tile
+      right_click
+      @selected_tile = current_tile
+      @moves_record = nil
+      calculate_potential_moves
     end
   end
 end
