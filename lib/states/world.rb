@@ -13,7 +13,7 @@ class World < GameState
   SAVE_FOLDER = File.expand_path("saves", ROOT_PATH)
   QUICKSAVE_FILE = File.expand_path("quicksave.sgs", SAVE_FOLDER)
 
-  BACKGROUND_COLOR = Color.rgba(30, 10, 10, 255)
+  BACKGROUND_COLOR = Color.rgba(35, 20, 20, 255)
   
   def setup
     init_fps
@@ -218,11 +218,7 @@ class World < GameState
     start_at = Time.now
 
     # Colour the background.
-    $window.draw_quad 0, 0, BACKGROUND_COLOR,
-                      $window.width, 0, BACKGROUND_COLOR,
-                      $window.width, $window.height, BACKGROUND_COLOR,
-                      0, $window.height, BACKGROUND_COLOR,
-                      ZOrder::BACKGROUND
+    $window.pixel.draw 0, 0, -Float::INFINITY, $window.width, $window.height, BACKGROUND_COLOR
 
     # Draw the flat tiles.
     1.times do
