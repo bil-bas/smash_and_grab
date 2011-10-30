@@ -14,6 +14,7 @@ class MouseSelection < GameObject
     @final_move_image = Image["final_move.png"]
     @partial_move_too_far_image = Image["partial_move_too_far.png"]
     @final_move_too_far_image = Image["final_move_too_far.png"]
+    @mouse_hover_image = Image["mouse_hover.png"]
 
     @selected_tile = @hover_tile = nil
     @path = nil
@@ -66,7 +67,6 @@ class MouseSelection < GameObject
   def draw(offset_x, offset_y, zoom)
     # Draw a disc under the selected object.
     if @selected_tile
-
       selected_color = @selected_tile.objects.last.move? ? Color::GREEN : Color::BLACK
       @selected_image.draw_rot @selected_tile.x, @selected_tile.y, ZOrder::TILE_SELECTION, 0, 0.5, 0.5, 1, 1, selected_color
 
@@ -104,6 +104,9 @@ class MouseSelection < GameObject
 
         @path_record.draw -offset_x, -offset_y, ZOrder::TILE_SELECTION, zoom, zoom
       end
+    elsif @hover_tile
+      color = @hover_tile.empty? ? Color::BLUE : Color::CYAN
+      @mouse_hover_image.draw_rot @hover_tile.x, @hover_tile.y, ZOrder::TILE_SELECTION, 0, 0.5, 0.5, 1, 1, color
     end
   end
 
