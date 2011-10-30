@@ -41,6 +41,10 @@ module Gosu
     def self.create(width, height, options = {})
       TexPlay.create_image($window, width, height, options)
     end
+
+    def transparent_pixel?(x, y)
+      get_pixel(x, y) == [0, 0, 0, 0]
+    end
     
     # Redraw the outline image, assuming the image has changed.
     public

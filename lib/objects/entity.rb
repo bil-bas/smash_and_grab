@@ -45,7 +45,7 @@ class Entity < StaticObject
     @map = map
 
     unless defined? @@sprites
-      @@sprites = SpriteSheet.new("characters.png", 32, 32)
+      @@sprites = SpriteSheet.new("characters.png", 64 + 2, 64 + 2)
     end
 
     @image_index = data[DATA_IMAGE_INDEX]
