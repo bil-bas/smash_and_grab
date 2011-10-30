@@ -1,4 +1,4 @@
-require 'json'
+require_relative 'action_history'
 
 class Map
   include Log
@@ -35,8 +35,9 @@ class Map
   DATA_WALLS = "walls"
   DATA_ENTITIES = "entities"
   DATA_OBJECTS = "objects"
+  DATA_ACTIONS = 'actions'
 
-  attr_reader :grid_width, :grid_height
+  attr_reader :grid_width, :grid_height, :actions
     
   def to_rect; Rect.new(0, 0, @grid_width * Tile::WIDTH, @grid_height * Tile::HEIGHT); end
 
@@ -78,6 +79,8 @@ class Map
     data[DATA_ENTITIES].each do |entity_data|
       Entity.const_get(entity_data[Entity::DATA_TYPE]).new self, entity_data
     end
+
+    @actions = ActionHistory.new self, data[DATA_ACTIONS]
 
     @start_time = data[DATA_GAME_STARTED_AT] || Time.now
 
@@ -151,6 +154,7 @@ class Map
         DATA_WALLS => walls,
         DATA_ENTITIES => @entities,
         DATA_OBJECTS => @static_objects,
+        DATA_ACTIONS => @actions,
     }
   end
 end

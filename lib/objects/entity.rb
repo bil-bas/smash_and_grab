@@ -140,12 +140,13 @@ class Entity < StaticObject
     nil # Failed to connect at all.
   end
 
-  def move_to(tile, movement_cost)
-    raise "Not enough movement points" unless movement_cost <= @movement_points
+  def move(tiles, movement_cost)
+    raise "Not enough movement points (tried to move #{movement_cost} with #{@movement_points} left)" unless movement_cost <= @movement_points
 
+    destination = tiles.last
     @movement_points -= movement_cost
 
-    change_in_x = tile.x - @tile.x
+    change_in_x = destination.x - @tile.x
 
     # Turn based on movement.
     unless change_in_x == 0
@@ -153,11 +154,13 @@ class Entity < StaticObject
     end
 
     @tile.remove_object self
-    tile.add_object self
+    destination.add_object self
 
-    [@tile, tile].each {|t| parent.minimap.update_tile t }
+    [@tile, destination].each {|t| parent.minimap.update_tile t }
 
-    @tile = tile
+    @tile = destination
+
+    parent.mouse_selection.select self
   end
 
   def minimap_color

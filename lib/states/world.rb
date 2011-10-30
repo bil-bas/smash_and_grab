@@ -4,7 +4,7 @@ require 'json'
 class World < GameState
   include Log
 
-  attr_reader :map, :minimap
+  attr_reader :map, :minimap, :mouse_selection
 
   MAX_ZOOM = 0.5
   MIN_ZOOM = 4.0
@@ -56,7 +56,7 @@ class World < GameState
 
 
 
-    @map = Map.new "tiles" => tile_data, "walls" => wall_data, "entities" => [], "objects" => []
+    @map = Map.new "tiles" => tile_data, "walls" => wall_data, "entities" => [], "objects" => [], 'actions' => []
     empty_tiles = @map.passable_tiles.shuffle
 
     # Make some characters.
@@ -75,7 +75,7 @@ class World < GameState
     @camera_offset_x, @camera_offset_y = [0, -@map.to_rect.center_y]
     @zoom = INITIAL_ZOOM
 
-    @mouse_selection = MouseSelection.new
+    @mouse_selection = MouseSelection.new @map
 
     @font = Font.new $window, default_font_name, 24
 
@@ -93,7 +93,19 @@ class World < GameState
       @mouse_selection.turn_reset
     end
 
-    add_inputs(f5: :quicksave, f6: :quickload)
+    add_inputs(f5: :quicksave,
+               f6: :quickload,
+               z: ->{ undo_action if holding? :left_control },
+               y: ->{ redo_action if holding? :left_control }
+    )
+  end
+
+  def undo_action
+    @map.actions.undo if @map.actions.can_undo?
+  end
+
+  def redo_action
+    @map.actions.redo if @map.actions.can_redo?
   end
 
   def quicksave
@@ -138,8 +150,11 @@ class World < GameState
 
     data = JSON.parse(json)
 
-    @mouse_selection.right_click
     @map = Map.new(data)
+
+    @mouse_selection.select nil
+    @mouse_selection.map = @map
+
     @minimap.map = @map
     @minimap.refresh
 

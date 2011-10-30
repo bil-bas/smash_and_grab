@@ -30,7 +30,7 @@ require 'syck' # Required for unknown reason, when ocraed!
 
 require 'gosu'
 require 'chingu'
-#require 'fidgit'
+require 'fidgit'
 
 require 'texplay'
 require_folder('texplay_ext', %w[color image window])
@@ -73,7 +73,7 @@ class GameWindow < Chingu::Window
     @pixel = Image.create 1, 1
     @pixel.clear color: :white
 
-    self.caption = "Smash and Grab - By Spooner [Escape - reset turn; F5/F6 - quicksave/load]"
+    self.caption = "Smash and Grab - By Spooner [Escape - reset turn; F5/F6 - quicksave/load; Ctrl-z/y - undo/redo]"
 
     self.cursor = true
     push_game_state World

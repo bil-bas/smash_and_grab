@@ -3,8 +3,12 @@ class MouseSelection < GameObject
 
   MOVE_COLOR = Color.rgba(0, 255, 0, 50)
   NO_MOVE_COLOR = Color.rgba(255, 0, 0, 25)
+
+  attr_accessor :map
   
-  def initialize(options = {})
+  def initialize(map, options = {})
+    @map = map
+
     @potential_moves = []
 
     @selected_image = Image["tile_selection.png"]
@@ -108,7 +112,7 @@ class MouseSelection < GameObject
       # Move the character.
       if @potential_moves.include? @hover_tile and @hover_tile.end_turn_on?(@selected_tile.objects.last)
         character = @selected_tile.objects.last
-        character.move_to @hover_tile, @path.move_distance
+        @map.actions.do(GameAction::Move.new(@map, @path))
 
         modify_occlusions @path.tiles, -1 if @path
         @path = nil
@@ -119,15 +123,16 @@ class MouseSelection < GameObject
       end
     elsif @hover_tile and @hover_tile.objects.last.is_a? Entity
       # Select a character to move.
-      @selected_tile = @hover_tile
-      @moves_record = nil
-      calculate_potential_moves
+      select(@hover_tile.objects.last)
     end
   end
 
-  def right_click
-    # Deselect the currently selected character.
-    if @selected_tile
+  def select(entity)
+    if entity
+      @selected_tile = entity.tile
+      @moves_record = nil
+      calculate_potential_moves
+    else
       modify_occlusions @potential_moves, -1
       @potential_moves.clear
 
@@ -135,6 +140,13 @@ class MouseSelection < GameObject
       @path = nil
 
       @selected_tile = nil
+    end
+  end
+
+  def right_click
+    # Deselect the currently selected character.
+    if @selected_tile
+      select nil
     end
   end
 
