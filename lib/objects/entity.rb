@@ -48,7 +48,7 @@ class Entity < StaticObject
       @@sprites = SpriteSheet.new("characters.png", 32, 32)
     end
 
-    @image_index = data[DATA_IMAGE_INDEX] || rand(40)
+    @image_index = data[DATA_IMAGE_INDEX]
 
     options = {
         image: @@sprites.each.to_a[@image_index],

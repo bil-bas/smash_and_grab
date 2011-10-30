@@ -17,8 +17,6 @@ class Tile < GameObject
   end
   
   WIDTH, HEIGHT = 32, 16
-  ADJACENT_POSITIONS = [[-1, 0], [0, -1], [1, 0], [0, 1]]
-  #ADJACENT_POSITIONS = [[-1, 0], [0, -1], [1, 0], [0, 1], [-1, -1], [-1, 1], [1, -1], [1, 1]]
 
   WALL_OCCLUSION_POSITIONS = [
       [[0, 0], :left],
@@ -40,8 +38,8 @@ class Tile < GameObject
   # Blank white tile, useful for colourising tiles.
   def self.blank; @@sprites[0]; end
   
-  def initialize(grid_x, grid_y, options = {})
-    @grid_x, @grid_y = grid_x, grid_y
+  def initialize(map, grid_x, grid_y, options = {})
+    @map, @grid_x, @grid_y = map, grid_x, grid_y
 
     unless defined? @@sprites
       @@sprites = SpriteSheet.new("floor_tiles.png", WIDTH, HEIGHT, 8)
@@ -100,7 +98,7 @@ class Tile < GameObject
 
   def modify_occlusions(value)
     WALL_OCCLUSION_POSITIONS.each do |(offset_x, offset_y), direction|
-      if tile = map.tile_at_grid(grid_x + offset_x, grid_y + offset_y)
+      if tile = @map.tile_at_grid(grid_x + offset_x, grid_y + offset_y)
         if wall = tile.wall(direction)
           wall.occlusions += value
         end

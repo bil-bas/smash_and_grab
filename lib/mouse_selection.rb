@@ -3,8 +3,6 @@ class MouseSelection < GameObject
 
   MOVE_COLOR = Color.rgba(0, 255, 0, 50)
   NO_MOVE_COLOR = Color.rgba(255, 0, 0, 25)
-
-  attr_accessor :map
   
   def initialize(map, options = {})
     @map = map
@@ -28,9 +26,11 @@ class MouseSelection < GameObject
   end
   
   def tile=(tile)
-    modify_occlusions [@hover_tile], -1 if @hover_tile
-    @hover_tile = tile
-    modify_occlusions [@hover_tile], +1 if @hover_tile
+    if tile != @hover_tile
+      modify_occlusions [@hover_tile], -1 if @hover_tile
+      @hover_tile = tile
+      modify_occlusions [@hover_tile], +1 if @hover_tile
+    end
   end
 
   def update

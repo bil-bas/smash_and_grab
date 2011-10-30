@@ -25,7 +25,9 @@ class World < GameState
         *(['Lava'] * 1),
     ]
 
-    tile_data = Array.new(50) { Array.new(50) { possible_tiles.sample } }
+    map_size = 50
+
+    tile_data = Array.new(map_size) { Array.new(map_size) { possible_tiles.sample } }
 
     # Create a little house.
     wall_data = [
@@ -54,19 +56,16 @@ class World < GameState
         { "type" => "HighConcreteWall", "tiles" => [[4, 6], [5, 6]] },
     ]
 
-
-
-    @map = Map.new "tiles" => tile_data, "walls" => wall_data, "entities" => [], "objects" => [], 'actions' => []
-    empty_tiles = @map.passable_tiles.shuffle
-
-    # Make some characters.
-    t = Time.now
-    200.times do
-      tile = empty_tiles.pop
-      Entity::Character.new(map, "tile" => [tile.grid_x, tile.grid_y], "facing" => ['left', 'right'].sample)
+    entity_data = Array.new(200) do
+      {
+          "type" => "Character",
+          "image_index" => rand(40),
+          "tile" => [rand(map_size), rand(map_size)],
+          "facing" => ['left', 'right'].sample,
+      }
     end
 
-    log.debug { "Entities placed on map in #{"%.3f" % (Time.now - t)} s" }
+    @map = Map.new "tiles" => tile_data, "walls" => wall_data, "entities" => entity_data, "objects" => [], 'actions' => []
 
     @minimap = Minimap.new @map
 
@@ -150,10 +149,9 @@ class World < GameState
 
     data = JSON.parse(json)
 
-    @map = Map.new(data)
+    @map = Map.new data
 
-    @mouse_selection.select nil
-    @mouse_selection.map = @map
+    @mouse_selection = MouseSelection.new @map
 
     @minimap.map = @map
     @minimap.refresh

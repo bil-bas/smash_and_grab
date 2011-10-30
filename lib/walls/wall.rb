@@ -29,8 +29,7 @@ class Wall < GameObject
   
   WIDTH, HEIGHT = 32, 64
     
-  attr_reader :objects, :grid_x, :grid_y, :cost
-  attr_accessor :occlusions
+  attr_reader :objects, :grid_x, :grid_y, :cost, :occlusions
 
   def blocks_sight?(person); true; end
   def blocks_movement?(person); true; end
@@ -38,7 +37,7 @@ class Wall < GameObject
   def zorder; super + 0.01; end
   def to_s; "<#{self.class.name} [#{@tiles[0].grid_x}, #{@tiles[0].grid_y}] <=> [#{@tiles[1].grid_x}, #{@tiles[1].grid_y}]>"; end
   def occludes?; @occlusions > 0; end
-  
+
   def initialize(map, data)
     @tiles = data[DATA_TILES].map {|p| map.tile_at_grid(*p) }.sort_by(&:y)
 
@@ -68,6 +67,14 @@ class Wall < GameObject
     end
 
     map << self
+  end
+
+  def occlusions=(value)
+    @occlusions = value
+
+    raise if @occlusions < 0
+
+    @occlusions
   end
 
   def destination(from, person)

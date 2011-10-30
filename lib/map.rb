@@ -53,7 +53,7 @@ class Map
     @grid_width, @grid_height = data[DATA_TILES].size, data[DATA_TILES][0].size
     @tiles = data[DATA_TILES].map.with_index do |row, y|
       row.map.with_index do |tile_class, x|
-        Tile.const_get(tile_class).new x, y
+        Tile.const_get(tile_class).new self, x, y
       end
     end
 
