@@ -26,7 +26,11 @@ class Map
     end
   end
 
-  DATA_SIZE = "size"
+  DATA_COMMENT = 'comment'
+  DATA_GAME_STARTED_AT = 'game_started_at'
+  DATA_LAST_SAVED_AT = 'last_saved_at'
+  DATA_VERSION = 'version'
+  DATA_SIZE = "map_size"
   DATA_TILES = "tiles"
   DATA_WALLS = "walls"
   DATA_ENTITIES = "entities"
@@ -74,6 +78,8 @@ class Map
     data[DATA_ENTITIES].each do |entity_data|
       Entity.const_get(entity_data[Entity::DATA_TYPE]).new self, entity_data
     end
+
+    @start_time = data[DATA_GAME_STARTED_AT] || Time.now
 
     log.debug { "Map created in #{"%.3f" % (Time.now - t)} s" }
 
@@ -128,7 +134,7 @@ class Map
     @objects.each(&:draw)
   end
 
-  def to_json(*a)
+  def save_data
     # Get walls in two directions, since that will prevent duplicates.
     walls = @tiles.flatten.map {|t| [:left, :bottom].map {|d| t.wall(d) } }.flatten
 
@@ -136,11 +142,15 @@ class Map
     walls = walls.compact.select {|w| not w.is_a? Wall::None }
 
     {
+        DATA_COMMENT => "Smash and Grab save game",
+        DATA_VERSION => SmashAndGrab::VERSION,
+        DATA_GAME_STARTED_AT => @start_time,
+        DATA_LAST_SAVED_AT => Time.now,
         DATA_SIZE => [@grid_width, @grid_height],
         DATA_TILES => @tiles,
         DATA_WALLS => walls,
         DATA_ENTITIES => @entities,
         DATA_OBJECTS => @static_objects,
-    }.to_json(*a)
+    }
   end
 end

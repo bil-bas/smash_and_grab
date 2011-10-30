@@ -107,13 +107,7 @@ class World < GameState
   def save_game(file)
     t = Time.now
 
-    data = {
-        comment: "Smash and Grab save game",
-        version: SmashAndGrab::VERSION,
-        start_time: @start_time,
-        last_saved_at: Time.now,
-        map: @map,
-    }
+    data = @map.save_data
 
     # Pretty generation is twice as slow as regular to_json.
     json = JSON.pretty_generate(data)
@@ -130,7 +124,7 @@ class World < GameState
 
     log.debug { "Saved game data in #{"%.3f" % (Time.now - t)} s" }
 
-    log.info { "Saved game as #{file} [#{File.size(file) / 1024}] k" }
+    log.info { "Saved game as #{file} [#{File.size(file)} bytes]" }
   end
 
   def load_game(file)
@@ -145,11 +139,11 @@ class World < GameState
     data = JSON.parse(json)
 
     @mouse_selection.right_click
-    @map = Map.new(data['map'])
+    @map = Map.new(data)
     @minimap.map = @map
     @minimap.refresh
 
-    log.info { "Loaded game from #{file} [#{File.size(file) / 1024}] k" }
+    log.info { "Loaded game from #{file} [#{File.size(file)} bytes]" }
   end
 
   def zoom_by(factor)
