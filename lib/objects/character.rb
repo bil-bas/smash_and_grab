@@ -154,7 +154,7 @@ class Character < StaticObject
 
   def to_json(*a)
     {
-        json_class: self.class.name,
+        type: Inflector.demodulize(self.class.name),
         location: [tile.grid_x, tile.grid_y],
         movement_points: @movement_points,
         facing: factor_x > 0 ? :right : :left,

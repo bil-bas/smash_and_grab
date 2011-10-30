@@ -36,7 +36,7 @@ class Wall < GameObject
   def to_s; "<#{self.class.name} [#{@tiles[0].grid_x}, #{@tiles[0].grid_y}] <=> [#{@tiles[1].grid_x}, #{@tiles[1].grid_y}]>"; end
   def occludes?; @occlusions > 0; end
   
-  def initialize(tile1, tile2, options = {})
+  def initialize(map, tile1, tile2, options = {})
     @@sprites ||= SpriteSheet.new("walls.png", WIDTH, HEIGHT, 8)
     @tiles = [tile1, tile2].sort_by(&:y)
 
@@ -63,7 +63,7 @@ class Wall < GameObject
       @image = spritesheet_pos ? @@sprites[*spritesheet_pos[SPRITESHEET_HORIZONTAL]] : nil
     end
 
-    parent.add_object self
+    map << self
   end
 
   def destination(from, person)
@@ -79,7 +79,7 @@ class Wall < GameObject
 
   def to_json(*a)
     {
-        json_class: self.class.name,
+        type: Inflector.demodulize(self.class.name),
         from: [@tiles.first.grid_x, @tiles.first.grid_y],
         to: [@tiles.last.grid_x, @tiles.last.grid_y],
     }.to_json(*a)

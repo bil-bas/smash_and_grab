@@ -14,20 +14,26 @@ class World < GameState
   BACKGROUND_COLOR = Color.rgba(30, 10, 10, 255)
   
   def setup
-    @objects = [] # Objects that need #update
-
     init_fps
 
     @start_time = Time.now
 
-    @map = Map.new 50, 50
+    # Create a map.
+    possible_tiles = [
+        *(['Concrete'] * 20),
+        *(['Grass'] * 4),
+        *(['Lava'] * 1),
+    ]
+
+    tile_classes = Array.new(50) { Array.new(50) { possible_tiles.sample } }
+    @map = Map.new tile_classes
     empty_tiles = @map.passable_tiles.shuffle
 
     # Make some characters.
     t = Time.now
     200.times do
       tile = empty_tiles.pop
-      add_object Character.new(tile)
+      map << Character.new(tile)
     end
 
     log.debug { "Entities placed on map in #{"%.3f" % (Time.now - t)} s" }
@@ -53,7 +59,7 @@ class World < GameState
     end
 
     on_input :escape do
-      @objects.each {|o| o.turn_reset if o.respond_to? :turn_reset }
+      @map.end_turn
       @mouse_selection.turn_reset
     end
 
@@ -73,7 +79,6 @@ class World < GameState
         start_time: @start_time,
         last_saved_at: Time.now,
         map: @map,
-        entities: @objects.grep(Character),
     }
 
     # Pretty generation is twice as slow as regular to_json.
@@ -107,10 +112,6 @@ class World < GameState
       @camera_offset_x = ((@zoom * x) - focus_x).round
       @camera_offset_y = ((@zoom * y) - focus_y).round
     end
-  end
-  
-  def add_object(object)
-    @objects << object
   end
   
   def zoom
@@ -159,14 +160,14 @@ class World < GameState
 
     # Draw the flat tiles.
     1.times do
-      @map.draw @camera_offset_x, @camera_offset_y, @zoom
+      @map.draw_tiles @camera_offset_x, @camera_offset_y, @zoom
     end
 
     # Draw objects, etc.
     $window.translate -@camera_offset_x, -@camera_offset_y do
       $window.scale @zoom do
         1.times do
-          @objects.each(&:draw)
+          @map.draw_objects
           @mouse_selection.draw @camera_offset_x, @camera_offset_y, @zoom
         end
       end
