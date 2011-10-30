@@ -48,7 +48,7 @@ class Map
     @objects = []
     @entities = []
     @static_objects = []
-    @walls = []
+    @walls = [] # Only the visible walls are stored. Others are ignored.
 
     @grid_width, @grid_height = data[DATA_TILES].size, data[DATA_TILES][0].size
     @tiles = data[DATA_TILES].map.with_index do |row, y|
@@ -122,6 +122,8 @@ class Map
     case object
       when Entity
         @entities << object
+      when Wall::None
+        # Do nothing. We don't need to draw them anyway.
       when Wall
         @walls << object
     end
@@ -138,12 +140,6 @@ class Map
   end
 
   def save_data
-    # Get walls in two directions, since that will prevent duplicates.
-    walls = @tiles.flatten.map {|t| [:left, :bottom].map {|d| t.wall(d) } }.flatten
-
-    # Remove nils and default walls.
-    walls = walls.compact.select {|w| not w.is_a? Wall::None }
-
     {
         DATA_COMMENT => "Smash and Grab save game",
         DATA_VERSION => SmashAndGrab::VERSION,
@@ -151,7 +147,7 @@ class Map
         DATA_LAST_SAVED_AT => Time.now,
         DATA_SIZE => [@grid_width, @grid_height],
         DATA_TILES => @tiles,
-        DATA_WALLS => walls,
+        DATA_WALLS => @walls,
         DATA_ENTITIES => @entities,
         DATA_OBJECTS => @static_objects,
         DATA_ACTIONS => @actions,
