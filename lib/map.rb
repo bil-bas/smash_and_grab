@@ -101,8 +101,8 @@ class Map
   
   def tile_at_position(x, y)
     x += Tile::WIDTH / 2
-    tile_at_grid([[x / Tile::WIDTH - y / Tile::HEIGHT, 0].max, @grid_width - 1].min.floor,
-                 [[x / Tile::WIDTH + y / Tile::HEIGHT, 0].max, @grid_height - 1].min.floor)
+    tile_at_grid(x / Tile::WIDTH - y / Tile::HEIGHT,
+                 x / Tile::WIDTH + y / Tile::HEIGHT)
   end
   
   def tile_at_grid(x, y)

@@ -199,8 +199,14 @@ class World < GameState
       @camera_offset_y += 10.0
     end
 
-    @mouse_selection.tile = @map.tile_at_position((@camera_offset_x + $window.mouse_x) / @zoom,
-                                                  (@camera_offset_y + $window.mouse_y) / @zoom)
+    @mouse_selection.tile = if  $window.mouse_x >= 0 and $window.mouse_x < $window.width and
+                                $window.mouse_y >= 0 and $window.mouse_y < $window.height
+      @map.tile_at_position((@camera_offset_x + $window.mouse_x) / @zoom,
+         (@camera_offset_y + $window.mouse_y) / @zoom)
+    else
+      nil
+    end
+
     @mouse_selection.update
 
     @used_time += (Time.now - start_at).to_f

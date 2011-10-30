@@ -40,11 +40,15 @@ class MouseSelection < GameObject
     if @selected_tile
       if @hover_tile != @selected_tile and (@path.nil? or @hover_tile != @path.current)
         modify_occlusions @path.tiles, -1 if @path
-        @path = @selected_tile.objects.last.path_to(@hover_tile)
-
-        modify_occlusions @path.tiles, +1 if @path
-
         @path_record = nil
+
+        if @hover_tile
+          @path = @selected_tile.objects.last.path_to(@hover_tile)
+
+          modify_occlusions @path.tiles, +1 if @path
+        else
+          @path = nil
+        end
       end
     else
       modify_occlusions @potential_moves, +1
