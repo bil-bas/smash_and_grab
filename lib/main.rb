@@ -29,14 +29,21 @@ end
 require 'syck' # Required for unknown reason, when ocraed!
 
 require 'gosu'
+require_folder('gosu_ext', %w[font])
+
 require 'chingu'
+
 require 'fidgit'
+Fidgit::Element.schema.merge_schema! YAML.load(File.read(File.join(EXTRACT_PATH, 'config', 'schema.yml')))
+require_folder("fidgit_ext", %w[cursor])
 
 require 'texplay'
 require_folder('texplay_ext', %w[color image window])
 TexPlay.set_options(caching: false)
 
 include Gosu
+Font.factor_stored = 2
+Font.factor_rendered = 1.0 / 2
 include Chingu
 
 # Setup Chingu's autoloading media directories.
@@ -54,6 +61,7 @@ require_folder("walls", %w[wall])
 require_folder("states", %w[world])
 
 
+
 class ZOrder
   BACKGROUND = -Float::INFINITY
   TILES = -99999
@@ -63,6 +71,14 @@ class ZOrder
   GUI = Float::INFINITY
 end
 
+# Hack because I've forgotten how to do this correctly!
+class Fidgit::Element
+  alias_method :old_initialize, :initialize
+  def initialize(options = {}, &block)
+    options[:z] = ZOrder::GUI
+    old_initialize options, &block
+  end
+end
 
 class GameWindow < Chingu::Window
   attr_reader :pixel

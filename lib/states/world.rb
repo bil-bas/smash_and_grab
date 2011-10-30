@@ -2,7 +2,7 @@ require 'zlib'
 require 'json'
 require 'fileutils'
 
-class World < GameState
+class World < Fidgit::GuiState
   include Log
 
   attr_reader :map, :minimap, :mouse_selection
@@ -15,7 +15,9 @@ class World < GameState
 
   BACKGROUND_COLOR = Color.rgba(35, 20, 20, 255)
   
-  def setup
+  def initialize
+    super()
+
     init_fps
 
     @start_time = Time.now
@@ -89,16 +91,63 @@ class World < GameState
       zoom_by 2.0 # Zoom in.
     end
 
-    on_input :escape do
-      @map.end_turn
-      @mouse_selection.turn_reset
-    end
-
     add_inputs(f5: :quicksave,
                f6: :quickload,
                z: ->{ undo_action if holding? :left_control },
-               y: ->{ redo_action if holding? :left_control }
+               y: ->{ redo_action if holding? :left_control },
+               escape: :end_turn
     )
+
+    create_gui
+  end
+
+  def end_turn
+    @map.end_turn
+    @mouse_selection.turn_reset
+  end
+
+  def create_gui
+    horizontal spacing: 0, padding: 0 do
+      vertical spacing: 2, padding: 0 do
+        group do
+          vertical padding: 1, spacing: 2, background_color: Color::BLACK, do
+            6.times do |i|
+              horizontal background_color: Color::BLUE, padding_h: 1, padding_v: 1 do
+                image_frame @map.entities[i].image, factor: 0.25, padding: 0, background_color: Color::GRAY
+                radio_button "##{i + 1}", i, align_v: :center do
+                  @mouse_selection.select nil
+                  @mouse_selection.select @map.entities[i]
+                end
+              end
+            end
+          end
+        end
+
+        horizontal padding: 0 do
+          vertical padding: 1, spacing: 2, background_color: Color::BLACK do
+            horizontal padding: 0 do
+              button "Undo", padding_h: 1, font_height: 5 do
+                undo_action
+              end
+
+              button "Redo", padding_h: 1, font_height: 5, align_h: :right do
+                redo_action
+              end
+            end
+
+            button "End turn" do
+              end_turn
+            end
+          end
+
+          horizontal padding: 1, spacing: 2, background_color: Color::BLACK do
+            image_frame @map.entities[0].image, factor: 0.25, padding: 0, background_color: Color::GRAY
+            text_area text: "Detailed info about the currently selected super-chicken (of prodigious size).\nAnd superpower buttons ......",
+                      width: 120, font_height: 4
+          end
+        end
+      end
+    end
   end
 
   def undo_action
@@ -209,6 +258,8 @@ class World < GameState
 
     @mouse_selection.update
 
+    super()
+
     @used_time += (Time.now - start_at).to_f
     recalculate_fps
 
@@ -243,7 +294,13 @@ class World < GameState
 
     @minimap.draw
 
-    @font.draw @fps_text, 0, 0, Float::INFINITY
+
+    @font.draw @fps_text, 200, 0, Float::INFINITY
+
+    # Draw the gui in large.
+    $window.scale 4 do
+      super()
+    end
 
     @used_time += (Time.now - start_at).to_f
 

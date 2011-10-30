@@ -37,7 +37,7 @@ class Map
   DATA_OBJECTS = "objects"
   DATA_ACTIONS = 'actions'
 
-  attr_reader :grid_width, :grid_height, :actions
+  attr_reader :grid_width, :grid_height, :actions, :entities
     
   def to_rect; Rect.new(0, 0, @grid_width * Tile::WIDTH, @grid_height * Tile::HEIGHT); end
 

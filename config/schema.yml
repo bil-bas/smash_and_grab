@@ -1,0 +1,61 @@
+---
+:constants:
+  :blue_white: [224, 224, 255]
+  :very_dark_blue: [0, 0, 100]
+  :dark_blue: [50, 50, 150]
+  :light_blue: [150, 150, 255]
+
+:elements:
+  :Element:
+    :font_name: 04B_03__.TTF
+    :font_height: 6
+    :color: ?blue_white
+    :background_color: ?none
+    :border_color: ?light_blue
+
+  :Button:
+    :disabled:
+      :background_color: ?very_dark_blue
+      :border_color: ?dark_blue
+    :hover:
+      :background_color: ?light_blue
+
+  :Packer:
+    :spacing_h: 2
+    :spacing_v: 2
+    :padding_left: 4
+    :padding_right: 4
+    :padding_top: 3
+    :padding_bottom: 4.5
+
+  :Button:
+    :border_thickness: 0.5
+    :padding_left: 4
+    :padding_right: 4
+    :padding_top: 1
+    :padding_bottom: 1
+    :background_color: ?dark_blue
+
+  :ComboBox:
+    :border_thickness: 0
+
+  :MenuPane::Item:
+    :padding_top: 0.1
+    :padding_bottom: 0.1
+
+  :ToolTip:
+    :font_height: 4
+    :padding_top: 1
+    :padding_bottom: 1
+    :background_color: ?very_dark_blue
+
+  :TextArea:
+    :color: ?blue_white
+    :background_color: ?very_dark_blue
+    
+  :ScrollBar: # < Composite
+    :rail_width: 5
+    
+  :ScrollWindow: # < Composite
+    :scroll_bar_thickness: 5
+
