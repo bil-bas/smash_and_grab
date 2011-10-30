@@ -143,6 +143,8 @@ class Entity < StaticObject
   def move(tiles, movement_cost)
     raise "Not enough movement points (tried to move #{movement_cost} with #{@movement_points} left)" unless movement_cost <= @movement_points
 
+    parent.mouse_selection.select nil
+
     destination = tiles.last
     @movement_points -= movement_cost
 
