@@ -8,6 +8,8 @@ def require_folder(path, files)
   end
 end
 
+t = Time.now
+
 begin
   require 'rubygems' unless defined? OSX_EXECUTABLE
 rescue LoadError
@@ -45,7 +47,7 @@ Song.autoload_dirs.unshift File.join(media_dir, 'music')
 Font.autoload_dirs.unshift File.join(media_dir, 'fonts')
 
 # Include other files.
-require_folder("", %w[sprite_sheet z_order_recorder map minimap mouse_selection])
+require_folder("", %w[log version sprite_sheet z_order_recorder map minimap mouse_selection])
 require_folder("tiles", %w[tile])
 require_folder("objects", %w[static_object dynamic_object character])
 require_folder("walls", %w[wall])
@@ -71,11 +73,13 @@ class GameWindow < Chingu::Window
     @pixel = Image.create 1, 1
     @pixel.clear color: :white
 
-    self.caption = "Smash and Grab - By Spooner - Press escape to reset turn."
+    self.caption = "Smash and Grab - By Spooner [Escape - reset turn; F5 - quicksave]"
 
     self.cursor = true
     push_game_state World
   end
 end
+
+Log.log.debug { "Scripts loaded in #{"%.3f" % (Time.now - t)} s" }
 
 GameWindow.new.show unless defined? Ocra

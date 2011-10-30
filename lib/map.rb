@@ -1,4 +1,8 @@
+require 'json'
+
 class Map
+  include Log
+
   class TileRow
     attr_reader :zorder
 
@@ -27,6 +31,8 @@ class Map
   def to_rect; Rect.new(0, 0, @grid_width * Tile::WIDTH, @grid_height * Tile::HEIGHT); end
 
   def initialize(grid_width, grid_height)
+    t = Time.now
+
     @grid_width, @grid_height = grid_width, grid_height
     @tiles = Array.new(@grid_height) { Array.new(@grid_width) }
   
@@ -81,6 +87,8 @@ class Map
     Wall::HighConcreteWall.new tile_at_grid(4, 5), tile_at_grid(5, 5)
     Wall::HighConcreteWall.new tile_at_grid(4, 6), tile_at_grid(5, 6)
 
+    log.debug { "Map created in #{"%.3f" % (Time.now - t)} s" }
+
     record
   end
 
@@ -111,5 +119,20 @@ class Map
   # Draws all tiles (only) visible in the window.
   def draw(offset_x, offset_y, zoom)
     @recorded_tiles.draw -offset_x, -offset_y, ZOrder::TILES, zoom, zoom
+  end
+
+  def to_json(*a)
+    walls = @tiles.flatten.map {|t| [:left, :bottom].map {|d| t.wall(d) } }.flatten.compact
+
+    {
+        json_class: self.class.name,
+        size: [@grid_width, @grid_height],
+        tiles: @tiles,
+        walls: walls,
+    }.to_json(*a)
+  end
+
+  def self.json_create(data)
+    new(*data['size'], tiles: data['tiles'], walls: data['walls'])
   end
 end

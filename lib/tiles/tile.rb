@@ -125,4 +125,8 @@ class Tile < GameObject
   def wall(direction)
     @walls[direction]
   end
+
+  def to_json(*a)
+    Inflector.demodulize(self.class.name).to_json(*a)
+  end
 end

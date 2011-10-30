@@ -76,4 +76,12 @@ class Wall < GameObject
       @image.draw_rot @x, @y, @zorder, 0, 0.5, 1, 1, 1, color
     end
   end
+
+  def to_json(*a)
+    {
+        json_class: self.class.name,
+        from: [@tiles.first.grid_x, @tiles.first.grid_y],
+        to: [@tiles.last.grid_x, @tiles.last.grid_y],
+    }.to_json(*a)
+  end
 end

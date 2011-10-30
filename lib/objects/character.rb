@@ -151,4 +151,18 @@ class Character < StaticObject
     # TODO: Friend blue, enemy red.
     :red
   end
+
+  def to_json(*a)
+    {
+        json_class: self.class.name,
+        location: [tile.grid_x, tile.grid_y],
+        movement_points: @movement_points,
+        facing: factor_x > 0 ? :right : :left,
+    }.to_json(*a)
+  end
+
+  def self.json_create(data)
+    tile = $window.current_game_state.map.tile_at_grid(*data['location'])
+    new(tile, factor_x: data['facing'])
+  end
 end

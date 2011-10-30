@@ -2,7 +2,7 @@
 
 require 'optparse'
 
-#begin
+begin
   EXTRACT_PATH = File.dirname(File.dirname(File.expand_path(__FILE__)))
 
   ROOT_PATH = if ENV['OCRA_EXECUTABLE']
@@ -19,7 +19,7 @@ require 'optparse'
 
   DEFAULT_LOG_FILE = "#{APP_NAME}.log"
   DEFAULT_LOG_FILE_PATH = File.join(ROOT_PATH, DEFAULT_LOG_FILE)
-=begin
+
   def parse_options
     options = {}
 
@@ -94,12 +94,11 @@ TEXT
     $stdout.reopen LOG_FILE
     $stdout.sync = true
   end
-=end
 
   require_relative "../lib/main"
 
   exit_message = ""
-=begin
+
 rescue => ex
   $stderr.puts "FATAL ERROR - #{ex.class}: #{ex.message}\n#{ex.backtrace.join("\n")}"
   raise ex # Just to make sure that the user sees the error in the CLI/IDE too.
@@ -108,4 +107,3 @@ ensure
   $stderr.puts exit_message if exit_message
   $stdout.reopen(original_stdout) if defined?(original_stdout) and original_stdout
 end
-=end

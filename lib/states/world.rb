@@ -1,9 +1,15 @@
+require 'zlib'
+require 'json'
+
 class World < GameState
+  include Log
+
   attr_reader :map, :minimap
 
   MAX_ZOOM = 0.5
   MIN_ZOOM = 4.0
   INITIAL_ZOOM = 2.0
+  QUICKSAVE_FILE = File.expand_path("quicksave.sgs", EXTRACT_PATH)
 
   BACKGROUND_COLOR = Color.rgba(30, 10, 10, 255)
   
@@ -12,14 +18,19 @@ class World < GameState
 
     init_fps
 
+    @start_time = Time.now
+
     @map = Map.new 50, 50
     empty_tiles = @map.passable_tiles.shuffle
 
     # Make some characters.
+    t = Time.now
     200.times do
       tile = empty_tiles.pop
       add_object Character.new(tile)
     end
+
+    log.debug { "Entities placed on map in #{"%.3f" % (Time.now - t)} s" }
 
     @minimap = Minimap.new @map
 
@@ -45,6 +56,40 @@ class World < GameState
       @objects.each {|o| o.turn_reset if o.respond_to? :turn_reset }
       @mouse_selection.turn_reset
     end
+
+    add_inputs(f5: :quicksave)
+  end
+
+  def quicksave
+    save_game QUICKSAVE_FILE
+  end
+
+  def save_game(file)
+    t = Time.now
+
+    data = {
+        comment: "Smash and Grab save game",
+        version: SmashAndGrab::VERSION,
+        start_time: @start_time,
+        last_saved_at: Time.now,
+        map: @map,
+        entities: @objects.grep(Character),
+    }
+
+    # Pretty generation is twice as slow as regular to_json.
+    json = JSON.pretty_generate(data)
+
+    log.debug { "Generated save game data in #{"%.3f" % (Time.now - t)} s" }
+
+    t = Time.now
+
+    Zlib::GzipWriter.open(file) do |gz|
+      gz.write json
+    end
+
+    log.debug { "Saved game data in #{"%.3f" % (Time.now - t)} s" }
+
+    log.info { "Saved game as #{file} [#{File.size(file) / 1024}] k" }
   end
 
   def zoom_by(factor)
