@@ -1,5 +1,6 @@
 require 'zlib'
 require 'json'
+require 'fileutils'
 
 class World < GameState
   include Log
@@ -9,7 +10,8 @@ class World < GameState
   MAX_ZOOM = 0.5
   MIN_ZOOM = 4.0
   INITIAL_ZOOM = 2.0
-  QUICKSAVE_FILE = File.expand_path("quicksave.sgs", EXTRACT_PATH)
+  SAVE_FOLDER = File.expand_path("saves", ROOT_PATH)
+  QUICKSAVE_FILE = File.expand_path("quicksave.sgs", SAVE_FOLDER)
 
   BACKGROUND_COLOR = Color.rgba(30, 10, 10, 255)
   
@@ -126,6 +128,8 @@ class World < GameState
     log.debug { "Generated save game data in #{"%.3f" % (Time.now - t)} s" }
 
     t = Time.now
+
+    FileUtils.mkdir_p File.dirname(QUICKSAVE_FILE)
 
     Zlib::GzipWriter.open(file) do |gz|
       gz.write json
