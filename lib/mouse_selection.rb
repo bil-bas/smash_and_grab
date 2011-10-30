@@ -157,6 +157,7 @@ class MouseSelection < GameObject
       @selected_tile = current_tile
       @moves_record = nil
       calculate_potential_moves
+      @map.actions.do(GameAction::EndTurn.new(self))
     end
   end
 end

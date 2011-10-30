@@ -41,21 +41,24 @@ class GameAction < Fidgit::History::Action
   end
 
   class EndTurn < self
-    def initialize(map, data)
+    def initialize(map, data = nil)
       @map = map
+      super
     end
+
+    def can_be_undone?; false; end
 
     def do
-
     end
 
-    def end
-
+    def undo
     end
   end
 
   DATA_TYPE = 'type'
   DATA_TIME = 'timestamp'
+
+  def can_be_undone?; true; end
 
   def to_json(*a)
     {
@@ -114,6 +117,10 @@ class ActionHistory < Fidgit::History
     action.do
 
     nil
+  end
+
+  def can_undo?
+    super and @actions[@last_done].can_be_undone?
   end
 
   def to_json(*a)
