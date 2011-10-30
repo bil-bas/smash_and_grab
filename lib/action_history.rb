@@ -95,7 +95,15 @@ class ActionHistory < Fidgit::History
   # If there are currently any actions that have been undone, they will be permanently lost and cannot be redone.
   #
   # @param [History::Action] action Action to be performed
-  def do(action)
+  def do(*args)
+    raise ArgumentError, "Needs one or more params" if args.empty?
+
+    action = if args.size > 1 or args.first.is_a? Symbol
+      GameAction.const_get(Inflector.camelize(args.first)).new @map, *args[1..-1]
+    else
+      args.first
+    end
+
     raise ArgumentError, "Parameter, 'action', expected to be a #{Action}, but received: #{action}" unless action.is_a? Action
 
     # Remove all undone actions when a new one is performed.

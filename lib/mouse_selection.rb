@@ -112,7 +112,7 @@ class MouseSelection < GameObject
       # Move the character.
       if @potential_moves.include? @hover_tile and @hover_tile.end_turn_on?(@selected_tile.objects.last)
         character = @selected_tile.objects.last
-        @map.actions.do(GameAction::Move.new(@map, @path))
+        @map.actions.do :move, @path
 
         modify_occlusions @path.tiles, -1 if @path
         @path = nil
@@ -157,7 +157,7 @@ class MouseSelection < GameObject
       @selected_tile = current_tile
       @moves_record = nil
       calculate_potential_moves
-      @map.actions.do(GameAction::EndTurn.new(self))
+      @map.actions.do :end_turn
     end
   end
 end
