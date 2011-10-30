@@ -3,6 +3,8 @@ class Minimap < GameObject
   MARGIN = TILE_WIDTH * 2
   MARGIN_COLOR = Color.rgba(50, 50, 50, 200)
 
+  attr_accessor :map
+
   def initialize(map, options = {})
     options = {
         x: $window.width - 10,

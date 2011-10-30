@@ -1,6 +1,8 @@
 require 'set'
 
-class Character < StaticObject
+class Entity < StaticObject
+  class Character < Entity; end
+
   class Path
     attr_reader :cost, :move_distance, :current, :first
 
@@ -29,6 +31,7 @@ class Character < StaticObject
   end
 
   DATA_TYPE = 'type'
+  DATA_IMAGE_INDEX = 'image_index'
   DATA_TILE = 'tile'
   DATA_MOVEMENT_POINTS = 'movement_points'
   DATA_FACING = 'facing'
@@ -42,11 +45,13 @@ class Character < StaticObject
     @map = map
 
     unless defined? @@sprites
-      @@sprites = SpriteSheet.new("characters.png", 32, 32, 8)
+      @@sprites = SpriteSheet.new("characters.png", 32, 32)
     end
 
+    @image_index = data[DATA_IMAGE_INDEX] || rand(40)
+
     options = {
-        image: @@sprites.each.to_a.sample,
+        image: @@sprites.each.to_a[@image_index],
         factor_x: data[DATA_FACING] == 'right' ? 1 : -1,
     }
 
@@ -163,6 +168,7 @@ class Character < StaticObject
   def to_json(*a)
     {
         DATA_TYPE => Inflector.demodulize(self.class.name),
+        DATA_IMAGE_INDEX => @image_index,
         DATA_TILE => [tile.grid_x, tile.grid_y],
         DATA_MOVEMENT_POINTS => @movement_points,
         DATA_FACING => factor_x > 0 ? :right : :left,

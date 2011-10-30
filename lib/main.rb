@@ -49,7 +49,7 @@ Font.autoload_dirs.unshift File.join(media_dir, 'fonts')
 # Include other files.
 require_folder("", %w[log version sprite_sheet z_order_recorder map minimap mouse_selection])
 require_folder("tiles", %w[tile])
-require_folder("objects", %w[static_object dynamic_object character])
+require_folder("objects", %w[static_object dynamic_object entity])
 require_folder("walls", %w[wall])
 require_folder("states", %w[world])
 
@@ -73,7 +73,7 @@ class GameWindow < Chingu::Window
     @pixel = Image.create 1, 1
     @pixel.clear color: :white
 
-    self.caption = "Smash and Grab - By Spooner [Escape - reset turn; F5 - quicksave]"
+    self.caption = "Smash and Grab - By Spooner [Escape - reset turn; F5/F6 - quicksave/load]"
 
     self.cursor = true
     push_game_state World

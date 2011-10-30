@@ -56,14 +56,14 @@ class World < GameState
 
 
 
-    @map = Map.new "tiles" => tile_data, "walls" => wall_data
+    @map = Map.new "tiles" => tile_data, "walls" => wall_data, "entities" => [], "objects" => []
     empty_tiles = @map.passable_tiles.shuffle
 
     # Make some characters.
     t = Time.now
     200.times do
       tile = empty_tiles.pop
-      Character.new(map, "tile" => [tile.grid_x, tile.grid_y], "facing" => ['left', 'right'].sample)
+      Entity::Character.new(map, "tile" => [tile.grid_x, tile.grid_y], "facing" => ['left', 'right'].sample)
     end
 
     log.debug { "Entities placed on map in #{"%.3f" % (Time.now - t)} s" }
@@ -93,7 +93,7 @@ class World < GameState
       @mouse_selection.turn_reset
     end
 
-    add_inputs(f5: :quicksave)
+    add_inputs(f5: :quicksave, f6: :quickload)
   end
 
   def quicksave
@@ -131,6 +131,25 @@ class World < GameState
     log.debug { "Saved game data in #{"%.3f" % (Time.now - t)} s" }
 
     log.info { "Saved game as #{file} [#{File.size(file) / 1024}] k" }
+  end
+
+  def load_game(file)
+    t = Time.now
+
+    json = Zlib::GzipReader.open(file) do |gz|
+      gz.read
+    end
+
+    log.debug { "Loaded game data in #{"%.3f" % (Time.now - t)} s" }
+
+    data = JSON.parse(json)
+
+    @mouse_selection.right_click
+    @map = Map.new(data['map'])
+    @minimap.map = @map
+    @minimap.refresh
+
+    log.info { "Loaded game from #{file} [#{File.size(file) / 1024}] k" }
   end
 
   def zoom_by(factor)

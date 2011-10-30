@@ -40,16 +40,13 @@ class Map
   def initialize(data)
     t = Time.now
 
-    tile_data = data[DATA_TILES]
-    wall_data = data[DATA_WALLS]
-
     @objects = []
     @entities = []
     @static_objects = []
     @walls = []
 
-    @grid_width, @grid_height = tile_data.size, tile_data[0].size
-    @tiles = tile_data.map.with_index do |row, y|
+    @grid_width, @grid_height = data[DATA_TILES].size, data[DATA_TILES][0].size
+    @tiles = data[DATA_TILES].map.with_index do |row, y|
       row.map.with_index do |tile_class, x|
         Tile.const_get(tile_class).new x, y
       end
@@ -70,8 +67,12 @@ class Map
       end
     end
 
-    wall_data.each do |wall_datum|
-      Wall.const_get(wall_datum[Wall::DATA_TYPE]).new self, wall_datum
+    data[DATA_WALLS].each do |wall_data|
+      Wall.const_get(wall_data[Wall::DATA_TYPE]).new self, wall_data
+    end
+
+    data[DATA_ENTITIES].each do |entity_data|
+      Entity.const_get(entity_data[Entity::DATA_TYPE]).new self, entity_data
     end
 
     log.debug { "Map created in #{"%.3f" % (Time.now - t)} s" }
@@ -110,7 +111,7 @@ class Map
 
   def <<(object)
     case object
-      when Character
+      when Entity
         @entities << object
       when Wall
         @walls << object

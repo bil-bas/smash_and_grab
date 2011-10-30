@@ -85,7 +85,7 @@ class MouseSelection < GameObject
             can_move = @potential_moves.include? tile
 
             image = if tile == tiles.last
-              if tile.objects.last.is_a? Character
+              if tile.objects.last.is_a? Entity
                 @final_move_too_far_image
               else
                 can_move ? @final_move_image : @final_move_too_far_image
@@ -117,7 +117,7 @@ class MouseSelection < GameObject
         @selected_tile = @hover_tile
         calculate_potential_moves
       end
-    elsif @hover_tile and @hover_tile.objects.last.is_a? Character
+    elsif @hover_tile and @hover_tile.objects.last.is_a? Entity
       # Select a character to move.
       @selected_tile = @hover_tile
       @moves_record = nil
