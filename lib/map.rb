@@ -26,21 +26,30 @@ class Map
     end
   end
 
+  DATA_SIZE = "size"
+  DATA_TILES = "tiles"
+  DATA_WALLS = "walls"
+  DATA_ENTITIES = "entities"
+  DATA_OBJECTS = "objects"
+
   attr_reader :grid_width, :grid_height
     
   def to_rect; Rect.new(0, 0, @grid_width * Tile::WIDTH, @grid_height * Tile::HEIGHT); end
 
   # tile_classes: Nested arrays of Tile class names (Tile::Grass is represented as "Grass")
-  def initialize(tile_classes)
+  def initialize(data)
     t = Time.now
+
+    tile_data = data[DATA_TILES]
+    wall_data = data[DATA_WALLS]
 
     @objects = []
     @entities = []
     @static_objects = []
     @walls = []
 
-    @grid_width, @grid_height = tile_classes.size, tile_classes[0].size
-    @tiles = tile_classes.map.with_index do |row, y|
+    @grid_width, @grid_height = tile_data.size, tile_data[0].size
+    @tiles = tile_data.map.with_index do |row, y|
       row.map.with_index do |tile_class, x|
         Tile.const_get(tile_class).new x, y
       end
@@ -51,39 +60,19 @@ class Map
       row.each_with_index do |tile, x|
         # Tile below.
         if y < @grid_height - 1
-          Wall::None.new self, tile, tile_at_grid(x, y + 1)
+          Wall::None.new self, Wall::DATA_TILES => [[x, y], [x, y + 1]]
         end
 
         # Tile to right.
         if x < @grid_width - 1
-          Wall::None.new self, tile, tile_at_grid(x + 1, y)
+          Wall::None.new self, Wall::DATA_TILES => [[x, y], [x + 1, y]]
         end
       end
     end
 
-    # Back wall.
-    Wall::HighConcreteWall.new self, tile_at_grid(1, 2), tile_at_grid(1, 3)
-    Wall::HighConcreteWallWindow.new self, tile_at_grid(2, 2), tile_at_grid(2, 3)
-    Wall::HighConcreteWallWindow.new self, tile_at_grid(3, 2), tile_at_grid(3, 3)
-    Wall::HighConcreteWall.new self, tile_at_grid(4, 2), tile_at_grid(4, 3)
-
-    # Left wall
-    Wall::HighConcreteWall.new self, tile_at_grid(0, 3), tile_at_grid(1, 3)
-    #Wall::HighConcreteWall.new self, tile_at_grid(0, 4), tile_at_grid(1, 4)
-    Wall::HighConcreteWall.new self, tile_at_grid(0, 5), tile_at_grid(1, 5)
-    Wall::HighConcreteWall.new self, tile_at_grid(0, 6), tile_at_grid(1, 6)
-
-    # Front wall.
-    Wall::HighConcreteWall.new self, tile_at_grid(1, 6), tile_at_grid(1, 7)
-    Wall::HighConcreteWallWindow.new self, tile_at_grid(2, 6), tile_at_grid(2, 7)
-    Wall::HighConcreteWallWindow.new self, tile_at_grid(3, 6), tile_at_grid(3, 7)
-    Wall::HighConcreteWall.new self, tile_at_grid(4, 6), tile_at_grid(4, 7)
-
-    # Right wall
-    Wall::HighConcreteWall.new self, tile_at_grid(4, 3), tile_at_grid(5, 3)
-    Wall::HighConcreteWall.new self, tile_at_grid(4, 4), tile_at_grid(5, 4)
-    Wall::HighConcreteWall.new self, tile_at_grid(4, 5), tile_at_grid(5, 5)
-    Wall::HighConcreteWall.new self, tile_at_grid(4, 6), tile_at_grid(5, 6)
+    wall_data.each do |wall_datum|
+      Wall.const_get(wall_datum[Wall::DATA_TYPE]).new self, wall_datum
+    end
 
     log.debug { "Map created in #{"%.3f" % (Time.now - t)} s" }
 
@@ -146,11 +135,11 @@ class Map
     walls = walls.compact.select {|w| not w.is_a? Wall::None }
 
     {
-        size: [@grid_width, @grid_height],
-        tiles: @tiles,
-        walls: walls,
-        entities: @entities,
-        objects: @static_objects,
+        DATA_SIZE => [@grid_width, @grid_height],
+        DATA_TILES => @tiles,
+        DATA_WALLS => walls,
+        DATA_ENTITIES => @entities,
+        DATA_OBJECTS => @static_objects,
     }.to_json(*a)
   end
 end

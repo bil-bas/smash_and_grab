@@ -4,6 +4,9 @@ class Wall < GameObject
   SEMI_TRANSPARENT_COLOR = Color.rgba(255, 255, 255, 120)
   OPAQUE_COLOR = Color::WHITE
 
+  DATA_TYPE = "type"
+  DATA_TILES = "tiles"
+
   # No wall - just let the user through.
   class None < self
     def blocks_sight?(person); false; end
@@ -36,16 +39,17 @@ class Wall < GameObject
   def to_s; "<#{self.class.name} [#{@tiles[0].grid_x}, #{@tiles[0].grid_y}] <=> [#{@tiles[1].grid_x}, #{@tiles[1].grid_y}]>"; end
   def occludes?; @occlusions > 0; end
   
-  def initialize(map, tile1, tile2, options = {})
+  def initialize(map, data)
+    @tiles = data[DATA_TILES].map {|p| map.tile_at_grid(*p) }.sort_by(&:y)
+
     @@sprites ||= SpriteSheet.new("walls.png", WIDTH, HEIGHT, 8)
-    @tiles = [tile1, tile2].sort_by(&:y)
 
     options = {
         rotation_center: :bottom_center,
         x: @tiles.first.x,
         y: @tiles.first.y + HEIGHT / 8,
         zorder: @tiles.first.y + 0.01,
-    }.merge! options
+    }
 
     @cost = options[:cost]
     @objects = []
@@ -79,9 +83,8 @@ class Wall < GameObject
 
   def to_json(*a)
     {
-        type: Inflector.demodulize(self.class.name),
-        from: [@tiles.first.grid_x, @tiles.first.grid_y],
-        to: [@tiles.last.grid_x, @tiles.last.grid_y],
+        DATA_TYPE => Inflector.demodulize(self.class.name),
+        DATA_TILES => [[@tiles.first.grid_x, @tiles.first.grid_y], [@tiles.last.grid_x, @tiles.last.grid_y]],
     }.to_json(*a)
   end
 end

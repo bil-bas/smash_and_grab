@@ -28,33 +28,41 @@ class Character < StaticObject
     end
   end
 
-  MOVE = 5
+  DATA_TYPE = 'type'
+  DATA_TILE = 'tile'
+  DATA_MOVEMENT_POINTS = 'movement_points'
+  DATA_FACING = 'facing'
+  MOVEMENT_POINTS_PER_TURN = 5
 
   attr_reader :faction, :movement_points
 
   def to_s; "<#{self.class.name} [#{tile.grid_x}, #{tile.grid_y}]>"; end
 
-  def initialize(tile, options = {})
+  def initialize(map, data)
+    @map = map
+
     unless defined? @@sprites
       @@sprites = SpriteSheet.new("characters.png", 32, 32, 8)
     end
 
     options = {
         image: @@sprites.each.to_a.sample,
-        factor_x: [-1, 1].sample,
-    }.merge! options
-     
-    super(tile, options)
+        factor_x: data[DATA_FACING] == 'right' ? 1 : -1,
+    }
+
+    super(@map.tile_at_grid(*data[DATA_TILE]), options)
 
     # TODO: Obviously, this is dumb way to do factions.
     # Get a hash of the image, so we can compare it.
     @faction = @image.hash
 
-    turn_reset
+    @movement_points = data[DATA_MOVEMENT_POINTS] || MOVEMENT_POINTS_PER_TURN
+
+    @map << self
   end
 
   def turn_reset
-    @movement_points = MOVE
+    @movement_points = MOVEMENT_POINTS_PER_TURN
   end
 
   def friend?(character)
@@ -154,15 +162,10 @@ class Character < StaticObject
 
   def to_json(*a)
     {
-        type: Inflector.demodulize(self.class.name),
-        location: [tile.grid_x, tile.grid_y],
-        movement_points: @movement_points,
-        facing: factor_x > 0 ? :right : :left,
+        DATA_TYPE => Inflector.demodulize(self.class.name),
+        DATA_TILE => [tile.grid_x, tile.grid_y],
+        DATA_MOVEMENT_POINTS => @movement_points,
+        DATA_FACING => factor_x > 0 ? :right : :left,
     }.to_json(*a)
-  end
-
-  def self.json_create(data)
-    tile = $window.current_game_state.map.tile_at_grid(*data['location'])
-    new(tile, factor_x: data['facing'])
   end
 end

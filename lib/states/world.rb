@@ -25,15 +25,45 @@ class World < GameState
         *(['Lava'] * 1),
     ]
 
-    tile_classes = Array.new(50) { Array.new(50) { possible_tiles.sample } }
-    @map = Map.new tile_classes
+    tile_data = Array.new(50) { Array.new(50) { possible_tiles.sample } }
+
+    # Create a little house.
+    wall_data = [
+        # Back wall.
+        { "type" => "HighConcreteWall", "tiles" => [[1, 2], [1, 3]] },
+        { "type" => "HighConcreteWallWindow", "tiles" => [[2, 2], [2, 3]] },
+        { "type" => "HighConcreteWallWindow", "tiles" => [[3, 2], [3, 3]] },
+        { "type" => "HighConcreteWall", "tiles" => [[4, 2], [4, 3]] },
+
+        # Left wall
+        { "type" => "HighConcreteWall", "tiles" => [[0, 3], [1, 3]] },
+        # { "type" => "HighConcreteWall", "tiles" => [[0, 4], [1, 4]] },
+        { "type" => "HighConcreteWall", "tiles" => [[0, 5], [1, 5]] },
+        { "type" => "HighConcreteWall", "tiles" => [[0, 6], [1, 6]] },
+
+        # Front wall.
+        { "type" => "HighConcreteWall", "tiles" => [[1, 6], [1, 7]] },
+        { "type" => "HighConcreteWallWindow", "tiles" => [[2, 6], [2, 7]] },
+        { "type" => "HighConcreteWallWindow", "tiles" => [[3, 6], [3, 7]] },
+        { "type" => "HighConcreteWall", "tiles" => [[4, 6], [4, 7]] },
+
+        # Right wall
+        { "type" => "HighConcreteWall", "tiles" => [[4, 3], [5, 3]] },
+        { "type" => "HighConcreteWall", "tiles" => [[4, 4], [5, 4]] },
+        { "type" => "HighConcreteWall", "tiles" => [[4, 5], [5, 5]] },
+        { "type" => "HighConcreteWall", "tiles" => [[4, 6], [5, 6]] },
+    ]
+
+
+
+    @map = Map.new "tiles" => tile_data, "walls" => wall_data
     empty_tiles = @map.passable_tiles.shuffle
 
     # Make some characters.
     t = Time.now
     200.times do
       tile = empty_tiles.pop
-      map << Character.new(tile)
+      Character.new(map, "tile" => [tile.grid_x, tile.grid_y], "facing" => ['left', 'right'].sample)
     end
 
     log.debug { "Entities placed on map in #{"%.3f" % (Time.now - t)} s" }
@@ -70,6 +100,10 @@ class World < GameState
     save_game QUICKSAVE_FILE
   end
 
+  def quickload
+    load_game QUICKSAVE_FILE
+  end
+
   def save_game(file)
     t = Time.now
 
@@ -91,6 +125,8 @@ class World < GameState
     Zlib::GzipWriter.open(file) do |gz|
       gz.write json
     end
+
+    File.open("#{file}.txt", "w") {|f| f.write json } # DEBUG ONLY!
 
     log.debug { "Saved game data in #{"%.3f" % (Time.now - t)} s" }
 
