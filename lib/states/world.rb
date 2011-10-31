@@ -63,7 +63,7 @@ class World < Fidgit::GuiState
     entity_data = Array.new(200) do
       {
           "type" => "Character",
-          "image_index" => rand(40),
+          "image_index" => rand(44),
           "tile" => [rand(map_size), rand(map_size)],
           "facing" => ['left', 'right'].sample,
       }
@@ -108,22 +108,30 @@ class World < Fidgit::GuiState
 
   def create_gui
     horizontal spacing: 0, padding: 0 do
-      vertical spacing: 2, padding: 0 do
+      horizontal spacing: 2, padding: 0 do
         group do
           vertical padding: 1, spacing: 2, background_color: Color::BLACK, do
-            6.times do |i|
-              horizontal background_color: Color::BLUE, padding_h: 1, padding_v: 1 do
+            8.times do |i|
+              horizontal background_color: Color::BLUE, padding: 0 do
                 image_frame @map.entities[i].image, factor: 0.25, padding: 0, background_color: Color::GRAY
-                radio_button "##{i + 1}", i, align_v: :center do
-                  @mouse_selection.select nil
-                  @mouse_selection.select @map.entities[i]
+                vertical padding: 0, spacing: 0 do
+                  label "##{i + 1}", font_size: 4.5
+                  label "bar1", font_height: 3.5
+                  label "bar2", font_height: 3.5
+                  label "icons", font_height: 3.5
                 end
               end
             end
           end
         end
 
-        horizontal padding: 0 do
+        horizontal padding: 0, padding_top: 125 do
+          horizontal padding: 1, spacing: 2, background_color: Color::BLACK do
+            image_frame @map.entities[0].image, factor: 0.25, padding: 0, background_color: Color::GRAY
+            text_area text: "Detailed info about the currently selected super-chicken (of prodigious size).\nAnd superpower buttons ......",
+                      width: 100, font_height: 4
+          end
+
           vertical padding: 1, spacing: 2, background_color: Color::BLACK do
             horizontal padding: 0 do
               button "Undo", padding_h: 1, font_height: 5 do
@@ -138,12 +146,6 @@ class World < Fidgit::GuiState
             button "End turn" do
               end_turn
             end
-          end
-
-          horizontal padding: 1, spacing: 2, background_color: Color::BLACK do
-            image_frame @map.entities[0].image, factor: 0.25, padding: 0, background_color: Color::GRAY
-            text_area text: "Detailed info about the currently selected super-chicken (of prodigious size).\nAnd superpower buttons ......",
-                      width: 120, font_height: 4
           end
         end
       end
