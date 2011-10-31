@@ -125,6 +125,7 @@ module Gosu
     # Returns a larger copy of the image.
     def enlarge(factor, options = {})
       zoomed_image = Image.create width * factor, height * factor
+      zoomed_image.refresh_cache
 
       options = {
         color_control: proc do |c1, c2, x, y|
@@ -138,7 +139,6 @@ module Gosu
       }.merge!(options)
 
       zoomed_image.splice self, 0, 0, options
-
       zoomed_image
     end
   end

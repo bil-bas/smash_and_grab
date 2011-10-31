@@ -3,6 +3,7 @@ MODIFIED_IMAGE_PATH = File.expand_path("../../media/images", __FILE__)
 
 IMAGES = [
     ["characters.png", [32, 32], 8],
+    ["vehicles.png", [64, 32], 4],
 ]
 
 desc "Process images (double in size and add an outline)"
@@ -12,25 +13,42 @@ task :process_images do
   require_relative '../lib/texplay_ext/image'
   require_relative '../lib/texplay_ext/window'
 
+  puts "=== Processing images ===\n\n"
+
   $window = Gosu::Window.new(100, 100, false)
 
   IMAGES.each do |image_name, (width, height), num_columns|
-    sprites = Gosu::Image.load_tiles($window, File.expand_path(image_name, ORIGINAL_IMAGE_PATH), width, height, false)
+    puts "Processing #{image_name}"
 
-    large_sprites = sprites.map {|s| s.enlarge 2 }
-    large_outlined = large_sprites.map {|s| s.outline }
-    large_outlined.map.with_index do |outline, i|
-      outline.clear(dest_ignore: :alpha, color: Gosu::Color.rgb(50, 50, 50))
-      outline.splice large_sprites[i], 1, 1, alpha_blend: true
+    sprites = Gosu::Image.load_tiles($window, File.expand_path(image_name, ORIGINAL_IMAGE_PATH), width, height, false)
+    sprites.each(&:refresh_cache)
+
+    print "  Enlarging: "
+    large_sprites = sprites.map do |sprite|
+      print '.'
+      sprite.enlarge 2
+    end
+
+    print "\n  Outlining: "
+    large_outlined = large_sprites.map do |sprite|
+      print '.'
+      sprite.outline
     end
 
     new_image = Gosu::Image.create large_outlined.first.width * num_columns,
                                    large_outlined.first.height * large_outlined.size / num_columns
+    new_image.refresh_cache
 
-    large_outlined.each_with_index do |sprite, i|
+    print "\n  Merging:   "
+    large_outlined.each.with_index do |sprite, i|
+      sprite.clear(dest_ignore: :alpha, color: Gosu::Color.rgb(50, 50, 50))
+      sprite.splice large_sprites[i], 1, 1, alpha_blend: true
       row, column = i.divmod num_columns
       new_image.splice sprite, column * sprite.width, row * sprite.height
+      print '.'
     end
+
+    puts "\n\n"
 
     new_image.save(File.expand_path(image_name, MODIFIED_IMAGE_PATH))
   end
