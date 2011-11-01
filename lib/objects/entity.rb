@@ -36,6 +36,7 @@ class Entity < StaticObject
   DATA_MOVEMENT_POINTS = 'movement_points'
   DATA_FACING = 'facing'
   MOVEMENT_POINTS_PER_TURN = 5
+  MELEE_COST = 2
 
   attr_reader :faction, :movement_points
 
@@ -85,7 +86,7 @@ class Entity < StaticObject
   def potential_moves(options = {})
     options = {
         starting_tile: tile,
-        tiles: [],
+        tiles: Set.new,
     }.merge! options
 
     starting_tile = options[:starting_tile]
@@ -96,8 +97,8 @@ class Entity < StaticObject
       tile = wall.destination(starting_tile, self)
       unless tiles.include? tile
         path = path_to(tile)
-        if path and path.move_distance <= @movement_points and path.move_distance >= tile.cost
-          tiles.push tile
+        if path and @movement_points >= path.move_distance
+          tiles << tile
           potential_moves(starting_tile: tile, tiles: tiles) if @movement_points > path.move_distance
         end
       end
@@ -111,15 +112,15 @@ class Entity < StaticObject
     return nil unless destination_tile.passable? self
     return nil if destination_tile == tile
 
-    closed_tiles = []
-    open_paths = [PathStart.new(tile)]
+    closed_tiles = Set.new
+    open_paths = Set.new [PathStart.new(tile)]
 
     while open_paths.any?
       # Check the (expected) shortest path and move it to closed, since we have considered it.
       path = open_paths.min_by(&:cost)
 
       open_paths.delete path
-      closed_tiles.push path.current
+      closed_tiles << path.current
 
       # Check adjacent tiles.
       exits = path.current.exits(self).select {|wall| not closed_tiles.include? wall.destination(path.current, self) }
@@ -132,10 +133,10 @@ class Entity < StaticObject
         if repeated_path = open_paths.find {|p| p.current == tile }
           if new_path.move_distance < repeated_path.move_distance
             open_paths.delete repeated_path
-            open_paths.push new_path
+            open_paths << new_path
           end
         else
-          open_paths.push new_path
+          open_paths << new_path
         end
       end
     end
