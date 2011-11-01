@@ -31,24 +31,21 @@ class MouseSelection < GameObject
       modify_occlusions [@hover_tile], -1 if @hover_tile
       @hover_tile = tile
       modify_occlusions [@hover_tile], +1 if @hover_tile
+      recalculate
     end
   end
 
-  def update
-    super
-
+  def recalculate
     if @selected_tile
-      if @hover_tile != @selected_tile and (@path.nil? or @hover_tile != @path.current)
-        modify_occlusions @path.tiles, -1 if @path
-        @path_record = nil
+      modify_occlusions @path.tiles, -1 if @path
+      @path_record = nil
 
-        if @hover_tile
-          @path = @selected_tile.objects.last.path_to(@hover_tile)
+      if @hover_tile
+        @path = @selected_tile.objects.last.path_to(@hover_tile)
 
-          modify_occlusions @path.tiles, +1 if @path
-        else
-          @path = nil
-        end
+        modify_occlusions @path.tiles, +1 if @path
+      else
+        @path = nil
       end
     else
       modify_occlusions @potential_moves, +1
@@ -165,6 +162,7 @@ class MouseSelection < GameObject
       @moves_record = nil
       calculate_potential_moves
       @map.actions.do :end_turn
+      recalculate
     end
   end
 end
