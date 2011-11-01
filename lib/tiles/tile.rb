@@ -63,12 +63,14 @@ class Tile < GameObject
   end
 
   def passable?(person)
-    cost < Float::INFINITY and objects.all? {|o| o.passable? person }
+    cost < Float::INFINITY
   end
 
   def end_turn_on?(person)
     passable?(person) and @objects.all? {|o| o.end_turn_on?(person) }
   end
+
+  def entity; @objects.find {|o| o.is_a? Entity }; end
 
   # List of squares that can be entered from this tile.
   def exits(person)

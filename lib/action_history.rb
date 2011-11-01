@@ -1,6 +1,40 @@
 class GameAction < Fidgit::History::Action
   include Log
 
+  class Melee < self
+    DATA_ATTACKER = 'attacker'
+    DATA_DEFENDER = 'defender'
+
+    def initialize(map, data)
+      @map = map
+
+      case data
+        when Entity::MeleePath
+          @attacker, @defender = data.attacker, data.defender
+          @time = Time.now
+        when Hash
+          @attacker = @map.tile_at_grid(data[DATA_ATTACKER])
+          @defender = @map.tile_at_grid(data[DATA_DEFENDER])
+          @time = data[DATA_TIME]
+        else
+          raise data.to_s
+      end
+    end
+
+    def do
+      @attacker.entity.melee(@defender.entity)
+    end
+
+    def can_be_undone?; false; end
+
+    def save_data
+      {
+        DATA_ATTACKER => [@attacker.grid_x, @attacker.grid_y],
+        DATA_DEFENDER => [@defender.grid_x, @defender.grid_y],
+      }
+    end
+  end
+
   class Move < self
     DATA_PATH = 'path'
     DATA_MOVEMENT_COST = 'movement_cost'
@@ -9,7 +43,7 @@ class GameAction < Fidgit::History::Action
       @map = map
 
       case data
-        when Entity::Path
+        when Entity::MovePath
           @path = data.tiles
           @movement_cost = data.move_distance
           @time = Time.now
@@ -18,7 +52,7 @@ class GameAction < Fidgit::History::Action
           @movement_cost = data[DATA_MOVEMENT_COST]
           @time = data[DATA_TIME]
         else
-          raise
+          raise data.to_s
       end
     end
 
@@ -49,9 +83,6 @@ class GameAction < Fidgit::History::Action
     def can_be_undone?; false; end
 
     def do
-    end
-
-    def undo
     end
   end
 

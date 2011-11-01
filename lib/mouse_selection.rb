@@ -1,7 +1,8 @@
 class MouseSelection < GameObject
   attr_reader :selected_tile, :hover_tile
 
-  MOVE_COLOR = Color.rgba(0, 255, 0, 50)
+  MOVE_COLOR = Color.rgba(0, 255, 0, 75)
+  MELEE_COLOR = Color.rgba(255, 0, 0, 75)
   NO_MOVE_COLOR = Color.rgba(255, 0, 0, 25)
   
   def initialize(map, options = {})
@@ -31,11 +32,11 @@ class MouseSelection < GameObject
       modify_occlusions [@hover_tile], -1 if @hover_tile
       @hover_tile = tile
       modify_occlusions [@hover_tile], +1 if @hover_tile
-      recalculate
+      calculate_path
     end
   end
 
-  def recalculate
+  def calculate_path
     if @selected_tile
       modify_occlusions @path.tiles, -1 if @path
       @path_record = nil
@@ -57,6 +58,7 @@ class MouseSelection < GameObject
     modify_occlusions @potential_moves, -1
     @potential_moves = @selected_tile.objects.last.potential_moves
     modify_occlusions @potential_moves, +1
+    @moves_record = nil
   end
 
   def modify_occlusions(tiles, amount)
@@ -75,11 +77,17 @@ class MouseSelection < GameObject
       unless @potential_moves.empty?
         @moves_record ||= $window.record do
           @potential_moves.each do |tile|
-            Tile.blank.draw_rot tile.x, tile.y, ZOrder::TILE_SELECTION, 0, 0.5, 0.5, 1, 1, MOVE_COLOR, :additive
+            color = if entity = tile.objects.last and entity.enemy?(@selected_tile.objects.last)
+              MELEE_COLOR
+            else
+              MOVE_COLOR
+            end
+            # TODO: Additive doesn't work in Gosu recordings :(
+            Tile.blank.draw_rot tile.x, tile.y, ZOrder::TILE_SELECTION, 0, 0.5, 0.5, 1, 1, color, :additive
           end
         end
 
-        @moves_record.draw -offset_x, -offset_y, ZOrder::TILE_SELECTION, zoom, zoom, Color::WHITE, :additive
+        @moves_record.draw -offset_x, -offset_y, ZOrder::TILE_SELECTION, zoom, zoom
       end
 
       # Show path and end of the move-path chosen.
@@ -91,7 +99,11 @@ class MouseSelection < GameObject
 
             image = if tile == tiles.last
               if tile.objects.last.is_a? Entity
-                @final_move_too_far_image
+                if can_move and tile.entity.enemy?(@selected_tile.entity)
+                  @final_move_image
+                else
+                  @final_move_too_far_image
+                end
               else
                 can_move ? @final_move_image : @final_move_too_far_image
               end
@@ -113,16 +125,19 @@ class MouseSelection < GameObject
 
   def left_click
     if @selected_tile
+      path = @path
       # Move the character.
-      if @potential_moves.include? @hover_tile and @hover_tile.end_turn_on?(@selected_tile.objects.last)
-        character = @selected_tile.objects.last
-        @map.actions.do :move, @path
-
-        modify_occlusions @path.tiles, -1 if @path
-        @path = nil
-
-        @moves_record = nil
-        @selected_tile = @hover_tile
+      if @potential_moves.include? @hover_tile
+        case path
+          when Entity::MovePath
+            @map.actions.do :move, path
+            @selected_tile = @hover_tile
+          when Entity::MeleePath
+            @map.actions.do :move, path.previous_path if path.requires_movement?
+            @map.actions.do :melee, path
+            @selected_tile = path.attacker
+        end
+        calculate_path
         calculate_potential_moves
       end
     elsif @hover_tile and @hover_tile.objects.last.is_a? Entity
@@ -157,12 +172,11 @@ class MouseSelection < GameObject
   def turn_reset
     if @selected_tile
       current_tile = @selected_tile
-      right_click
+      select nil
       @selected_tile = current_tile
-      @moves_record = nil
-      calculate_potential_moves
       @map.actions.do :end_turn
-      recalculate
+      calculate_potential_moves
+      calculate_path
     end
   end
 end

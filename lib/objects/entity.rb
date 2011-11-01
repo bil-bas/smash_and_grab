@@ -3,18 +3,38 @@ require 'set'
 class Entity < StaticObject
   class Character < Entity; end
 
+  # Abstract path class.
   class Path
-    attr_reader :cost, :move_distance, :current, :first
+    TILE_SIZE = 16
+    attr_reader :cost, :move_distance, :current, :first, :previous_path, :destination_distance
 
-    def tiles; @path.tiles + [current]; end
+    def tiles; @previous_path.tiles + [current]; end
 
-    def initialize(path, current, destination, extra_move_distance)
-      @path, @current = path, current
+    def initialize(previous_path, current, destination, extra_move_distance)
+      @previous_path, @current = previous_path, current
 
-      @move_distance = @path.move_distance + current.cost + extra_move_distance
-      @first = @path.first
-      @cost = (@move_distance * 16) +
-          (current.x - destination.x).abs + (current.y - destination.y).abs
+      @move_distance = @previous_path.move_distance + extra_move_distance
+      @first = @previous_path.first
+      @destination_distance = @previous_path.destination_distance
+      @cost = @move_distance + @destination_distance
+    end
+  end
+
+  # A path consisting just of movement.
+  class MovePath < Path
+    def initialize(previous_path, current, destination, extra_move_distance)
+      super(previous_path, current, destination, current.cost + extra_move_distance)
+    end
+  end
+
+  # A path consisting of melee, possibly with some movement beforehand.
+  class MeleePath < Path
+    def attacker; @previous_path.current; end
+    def defender; @current; end
+    def requires_movement?; previous_path.is_a? MovePath; end
+
+    def initialize(previous_path, current, destination)
+      super(previous_path, current, destination, MELEE_COST)
     end
   end
 
@@ -24,9 +44,10 @@ class Entity < StaticObject
     def cost; 0; end
     def move_distance; 0; end
 
-    def initialize(tile)
+    def initialize(tile, destination)
       @current = tile
       @tiles = [tile]
+      @destination_distance = (@current.grid_x - destination.grid_x).abs + (@current.grid_y - destination.grid_y).abs
     end
   end
 
@@ -67,6 +88,12 @@ class Entity < StaticObject
     @map << self
   end
 
+  def melee(other)
+    # TODO: Resolve melee!
+    p [:melee, self, other]
+    @movement_points -= MELEE_COST
+  end
+
   def turn_reset
     @movement_points = MOVEMENT_POINTS_PER_TURN
   end
@@ -92,14 +119,18 @@ class Entity < StaticObject
     starting_tile = options[:starting_tile]
     tiles = options[:tiles]
 
-    exits = starting_tile.exits(self).select {|wall| not tiles.include? wall.destination(starting_tile, self) }
-    exits.each do |wall|
+    starting_tile.exits(self).each do |wall|
+
       tile = wall.destination(starting_tile, self)
       unless tiles.include? tile
         path = path_to(tile)
+
         if path and @movement_points >= path.move_distance
+          # Can move onto this square - calculate further paths if we can move through the square.
           tiles << tile
-          potential_moves(starting_tile: tile, tiles: tiles) if @movement_points > path.move_distance
+          if path.is_a?(MovePath) and @movement_points > path.move_distance
+            potential_moves(starting_tile: tile, tiles: tiles)
+          end
         end
       end
     end
@@ -112,31 +143,40 @@ class Entity < StaticObject
     return nil unless destination_tile.passable? self
     return nil if destination_tile == tile
 
-    closed_tiles = Set.new
-    open_paths = Set.new [PathStart.new(tile)]
+    closed_tiles = Set.new # Tiles we've already dealt with.
+    open_paths = { tile => PathStart.new(tile, destination_tile) } # Paths to check { tile => path_to_tile }.
 
     while open_paths.any?
       # Check the (expected) shortest path and move it to closed, since we have considered it.
-      path = open_paths.min_by(&:cost)
+      path = open_paths.each_value.min_by(&:cost)
+      current_tile = path.current
 
-      open_paths.delete path
-      closed_tiles << path.current
+      open_paths.delete current_tile
+      closed_tiles << current_tile
 
       # Check adjacent tiles.
-      exits = path.current.exits(self).select {|wall| not closed_tiles.include? wall.destination(path.current, self) }
+      exits = current_tile.exits(self).reject {|wall| closed_tiles.include? wall.destination(current_tile, self) }
       exits.each do |wall|
-        tile = wall.destination(path.current, self)
-        new_path = Path.new(path, tile, destination_tile, wall.movement_cost(self))
+        testing_tile = wall.destination(current_tile, self)
 
-        return new_path if tile == destination_tile
+        new_path = if entity = testing_tile.objects.last and enemy?(entity)
+          MeleePath.new(path, testing_tile, destination_tile)
+        elsif testing_tile.passable?(self)
+          MovePath.new(path, testing_tile, destination_tile, wall.movement_cost(self))
+        else
+          nil
+        end
 
-        if repeated_path = open_paths.find {|p| p.current == tile }
-          if new_path.move_distance < repeated_path.move_distance
-            open_paths.delete repeated_path
-            open_paths << new_path
+        return new_path if new_path.nil? or testing_tile == destination_tile
+
+        # If the path is shorter than one we've already calculated, then replace it. Otherwise just store it.
+        if old_path = open_paths[testing_tile]
+          if new_path.move_distance < old_path.move_distance
+            open_paths.delete old_path
+            open_paths[testing_tile] = new_path
           end
         else
-          open_paths << new_path
+          open_paths[testing_tile] = new_path
         end
       end
     end
