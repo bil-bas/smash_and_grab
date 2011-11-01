@@ -58,6 +58,26 @@ class World < Fidgit::GuiState
         { "type" => "HighConcreteWall", "tiles" => [[4, 4], [5, 4]] },
         { "type" => "HighConcreteWall", "tiles" => [[4, 5], [5, 5]] },
         { "type" => "HighConcreteWall", "tiles" => [[4, 6], [5, 6]] },
+
+
+        # Garden
+        # Back wall.
+        { "type" => "LowFence", "tiles" => [[5, 2], [5, 3]] },
+        { "type" => "LowFence", "tiles" => [[6, 2], [6, 3]] },
+        #{ "type" => "LowFence", "tiles" => [[7, 2], [7, 3]] },
+        { "type" => "LowFence", "tiles" => [[8, 2], [8, 3]] },
+
+        # Front wall.
+        { "type" => "LowBrickWall", "tiles" => [[5, 6], [5, 7]] },
+        { "type" => "LowBrickWall", "tiles" => [[6, 6], [6, 7]] },
+        { "type" => "LowBrickWall", "tiles" => [[7, 6], [7, 7]] },
+        { "type" => "LowBrickWall", "tiles" => [[8, 6], [8, 7]] },
+
+        # Right wall
+        { "type" => "LowFence", "tiles" => [[8, 3], [9, 3]] },
+        { "type" => "LowFence", "tiles" => [[8, 4], [9, 4]] },
+        { "type" => "LowBrickWall", "tiles" => [[8, 5], [9, 5]] },
+        { "type" => "LowBrickWall", "tiles" => [[8, 6], [9, 6]] },
     ]
 
     entity_data = Array.new(200) do

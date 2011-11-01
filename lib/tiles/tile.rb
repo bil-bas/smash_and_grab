@@ -18,15 +18,17 @@ class Tile < GameObject
   
   WIDTH, HEIGHT = 32, 16
 
+  # x, y, direction, min height to cause occlusion.
   WALL_OCCLUSION_POSITIONS = [
-      [[0, 0], :left],
-      [[0, 0], :bottom],
-      [[-1, 1], :left],
-      [[-1, 1], :right],
-      [[-1, 1], :top],
-      [[-1, 1], :bottom],
-      [[-2, 2], :top],
-      [[-2, 2], :right],
+      [[ 0,  0], :left,   1],
+      [[ 0,  0], :bottom, 1],
+      [[-1,  1], :right,  1],
+      [[-1,  1], :top,    1],
+
+      [[-1,  1], :left,   2],
+      [[-1,  1], :bottom, 2],
+      [[-2,  2], :top,    2],
+      [[-2,  2], :right,  2],
   ]
 
   attr_reader :objects, :grid_x, :grid_y, :cost
@@ -97,9 +99,9 @@ class Tile < GameObject
   end
 
   def modify_occlusions(value)
-    WALL_OCCLUSION_POSITIONS.each do |(offset_x, offset_y), direction|
+    WALL_OCCLUSION_POSITIONS.each do |(offset_x, offset_y), direction, min_height|
       if tile = @map.tile_at_grid(grid_x + offset_x, grid_y + offset_y)
-        if wall = tile.wall(direction)
+        if wall = tile.wall(direction) and wall.tiles_high >= min_height
           wall.occlusions += value
         end
       end

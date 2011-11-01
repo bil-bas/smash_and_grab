@@ -10,21 +10,46 @@ class Wall < GameObject
   # No wall - just let the user through.
   class None < self
     def blocks_sight?(person); false; end
-    def blocks_movement?(person); false; end
     def spritesheet_pos; nil; end
     def minimap_color; Color::NONE; end
+    def movement_cost(person); 0; end
+    def tiles_high; 0; end
   end
 
   # Concrete walls.
   class HighConcreteWall < self
     def spritesheet_pos; [[1, 0], [2, 0]]; end
     def minimap_color; Color.rgb(100, 100, 100); end
+    def movement_cost(person); Float::INFINITY; end
+    def thickness; 4; end
+    def tiles_high; 2; end
   end
 
   class HighConcreteWallWindow < self
     def blocks_sight?(person); false; end
+    def movement_cost(person); Float::INFINITY; end
     def spritesheet_pos; [[1, 1], [2, 1]]; end
     def minimap_color; Color.rgb(150, 150, 150); end
+    def thickness; 4; end
+    def tiles_high; 2; end
+  end
+
+  class LowBrickWall < self
+    def blocks_sight?(person); false; end
+    def spritesheet_pos; [[4, 0], [3, 0]]; end
+    def minimap_color; Color.rgb(150, 150, 150); end
+    def thickness; 2; end
+    def movement_cost(person); 2; end
+    def tiles_high; 1; end
+  end
+
+  class LowFence < self
+    def blocks_sight?(person); false; end
+    def spritesheet_pos; [[4, 1], [3, 1]]; end
+    def minimap_color; Color.rgb(150, 150, 150); end
+    def thickness; 0; end
+    def movement_cost(person); 2; end
+    def tiles_high; 1; end
   end
   
   WIDTH, HEIGHT = 32, 64
@@ -32,7 +57,9 @@ class Wall < GameObject
   attr_reader :objects, :grid_x, :grid_y, :cost, :occlusions
 
   def blocks_sight?(person); true; end
-  def blocks_movement?(person); true; end
+  def blocks_movement?(person); movement_cost(person) == Float::INFINITY; end
+
+  def thickness; 0; end
 
   def zorder; super + 0.01; end
   def to_s; "<#{self.class.name} [#{@tiles[0].grid_x}, #{@tiles[0].grid_y}] <=> [#{@tiles[1].grid_x}, #{@tiles[1].grid_y}]>"; end
@@ -46,7 +73,7 @@ class Wall < GameObject
     options = {
         rotation_center: :bottom_center,
         x: @tiles.first.x,
-        y: @tiles.first.y + HEIGHT / 8,
+        y: @tiles.first.y + (HEIGHT / 8) + 1,
         zorder: @tiles.first.y + 0.01,
     }
 
@@ -60,10 +87,12 @@ class Wall < GameObject
       @tiles.last.add_wall :top, self
       @tiles.first.add_wall :bottom, self
       @image = spritesheet_pos ? @@sprites[*spritesheet_pos[SPRITESHEET_VERTICAL]] : nil
+      @x += 2
     else
       @tiles.last.add_wall :right, self
       @tiles.first.add_wall :left, self
       @image = spritesheet_pos ? @@sprites[*spritesheet_pos[SPRITESHEET_HORIZONTAL]] : nil
+      @x -= 2
     end
 
     map << self
