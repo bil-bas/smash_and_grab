@@ -58,6 +58,7 @@ class Wall < GameObject
 
   def blocks_sight?(person); true; end
   def blocks_movement?(person); movement_cost(person) == Float::INFINITY; end
+  def allows_movement?(person); movement_cost(person) < Float::INFINITY; end
 
   def thickness; 0; end
 

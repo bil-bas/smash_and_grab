@@ -8,10 +8,10 @@ class Entity < StaticObject
 
     def tiles; @path.tiles + [current]; end
 
-    def initialize(path, current, destination)
+    def initialize(path, current, destination, extra_move_distance)
       @path, @current = path, current
 
-      @move_distance = @path.move_distance + current.cost
+      @move_distance = @path.move_distance + current.cost + extra_move_distance
       @first = @path.first
       @cost = (@move_distance * 16) +
           (current.x - destination.x).abs + (current.y - destination.y).abs
@@ -91,13 +91,14 @@ class Entity < StaticObject
     starting_tile = options[:starting_tile]
     tiles = options[:tiles]
 
-    adjacent = starting_tile.adjacent_passable(self) - tiles
-    adjacent.each do |t|
-      unless tiles.include? t
-        path = path_to(t)
-        if path and path.move_distance <= @movement_points and path.move_distance >= t.cost
-          tiles.push t
-          potential_moves(starting_tile: t, tiles: tiles) if @movement_points > path.move_distance
+    exits = starting_tile.exits(self).select {|wall| not tiles.include? wall.destination(starting_tile, self) }
+    exits.each do |wall|
+      tile = wall.destination(starting_tile, self)
+      unless tiles.include? tile
+        path = path_to(tile)
+        if path and path.move_distance <= @movement_points and path.move_distance >= tile.cost
+          tiles.push tile
+          potential_moves(starting_tile: tile, tiles: tiles) if @movement_points > path.move_distance
         end
       end
     end
@@ -121,8 +122,10 @@ class Entity < StaticObject
       closed_tiles.push path.current
 
       # Check adjacent tiles.
-      (path.current.adjacent_passable(self) - closed_tiles).each do |tile|
-        new_path = Path.new(path, tile, destination_tile)
+      exits = path.current.exits(self).select {|wall| not closed_tiles.include? wall.destination(path.current, self) }
+      exits.each do |wall|
+        tile = wall.destination(path.current, self)
+        new_path = Path.new(path, tile, destination_tile, wall.movement_cost(self))
 
         return new_path if tile == destination_tile
 

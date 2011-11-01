@@ -71,10 +71,9 @@ class Tile < GameObject
   end
 
   # List of squares that can be entered from this tile.
-  def adjacent_passable(person)
+  def exits(person)
     walls = @walls.values.delete_if {|w| w.blocks_movement?(person) }
-    tiles = walls.map {|w| w.destination(self, person) }
-    tiles.select {|t| t.passable?(person) }
+    walls.select {|w| w.allows_movement?(person) and w.destination(self, person).passable?(person) }
   end
 
   def add_object(object)
