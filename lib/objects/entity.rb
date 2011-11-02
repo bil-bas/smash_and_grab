@@ -163,7 +163,7 @@ class Entity < StaticObject
       end
     end
 
-    tiles
+    tiles.reject {|t| t.entity and friend? t.entity }
   end
 
   # A* path-finding.
