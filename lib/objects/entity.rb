@@ -196,8 +196,10 @@ class Entity < StaticObject
 
         new_path = nil
 
+
         if entity = testing_tile.entity and enemy?(entity)
-          if ap >= MELEE_COST
+          # Ensure that the current tile is somewhere we could launch an attack from and we could actually perform it.
+          if (current_tile.empty? or current_tile == tile) and ap >= MELEE_COST
             new_path = MeleePath.new(path, testing_tile, destination_tile)
           else
             next
