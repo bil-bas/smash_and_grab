@@ -2,7 +2,9 @@ class WorldObject < GameObject
   attr_accessor :z
 
   OUTLINE_SCALE = Image::THIN_OUTLINE_SCALE
-  
+
+  def grid_position; [@grid_x, @grid_y]; end
+
   def initialize(options = {})    
     options = {
         rotation_center: :bottom_center,

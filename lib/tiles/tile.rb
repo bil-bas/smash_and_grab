@@ -36,6 +36,7 @@ class Tile < GameObject
   def map; parent.map; end
   def empty?; @objects.empty?; end
   def to_s; "<#{self.class.name} [#{grid_x}, #{grid_y}]>"; end
+  def grid_position; [@grid_x, @grid_y]; end
 
   # Blank white tile, useful for colourising tiles.
   def self.blank; @@sprites[0]; end

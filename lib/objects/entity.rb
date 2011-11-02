@@ -50,6 +50,10 @@ class Entity < StaticObject
     end
   end
 
+  # --------------------
+
+  extend Forwardable
+
   DATA_TYPE = 'type'
   DATA_IMAGE_INDEX = 'image_index'
   DATA_TILE = 'tile'
@@ -60,12 +64,14 @@ class Entity < StaticObject
   ACTION_POINTS_PER_TURN = 4
   MELEE_COST = 2
 
+  def_delegators :@tile, :grid_x, :grid_y, :grid_position
+
   attr_reader :faction, :movement_points, :action_points
 
   alias_method :mp, :movement_points
   alias_method :ap, :action_points
 
-  def to_s; "<#{self.class.name} [#{tile.grid_x}, #{tile.grid_y}]>"; end
+  def to_s; "<#{self.class.name} #{grid_position}>"; end
 
   def initialize(map, data)
     @map = map
@@ -230,7 +236,7 @@ class Entity < StaticObject
     {
         DATA_TYPE => Inflector.demodulize(self.class.name),
         DATA_IMAGE_INDEX => @image_index,
-        DATA_TILE => [tile.grid_x, tile.grid_y],
+        DATA_TILE => grid_position,
         DATA_MOVEMENT_POINTS => @movement_points,
         DATA_ACTION_POINTS => @action_points,
         DATA_FACING => factor_x > 0 ? :right : :left,

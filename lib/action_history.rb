@@ -29,8 +29,8 @@ class GameAction < Fidgit::History::Action
 
     def save_data
       {
-        DATA_ATTACKER => [@attacker.grid_x, @attacker.grid_y],
-        DATA_DEFENDER => [@defender.grid_x, @defender.grid_y],
+        DATA_ATTACKER => @attacker.grid_position,
+        DATA_DEFENDER => @defender.grid_position,
       }
     end
   end
@@ -68,7 +68,7 @@ class GameAction < Fidgit::History::Action
 
     def save_data
       {
-        DATA_PATH => @path.map {|t| [t.grid_x, t.grid_y] },
+        DATA_PATH => @path.map(&:grid_position),
         DATA_MOVEMENT_COST => @movement_cost,
       }
     end

@@ -63,7 +63,7 @@ class Wall < GameObject
   def thickness; 0; end
 
   def zorder; super + 0.01; end
-  def to_s; "<#{self.class.name} [#{@tiles[0].grid_x}, #{@tiles[0].grid_y}] <=> [#{@tiles[1].grid_x}, #{@tiles[1].grid_y}]>"; end
+  def to_s; "<#{self.class.name} #{@tiles[0].grid_position} <=> #{@tiles[1].grid_position}]>"; end
   def occludes?; @occlusions > 0; end
 
   def initialize(map, data)
@@ -121,7 +121,7 @@ class Wall < GameObject
   def to_json(*a)
     {
         DATA_TYPE => Inflector.demodulize(self.class.name),
-        DATA_TILES => [[@tiles.first.grid_x, @tiles.first.grid_y], [@tiles.last.grid_x, @tiles.last.grid_y]],
+        DATA_TILES => @tiles.map(&:grid_position),
     }.to_json(*a)
   end
 end
