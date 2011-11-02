@@ -316,8 +316,10 @@ class World < Fidgit::GuiState
 
     @minimap.draw
 
+    @font.draw @fps_text, 200, 0, ZOrder::GUI
 
-    @font.draw @fps_text, 200, 0, Float::INFINITY
+    status_text = @mouse_selection.selected ? "#{@mouse_selection.selected.movement_points} AP" : "???"
+    @font.draw status_text, 200, 475, ZOrder::GUI
 
     # Draw the gui in large.
     $window.scale 4 do

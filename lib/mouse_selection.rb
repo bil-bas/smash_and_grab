@@ -4,6 +4,8 @@ class MouseSelection < GameObject
   MOVE_COLOR = Color.rgba(0, 255, 0, 90)
   MELEE_COLOR = Color.rgba(255, 0, 0, 120)
   NO_MOVE_COLOR = Color.rgba(255, 0, 0, 25)
+
+  def selected; @selected_tile ? @selected_tile.entity : nil; end
   
   def initialize(map, options = {})
     @map = map
