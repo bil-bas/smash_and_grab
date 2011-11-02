@@ -12,6 +12,7 @@ class World < Fidgit::GuiState
   INITIAL_ZOOM = 2.0
   SAVE_FOLDER = File.expand_path("saves", ROOT_PATH)
   QUICKSAVE_FILE = File.expand_path("quicksave.sgs", SAVE_FOLDER)
+  AUTOSAVE_FILE = File.expand_path("autosave.sgs", SAVE_FOLDER)
 
   BACKGROUND_COLOR = Color.rgba(35, 20, 20, 255)
   
@@ -124,6 +125,7 @@ class World < Fidgit::GuiState
   def end_turn
     @mouse_selection.select nil
     @map.end_turn
+    save_game AUTOSAVE_FILE
   end
 
   def create_gui
@@ -196,10 +198,6 @@ class World < Fidgit::GuiState
     # Pretty generation is twice as slow as regular to_json.
     json = JSON.pretty_generate(data)
 
-    log.debug { "Generated save game data in #{"%.3f" % (Time.now - t)} s" }
-
-    t = Time.now
-
     FileUtils.mkdir_p File.dirname(QUICKSAVE_FILE)
 
     Zlib::GzipWriter.open(file) do |gz|
@@ -208,9 +206,7 @@ class World < Fidgit::GuiState
 
     File.open("#{file}.txt", "w") {|f| f.write json } # DEBUG ONLY!
 
-    log.debug { "Saved game data in #{"%.3f" % (Time.now - t)} s" }
-
-    log.info { "Saved game as #{file} [#{File.size(file)} bytes]" }
+    log.info { "Saved game as #{file} [#{File.size(file)} bytes] in #{"%.3f" % (Time.now - t) }s" }
   end
 
   def load_game(file)
