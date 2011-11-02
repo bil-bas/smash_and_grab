@@ -1,8 +1,8 @@
 class MouseSelection < GameObject
   attr_reader :selected_tile, :hover_tile
 
-  MOVE_COLOR = Color.rgba(0, 255, 0, 75)
-  MELEE_COLOR = Color.rgba(255, 0, 0, 75)
+  MOVE_COLOR = Color.rgba(0, 255, 0, 90)
+  MELEE_COLOR = Color.rgba(255, 0, 0, 120)
   NO_MOVE_COLOR = Color.rgba(255, 0, 0, 25)
   
   def initialize(map, options = {})

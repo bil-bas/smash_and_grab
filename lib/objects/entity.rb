@@ -154,12 +154,14 @@ class Entity < StaticObject
       open_paths.delete current_tile
       closed_tiles << current_tile
 
+      next if path.is_a? MeleePath
+
       # Check adjacent tiles.
       exits = current_tile.exits(self).reject {|wall| closed_tiles.include? wall.destination(current_tile, self) }
       exits.each do |wall|
         testing_tile = wall.destination(current_tile, self)
 
-        new_path = if entity = testing_tile.objects.last and enemy?(entity)
+        new_path = if entity = testing_tile.entity and enemy?(entity)
           MeleePath.new(path, testing_tile, destination_tile)
         elsif testing_tile.passable?(self)
           MovePath.new(path, testing_tile, destination_tile, wall.movement_cost(self))
