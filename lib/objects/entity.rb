@@ -32,9 +32,8 @@ class Entity < StaticObject
     def attacker; @previous_path.current; end
     def defender; @current; end
     def requires_movement?; previous_path.is_a? MovePath; end
-
     def initialize(previous_path, current, destination)
-      super(previous_path, current, destination, MELEE_COST)
+      super(previous_path, current, destination, 0)
     end
   end
 
@@ -55,11 +54,16 @@ class Entity < StaticObject
   DATA_IMAGE_INDEX = 'image_index'
   DATA_TILE = 'tile'
   DATA_MOVEMENT_POINTS = 'movement_points'
+  DATA_ACTION_POINTS = 'action_points'
   DATA_FACING = 'facing'
-  MOVEMENT_POINTS_PER_TURN = 5
+  MOVEMENT_POINTS_PER_TURN = 4
+  ACTION_POINTS_PER_TURN = 4
   MELEE_COST = 2
 
-  attr_reader :faction, :movement_points
+  attr_reader :faction, :movement_points, :action_points
+
+  alias_method :mp, :movement_points
+  alias_method :ap, :action_points
 
   def to_s; "<#{self.class.name} [#{tile.grid_x}, #{tile.grid_y}]>"; end
 
@@ -84,6 +88,7 @@ class Entity < StaticObject
     @faction = @image.hash
 
     @movement_points = data[DATA_MOVEMENT_POINTS] || MOVEMENT_POINTS_PER_TURN
+    @action_points = data[DATA_ACTION_POINTS] || ACTION_POINTS_PER_TURN
 
     @map << self
   end
@@ -91,11 +96,12 @@ class Entity < StaticObject
   def melee(other)
     # TODO: Resolve melee!
     p [:melee, self, other]
-    @movement_points -= MELEE_COST
+    @action_points -= MELEE_COST
   end
 
   def turn_reset
     @movement_points = MOVEMENT_POINTS_PER_TURN
+    @action_points = ACTION_POINTS_PER_TURN
   end
 
   def friend?(character)
@@ -128,7 +134,7 @@ class Entity < StaticObject
         if path and @movement_points >= path.move_distance
           # Can move onto this square - calculate further paths if we can move through the square.
           tiles << tile
-          if path.is_a?(MovePath) and @movement_points > path.move_distance
+          if path.is_a?(MovePath) and mp > path.move_distance or ap > 0
             potential_moves(starting_tile: tile, tiles: tiles)
           end
         end
@@ -161,12 +167,16 @@ class Entity < StaticObject
       exits.each do |wall|
         testing_tile = wall.destination(current_tile, self)
 
-        new_path = if entity = testing_tile.entity and enemy?(entity)
-          MeleePath.new(path, testing_tile, destination_tile)
+        new_path = nil
+
+        if entity = testing_tile.entity and enemy?(entity)
+          if ap >= MELEE_COST
+            new_path = MeleePath.new(path, testing_tile, destination_tile)
+          else
+            next
+          end
         elsif testing_tile.passable?(self)
-          MovePath.new(path, testing_tile, destination_tile, wall.movement_cost(self))
-        else
-          nil
+          new_path = MovePath.new(path, testing_tile, destination_tile, wall.movement_cost(self))
         end
 
         return new_path if new_path.nil? or testing_tile == destination_tile
@@ -222,6 +232,7 @@ class Entity < StaticObject
         DATA_IMAGE_INDEX => @image_index,
         DATA_TILE => [tile.grid_x, tile.grid_y],
         DATA_MOVEMENT_POINTS => @movement_points,
+        DATA_ACTION_POINTS => @action_points,
         DATA_FACING => factor_x > 0 ? :right : :left,
     }.to_json(*a)
   end

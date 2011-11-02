@@ -13,8 +13,8 @@ class GameAction < Fidgit::History::Action
           @attacker, @defender = data.attacker, data.defender
           @time = Time.now
         when Hash
-          @attacker = @map.tile_at_grid(data[DATA_ATTACKER])
-          @defender = @map.tile_at_grid(data[DATA_DEFENDER])
+          @attacker = @map.tile_at_grid(*data[DATA_ATTACKER])
+          @defender = @map.tile_at_grid(*data[DATA_DEFENDER])
           @time = data[DATA_TIME]
         else
           raise data.to_s
