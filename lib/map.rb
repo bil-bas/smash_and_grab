@@ -1,4 +1,5 @@
 require_relative 'action_history'
+require_relative 'factions/faction'
 
 class Map
   include Log
@@ -38,6 +39,7 @@ class Map
   DATA_ACTIONS = 'actions'
 
   attr_reader :grid_width, :grid_height, :actions, :entities
+  attr_reader :goodies, :baddies, :bystanders
     
   def to_rect; Rect.new(0, 0, @grid_width * Tile::WIDTH, @grid_height * Tile::HEIGHT); end
 
@@ -75,6 +77,10 @@ class Map
     data[DATA_WALLS].each do |wall_data|
       Wall.const_get(wall_data[Wall::DATA_TYPE]).new self, wall_data
     end
+
+    @goodies = Faction::Goodies.new
+    @baddies = Faction::Baddies.new
+    @bystanders = Faction::Bystanders.new
 
     data[DATA_ENTITIES].each do |entity_data|
       Entity.const_get(entity_data[Entity::DATA_TYPE]).new self, entity_data

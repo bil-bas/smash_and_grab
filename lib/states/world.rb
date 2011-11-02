@@ -133,7 +133,7 @@ class World < Fidgit::GuiState
           vertical padding: 1, spacing: 2, background_color: Color::BLACK, do
             8.times do |i|
               horizontal background_color: Color::BLUE, padding: 0 do
-                image_frame @map.entities[i].image, factor: 0.25, padding: 0, background_color: Color::GRAY
+                image_frame @map.baddies[i].image, factor: 0.25, padding: 0, background_color: Color::GRAY
                 vertical padding: 0, spacing: 0 do
                   label "##{i + 1}", font_size: 4.5
                   label "bar1", font_height: 3.5
@@ -318,7 +318,8 @@ class World < Fidgit::GuiState
 
     @font.draw @fps_text, 200, 0, ZOrder::GUI
 
-    status_text = @mouse_selection.selected ? "#{@mouse_selection.selected.grid_position} #{@mouse_selection.selected.health} HP / #{@mouse_selection.selected.mp} MP / #{@mouse_selection.selected.ap} AP" : "???"
+    active = @mouse_selection.selected
+    status_text = active ? "#{active.faction} #{active.grid_position} #{active.health} HP / #{active.mp} MP / #{active.ap} AP" : "???"
     @font.draw status_text, 200, 475, ZOrder::GUI
 
     # Draw the gui in large.

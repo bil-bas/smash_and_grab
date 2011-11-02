@@ -67,6 +67,8 @@ class Entity < StaticObject
   MELEE_DAMAGE = 5
   INITIAL_HEALTH = 10
 
+
+  def_delegator :@faction, :minimap_color
   attr_reader :faction, :movement_points, :action_points, :health
 
   alias_method :mp, :movement_points
@@ -88,13 +90,22 @@ class Entity < StaticObject
 
     super(map.tile_at_grid(*data[DATA_TILE]), options)
 
-    # TODO: Obviously, this is dumb way to do factions.
-    # Get a hash of the image, so we can compare it.
-    @faction = @image.hash
-
     @movement_points = data[DATA_MOVEMENT_POINTS] || MOVEMENT_POINTS_PER_TURN
     @action_points = data[DATA_ACTION_POINTS] || ACTION_POINTS_PER_TURN
     @health = data[DATA_HEALTH] || INITIAL_HEALTH
+
+    @faction = case @image_index
+                 when 0..6, 11, 12, 13, 14, 16, 17, 18, 37, 40, 41, 42, 43
+                   map.goodies
+                 when 15, 19, 20, 23..30, 31, 32, 33, 34, 35, 36, 39
+                   map.baddies
+                 when 7, 8, 9, 10, 21, 22, 38
+                   map.bystanders
+                 else
+                   raise @image_index
+               end
+
+    @faction << self
   end
 
   def health=(value)
@@ -114,17 +125,18 @@ class Entity < StaticObject
     @action_points = ACTION_POINTS_PER_TURN
   end
 
-  def friend?(character)
-    # TODO: Make this faction-based or something.
-    @faction == character.faction
-  end
-
-  def enemy?(character); not friend?(character); end
+  def friend?(character); @faction.friend? character.faction; end
+  def enemy?(character); @faction.enemy? character.faction; end
 
   def move?; @movement_points > 0; end
   def end_turn_on?(person); false; end
   def impassable?(character); enemy? character; end
   def passable?(character); friend? character; end
+
+  def destroy
+    @faction.remove self
+    super
+  end
 
   def potential_moves(options = {})
     options = {
@@ -229,11 +241,6 @@ class Entity < StaticObject
     @tile = destination
 
     parent.mouse_selection.select self
-  end
-
-  def minimap_color
-    # TODO: Friend blue, enemy red.
-    :red
   end
 
   def to_json(*a)

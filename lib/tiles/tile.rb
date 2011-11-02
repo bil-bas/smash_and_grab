@@ -13,7 +13,7 @@ class Tile < GameObject
   class Lava < Tile
     def cost; Float::INFINITY; end
     def spritesheet_pos; [3, 0]; end
-    def minimap_color; Color.rgb(255, 200, 0); end
+    def minimap_color; Color.rgb(200, 150, 0); end
   end
   
   WIDTH, HEIGHT = 32, 16
