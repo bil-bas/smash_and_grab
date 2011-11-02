@@ -1,11 +1,15 @@
-class WorldObject < GameObject 
+class WorldObject < GameObject
+  extend Forwardable
+
+  def_delegators :@tile, :map, :grid_position, :grid_x, :grid_y
+
+  attr_reader :tile
+
   attr_accessor :z
 
   OUTLINE_SCALE = Image::THIN_OUTLINE_SCALE
 
-  def grid_position; [@grid_x, @grid_y]; end
-
-  def initialize(options = {})    
+  def initialize(tile, options = {})
     options = {
         rotation_center: :bottom_center,
         z: 0,
@@ -14,10 +18,12 @@ class WorldObject < GameObject
     create_shadow(options[:position]) 
   
     @z = options[:z]
+    @tile = tile
 
     super(options)
 
-    #@image = @image.thin_outlined if @image
+    @tile.map << self
+    @tile << self
   end
 
   def create_shadow(position)
@@ -36,5 +42,12 @@ class WorldObject < GameObject
     @@shadow.draw_rot x, y, y - z, 0, 0.5, 0.5, 1, 0.5
 
     @image.draw_rot x, y + 2.5, y - z, 0, 0.5, 1, OUTLINE_SCALE * factor_x, OUTLINE_SCALE
+  end
+
+  def destroy
+    tile.remove self
+    map.remove self
+
+    super
   end
 end

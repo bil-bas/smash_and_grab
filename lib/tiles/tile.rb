@@ -31,11 +31,10 @@ class Tile < GameObject
       [[-2,  2], :right,  2],
   ]
 
-  attr_reader :objects, :grid_x, :grid_y, :cost
+  attr_reader :objects, :grid_x, :grid_y, :cost, :map
 
-  def map; parent.map; end
   def empty?; @objects.empty?; end
-  def to_s; "<#{self.class.name} [#{grid_x}, #{grid_y}]>"; end
+  def to_s; "<#{self.class.name} #{grid_position}>"; end
   def grid_position; [@grid_x, @grid_y]; end
 
   # Blank white tile, useful for colourising tiles.
@@ -79,7 +78,7 @@ class Tile < GameObject
     walls.select {|w| w.allows_movement?(person) and w.destination(self, person).passable?(person) }
   end
 
-  def add_object(object)
+  def <<(object)
     raise "can't re-add object" if @objects.include? object
 
     @objects << object
@@ -90,7 +89,7 @@ class Tile < GameObject
     object
   end
 
-  def remove_object(object)
+  def remove(object)
     raise "can't remove object" unless @objects.include? object
 
     @objects.delete object

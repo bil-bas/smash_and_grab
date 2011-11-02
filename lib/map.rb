@@ -123,12 +123,25 @@ class Map
       when Entity
         @entities << object
       when Wall::None
-        # Do nothing. We don't need to draw them anyway.
+        return # Do nothing. We don't need to draw them anyway.
       when Wall
         @walls << object
     end
 
     @objects << object
+  end
+
+  def remove(object)
+    @objects.delete object
+
+    case object
+      when Entity
+        @entities.delete object
+      when Wall::None
+        raise "Can't remove a Wall::None, since we don't care about them"
+      when Wall
+        @walls.delete object
+    end
   end
 
   def end_turn

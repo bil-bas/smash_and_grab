@@ -59,14 +59,15 @@ class Entity < StaticObject
   DATA_TILE = 'tile'
   DATA_MOVEMENT_POINTS = 'movement_points'
   DATA_ACTION_POINTS = 'action_points'
+  DATA_HEALTH = 'health'
   DATA_FACING = 'facing'
   MOVEMENT_POINTS_PER_TURN = 4
   ACTION_POINTS_PER_TURN = 4
   MELEE_COST = 2
+  MELEE_DAMAGE = 5
+  INITIAL_HEALTH = 10
 
-  def_delegators :@tile, :grid_x, :grid_y, :grid_position
-
-  attr_reader :faction, :movement_points, :action_points
+  attr_reader :faction, :movement_points, :action_points, :health
 
   alias_method :mp, :movement_points
   alias_method :ap, :action_points
@@ -74,8 +75,6 @@ class Entity < StaticObject
   def to_s; "<#{self.class.name} #{grid_position}>"; end
 
   def initialize(map, data)
-    @map = map
-
     unless defined? @@sprites
       @@sprites = SpriteSheet.new("characters.png", 64 + 2, 64 + 2)
     end
@@ -87,7 +86,7 @@ class Entity < StaticObject
         factor_x: data[DATA_FACING] == 'right' ? 1 : -1,
     }
 
-    super(@map.tile_at_grid(*data[DATA_TILE]), options)
+    super(map.tile_at_grid(*data[DATA_TILE]), options)
 
     # TODO: Obviously, this is dumb way to do factions.
     # Get a hash of the image, so we can compare it.
@@ -95,13 +94,18 @@ class Entity < StaticObject
 
     @movement_points = data[DATA_MOVEMENT_POINTS] || MOVEMENT_POINTS_PER_TURN
     @action_points = data[DATA_ACTION_POINTS] || ACTION_POINTS_PER_TURN
+    @health = data[DATA_HEALTH] || INITIAL_HEALTH
+  end
 
-    @map << self
+  def health=(value)
+    @health = [value, 0].max
+    if @health == 0
+      destroy
+    end
   end
 
   def melee(other)
-    # TODO: Resolve melee!
-    p [:melee, self, other]
+    other.health -= MELEE_DAMAGE
     @action_points -= MELEE_COST
   end
 
@@ -217,8 +221,8 @@ class Entity < StaticObject
       self.factor_x = change_in_x > 0 ? 1 : -1
     end
 
-    @tile.remove_object self
-    destination.add_object self
+    @tile.remove self
+    destination << self
 
     [@tile, destination].each {|t| parent.minimap.update_tile t }
 
@@ -237,6 +241,7 @@ class Entity < StaticObject
         DATA_TYPE => Inflector.demodulize(self.class.name),
         DATA_IMAGE_INDEX => @image_index,
         DATA_TILE => grid_position,
+        DATA_HEALTH => @health,
         DATA_MOVEMENT_POINTS => @movement_points,
         DATA_ACTION_POINTS => @action_points,
         DATA_FACING => factor_x > 0 ? :right : :left,

@@ -318,7 +318,7 @@ class World < Fidgit::GuiState
 
     @font.draw @fps_text, 200, 0, ZOrder::GUI
 
-    status_text = @mouse_selection.selected ? "#{@mouse_selection.selected.grid_position} / #{@mouse_selection.selected.mp} MP / #{@mouse_selection.selected.ap} AP" : "???"
+    status_text = @mouse_selection.selected ? "#{@mouse_selection.selected.grid_position} #{@mouse_selection.selected.health} HP / #{@mouse_selection.selected.mp} MP / #{@mouse_selection.selected.ap} AP" : "???"
     @font.draw status_text, 200, 475, ZOrder::GUI
 
     # Draw the gui in large.
