@@ -122,8 +122,8 @@ class World < Fidgit::GuiState
   end
 
   def end_turn
+    @mouse_selection.select nil
     @map.end_turn
-    @mouse_selection.turn_reset
   end
 
   def create_gui
@@ -321,6 +321,8 @@ class World < Fidgit::GuiState
     active = @mouse_selection.selected
     status_text = active ? "#{active.faction} #{active.grid_position} #{active.health} HP / #{active.mp} MP / #{active.ap} AP" : "???"
     @font.draw status_text, 200, 475, ZOrder::GUI
+
+    @font.draw "Turn: #{@map.turn + 1} Player: #{@map.active_faction}", 200, 35, ZOrder::GUI
 
     # Draw the gui in large.
     $window.scale 4 do

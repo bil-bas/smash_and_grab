@@ -68,7 +68,8 @@ class Entity < StaticObject
   INITIAL_HEALTH = 10
 
 
-  def_delegator :@faction, :minimap_color
+  def_delegators :@faction, :minimap_color, :active?, :inactive?
+
   attr_reader :faction, :movement_points, :action_points, :health
 
   alias_method :mp, :movement_points
@@ -120,9 +121,13 @@ class Entity < StaticObject
     @action_points -= MELEE_COST
   end
 
-  def turn_reset
+  def start_turn
     @movement_points = MOVEMENT_POINTS_PER_TURN
     @action_points = ACTION_POINTS_PER_TURN
+  end
+
+  def end_turn
+    # Do something?
   end
 
   def friend?(character); @faction.friend? character.faction; end

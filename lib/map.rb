@@ -39,7 +39,7 @@ class Map
   DATA_ACTIONS = 'actions'
 
   attr_reader :grid_width, :grid_height, :actions, :entities
-  attr_reader :goodies, :baddies, :bystanders
+  attr_reader :goodies, :baddies, :bystanders, :active_faction, :turn
     
   def to_rect; Rect.new(0, 0, @grid_width * Tile::WIDTH, @grid_height * Tile::HEIGHT); end
 
@@ -78,9 +78,11 @@ class Map
       Wall.const_get(wall_data[Wall::DATA_TYPE]).new self, wall_data
     end
 
-    @goodies = Faction::Goodies.new
-    @baddies = Faction::Baddies.new
-    @bystanders = Faction::Bystanders.new
+    @goodies = Faction::Goodies.new self
+    @baddies = Faction::Baddies.new self
+    @bystanders = Faction::Bystanders.new self
+
+    @factions = [@baddies, @goodies, @bystanders] # And order of play.
 
     data[DATA_ENTITIES].each do |entity_data|
       Entity.const_get(entity_data[Entity::DATA_TYPE]).new self, entity_data
@@ -88,11 +90,47 @@ class Map
 
     @actions = ActionHistory.new self, data[DATA_ACTIONS]
 
+    @turn, active_faction_index  = @actions.completed_turns.divmod @factions.size
+    @active_faction = @factions[active_faction_index]
+
     @start_time = data[DATA_GAME_STARTED_AT] || Time.now
 
     log.debug { "Map created in #{"%.3f" % (Time.now - t)} s" }
 
     record
+
+    if @actions.empty?
+      start_game
+    else
+      restart_game
+    end
+  end
+
+  def start_game
+    @active_faction.start_game
+  end
+
+  def restart_game
+    @active_faction.restart_game
+  end
+
+  def start_turn
+    @active_faction.start_turn
+  end
+
+  def end_turn
+    current_faction = @active_faction
+    if @active_faction == @factions.last
+      @turn += 1
+      @active_faction = @factions.first
+    else
+      @active_faction = @factions[@factions.index(@active_faction) + 1]
+    end
+
+    @actions.do :end_turn
+    current_faction.end_turn
+
+    start_turn # For the next faction.
   end
 
   def record
@@ -148,10 +186,6 @@ class Map
       when Wall
         @walls.delete object
     end
-  end
-
-  def end_turn
-    @entities.each(&:turn_reset)
   end
 
   def draw_objects

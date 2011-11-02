@@ -120,7 +120,7 @@ class MouseSelection < GameObject
         @path_record.draw -offset_x, -offset_y, ZOrder::TILE_SELECTION, zoom, zoom
       end
     elsif @hover_tile
-      color = @hover_tile.empty? ? Color::BLUE : Color::CYAN
+      color = (@hover_tile.empty? or @hover_tile.entity.inactive?) ? Color::BLUE : Color::CYAN
       @mouse_hover_image.draw_rot @hover_tile.x, @hover_tile.y, ZOrder::TILE_SELECTION, 0, 0.5, 0.5, 1, 1, color
     end
   end
@@ -142,7 +142,7 @@ class MouseSelection < GameObject
         calculate_path
         calculate_potential_moves
       end
-    elsif @hover_tile and @hover_tile.objects.last.is_a? Entity
+    elsif @hover_tile and @hover_tile.entity.is_a? Entity and @hover_tile.entity.active?
       # Select a character to move.
       select(@hover_tile.objects.last)
     end
@@ -168,17 +168,6 @@ class MouseSelection < GameObject
     # Deselect the currently selected character.
     if @selected_tile
       select nil
-    end
-  end
-
-  def turn_reset
-    if @selected_tile
-      current_tile = @selected_tile
-      select nil
-      @selected_tile = current_tile
-      @map.actions.do :end_turn
-      calculate_potential_moves
-      calculate_path
     end
   end
 end

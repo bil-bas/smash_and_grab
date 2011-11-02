@@ -106,7 +106,13 @@ end
 
 
 class ActionHistory < Fidgit::History
+  extend Forwardable
+
   DATA_ACTIONS = 'actions'
+
+  def_delegators :@actions, :empty?
+
+  def completed_turns; @actions.count {|a| a.is_a? GameAction::EndTurn }; end
 
   def initialize(map, data)
     @map = map
