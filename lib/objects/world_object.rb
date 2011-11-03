@@ -39,9 +39,9 @@ class WorldObject < GameObject
   end
  
   def draw
-    @@shadow.draw_rot x, y, ZOrder::SHADOW, 0, 0.5, 0.5, 1, 0.5
+    @@shadow.draw_rot @x, @y, ZOrder::SHADOW, 0, 0.5, 0.5, 1, 0.5
 
-    @image.draw_rot x, y + 2.5, y - z, 0, 0.5, 1, OUTLINE_SCALE * factor_x, OUTLINE_SCALE
+    @image.draw_rot @x, @y + 2.5, @y, 0, 0.5, 1, OUTLINE_SCALE * @factor_x, OUTLINE_SCALE
   end
 
   def destroy

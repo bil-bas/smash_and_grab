@@ -13,7 +13,7 @@ class Wall < GameObject
   def allows_movement?; movement_cost < Float::INFINITY; end
 
   def zorder; super + 0.01; end
-  def to_s; "<#{self.class.name} #{@tiles[0].grid_position} <=> #{@tiles[1].grid_position}]>"; end
+  def to_s; "<#{self.class.name}##{@type} #{@tiles[0].grid_position} <=> #{@tiles[1].grid_position}]>"; end
   def occludes?; @occlusions > 0; end
 
   def blocks_sight?; @blocks_sight; end
@@ -43,6 +43,11 @@ class Wall < GameObject
     @objects = []
     @occlusions = 0 # Number of objects occluded by the wall.
 
+    @destinations = {
+        @tiles.first => @tiles.last,
+        @tiles.last => @tiles.first,
+    }
+
     super(options)
 
     spritesheet_positions = @config['spritesheet_positions']
@@ -58,6 +63,8 @@ class Wall < GameObject
       @x -= 2
     end
 
+    @color = OPAQUE_COLOR
+
     map << self if @image
   end
 
@@ -66,18 +73,17 @@ class Wall < GameObject
 
     raise if @occlusions < 0
 
+    @color = occludes? ? SEMI_TRANSPARENT_COLOR : OPAQUE_COLOR
+
     @occlusions
   end
 
   def destination(from)
-    blocks_movement? ? nil : (@tiles - [from]).first
+    blocks_movement? ? nil : @destinations[from]
   end
 
   def draw
-    if @image
-      color = occludes? ? SEMI_TRANSPARENT_COLOR : OPAQUE_COLOR
-      @image.draw_rot @x, @y, @zorder, 0, 0.5, 1, 1, 1, color
-    end
+    @image.draw_rot @x, @y, @zorder, 0, 0.5, 1, 1, 1, @color
   end
 
   def to_json(*a)

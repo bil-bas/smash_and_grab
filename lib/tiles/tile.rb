@@ -17,7 +17,7 @@ class Tile < GameObject
   attr_reader :objects, :grid_x, :grid_y, :movement_cost, :map, :minimap_color
 
   def empty?; @objects.empty?; end
-  def to_s; "<#{self.class.name} #{grid_position}>"; end
+  def to_s; "<#{self.class.name}##{@type} #{grid_position}>"; end
   def grid_position; [@grid_x, @grid_y]; end
 
   # Blank white tile, useful for colourising tiles.
