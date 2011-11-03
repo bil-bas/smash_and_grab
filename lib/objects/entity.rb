@@ -23,7 +23,7 @@ class Entity < StaticObject
   def to_s; "<#{self.class.name}##{@type} #{grid_position}>"; end
   def name; @type.split("_").map(&:capitalize).join(" "); end
 
-  def self.config; @@config ||= YAML.load_file(File.expand_path("config/entities.yml", EXTRACT_PATH)); end
+  def self.config; @@config ||= YAML.load_file(File.expand_path("config/map/entities.yml", EXTRACT_PATH)); end
   def self.types; config.keys; end
 
   def initialize(map, data)

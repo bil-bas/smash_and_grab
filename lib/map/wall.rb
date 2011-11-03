@@ -19,7 +19,7 @@ class Wall < GameObject
   def blocks_sight?; @blocks_sight; end
 
   def initialize(map, data)
-    @@walls_config ||= YAML.load_file(File.expand_path("config/walls.yml", EXTRACT_PATH))
+    @@walls_config ||= YAML.load_file(File.expand_path("config/map/walls.yml", EXTRACT_PATH))
     @@sprites ||= SpriteSheet.new("walls.png", SPRITE_WIDTH, SPRITE_HEIGHT, 8)
 
     @type = data[DATA_TYPE]

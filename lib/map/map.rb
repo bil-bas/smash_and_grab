@@ -1,5 +1,5 @@
 require_relative 'action_history'
-require_relative 'factions/faction'
+require_relative 'faction'
 
 class Map
   include Log

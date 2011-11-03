@@ -26,7 +26,7 @@ class Tile < GameObject
   def initialize(type, map, grid_x, grid_y)
     @type, @map, @grid_x, @grid_y = type, map, grid_x, grid_y
 
-    @@tiles_config ||= YAML.load_file(File.expand_path("config/tiles.yml", EXTRACT_PATH))
+    @@tiles_config ||= YAML.load_file(File.expand_path("config/map/tiles.yml", EXTRACT_PATH))
     config = @@tiles_config[type]
 
     @minimap_color = config['minimap_color']
