@@ -1,21 +1,4 @@
 class Tile < GameObject
-  class Grass < Tile
-    def cost; 2; end
-    def spritesheet_pos; [1, 0]; end
-    def minimap_color; Color.rgb(0, 200, 0); end
-  end
-  
-  class Concrete < Tile
-    def spritesheet_pos; [2, 0]; end
-    def minimap_color; Color.rgb(200, 200, 200); end
-  end
-
-  class Lava < Tile
-    def cost; Float::INFINITY; end
-    def spritesheet_pos; [3, 0]; end
-    def minimap_color; Color.rgb(200, 150, 0); end
-  end
-  
   WIDTH, HEIGHT = 32, 16
 
   # x, y, direction, min height to cause occlusion.
@@ -31,7 +14,7 @@ class Tile < GameObject
       [[-2,  2], :right,  2],
   ]
 
-  attr_reader :objects, :grid_x, :grid_y, :cost, :map
+  attr_reader :objects, :grid_x, :grid_y, :movement_cost, :map, :minimap_color
 
   def empty?; @objects.empty?; end
   def to_s; "<#{self.class.name} #{grid_position}>"; end
@@ -40,30 +23,28 @@ class Tile < GameObject
   # Blank white tile, useful for colourising tiles.
   def self.blank; @@sprites[0]; end
   
-  def initialize(map, grid_x, grid_y, options = {})
-    @map, @grid_x, @grid_y = map, grid_x, grid_y
+  def initialize(type, map, grid_x, grid_y)
+    @type, @map, @grid_x, @grid_y = type, map, grid_x, grid_y
 
-    unless defined? @@sprites
-      @@sprites = SpriteSheet.new("floor_tiles.png", WIDTH, HEIGHT, 8)
-    end
+    @@tiles_config ||= YAML.load_file(File.expand_path("config/tiles.yml", EXTRACT_PATH))
+    config = @@tiles_config[type]
 
-    options = {
-        image: @@sprites[*spritesheet_pos],
-        x: (@grid_y + @grid_x) * WIDTH / 2,
-        y: (@grid_y - @grid_x) * HEIGHT / 2,
-        rotation_center: :center_center,
-        zorder: options[:y],
-    }.merge! options
+    @minimap_color = config['minimap_color']
+    @movement_cost = config['movement_cost']
 
-    super(options)
+    @@sprites ||= SpriteSheet.new("floor_tiles.png", WIDTH, HEIGHT, 8)
 
-    @cost = 1
+    super(image: @@sprites[*config['spritesheet_position']],
+          x: (@grid_y + @grid_x) * WIDTH / 2, y: (@grid_y - @grid_x) * HEIGHT / 2)
+
+    self.zorder = @y
+
     @objects = []
     @walls = {}
   end
 
   def passable?(person)
-    cost < Float::INFINITY
+    movement_cost < Float::INFINITY
   end
 
   def end_turn_on?(person)
@@ -109,15 +90,6 @@ class Tile < GameObject
     end
   end
 
-  def minimap_color
-    # Todo: Passable to local player.
-    if empty?
-      Color.rgb(200, 200, 200)
-    else
-      Color.rgb(50, 50, 50)
-    end
-  end
-
   def add_wall(direction, wall)
     raise "Bad direction #{direction}" unless [:left, :right, :up, :down].include? direction
     @walls[direction] = wall
@@ -136,6 +108,6 @@ class Tile < GameObject
   end
 
   def to_json(*a)
-    Inflector.demodulize(self.class.name).to_json(*a)
+    @type.to_json(*a)
   end
 end

@@ -25,9 +25,9 @@ class World < Fidgit::GuiState
 
     # Create a map.
     possible_tiles = [
-        *(['Concrete'] * 20),
-        *(['Grass'] * 4),
-        *(['Lava'] * 1),
+        *(['concrete'] * 20),
+        *(['grass'] * 4),
+        *(['lava'] * 1),
     ]
 
     map_size = 50

@@ -74,7 +74,7 @@ end
 # A path consisting just of movement.
 class MovePath < Path
   def initialize(previous_path, last, extra_move_distance)
-    super(previous_path, last, last.cost + extra_move_distance)
+    super(previous_path, last, last.movement_cost + extra_move_distance)
   end
 end
 
