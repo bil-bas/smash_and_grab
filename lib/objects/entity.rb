@@ -106,7 +106,7 @@ class Entity < StaticObject
 
     starting_tile.exits(self).each do |wall|
 
-      tile = wall.destination(starting_tile, self)
+      tile = wall.destination(starting_tile)
       unless tiles.include? tile
         path = path_to(tile)
 
@@ -142,9 +142,9 @@ class Entity < StaticObject
       next if path.is_a? MeleePath
 
       # Check adjacent tiles.
-      exits = current_tile.exits(self).reject {|wall| closed_tiles.include? wall.destination(current_tile, self) }
+      exits = current_tile.exits(self).reject {|wall| closed_tiles.include? wall.destination(current_tile) }
       exits.each do |wall|
-        testing_tile = wall.destination(current_tile, self)
+        testing_tile = wall.destination(current_tile)
 
         new_path = nil
 
@@ -156,7 +156,7 @@ class Entity < StaticObject
             next
           end
         elsif testing_tile.passable?(self)
-          new_path = MovePath.new(path, testing_tile, wall.movement_cost(self))
+          new_path = MovePath.new(path, testing_tile, wall.movement_cost)
         end
 
         return InaccessiblePath.new(destination_tile) if new_path.nil?

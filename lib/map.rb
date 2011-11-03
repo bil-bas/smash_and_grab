@@ -64,18 +64,18 @@ class Map
       row.each_with_index do |tile, x|
         # Tile below.
         if y < @grid_height - 1
-          Wall::None.new self, Wall::DATA_TILES => [[x, y], [x, y + 1]]
+          Wall.new self, Wall::DATA_TYPE => 'none', Wall::DATA_TILES => [[x, y], [x, y + 1]]
         end
 
         # Tile to right.
         if x < @grid_width - 1
-          Wall::None.new self, Wall::DATA_TILES => [[x, y], [x + 1, y]]
+          Wall.new self, Wall::DATA_TYPE => 'none', Wall::DATA_TILES => [[x, y], [x + 1, y]]
         end
       end
     end
 
     data[DATA_WALLS].each do |wall_data|
-      Wall.const_get(wall_data[Wall::DATA_TYPE]).new self, wall_data
+      Wall.new self, wall_data
     end
 
     @goodies = Faction::Goodies.new self
@@ -166,8 +166,6 @@ class Map
     case object
       when Entity
         @entities << object
-      when Wall::None
-        return # Do nothing. We don't need to draw them anyway.
       when Wall
         @walls << object
     end
@@ -181,8 +179,6 @@ class Map
     case object
       when Entity
         @entities.delete object
-      when Wall::None
-        raise "Can't remove a Wall::None, since we don't care about them"
       when Wall
         @walls.delete object
     end

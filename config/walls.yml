@@ -1,0 +1,47 @@
+---
+
+none:
+  blocks_sight: false
+  minimap_color: [0, 0, 0, 0]
+  movement_cost: 0
+  tiles_high: 0
+
+high_concrete_wall:
+  blocks_sight: true
+  spritesheet_positions:
+   vertical: [2, 0]
+   horizontal: [1, 0]
+  minimap_color: [100, 100, 100, 255]
+  movement_cost: .Inf
+  thickness: 4
+  tiles_high: 2
+
+high_concrete_wall_with_window:
+  blocks_sight: true
+  spritesheet_positions:
+    vertical: [2, 1]
+    horizontal: [1, 1]
+  minimap_color: [150, 150, 150, 255]
+  movement_cost: .Inf
+  thickness: 4
+  tiles_high: 2
+
+low_brick_wall:
+  blocks_sight: false
+  spritesheet_positions:
+    vertical: [3, 0]
+    horizontal: [4, 0]
+  minimap_color: [150, 150, 150, 255]
+  movement_cost: 2
+  thickness: 2
+  tiles_high: 1
+
+low_fence:
+  blocks_sight: false
+  spritesheet_positions:
+    vertical: [3, 1]
+    horizontal: [4, 1]
+  minimap_color: [150, 150, 150, 255]
+  movement_cost: 2
+  thickness: 0
+  tiles_high: 1

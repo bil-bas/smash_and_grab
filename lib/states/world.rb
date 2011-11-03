@@ -37,48 +37,48 @@ class World < Fidgit::GuiState
     # Create a little house.
     wall_data = [
         # Back wall.
-        { "type" => "HighConcreteWall", "tiles" => [[1, 2], [1, 3]] },
-        { "type" => "HighConcreteWallWindow", "tiles" => [[2, 2], [2, 3]] },
-        { "type" => "HighConcreteWallWindow", "tiles" => [[3, 2], [3, 3]] },
-        { "type" => "HighConcreteWall", "tiles" => [[4, 2], [4, 3]] },
+        { "type" => "high_concrete_wall", "tiles" => [[1, 2], [1, 3]] },
+        { "type" => "high_concrete_wall_with_window", "tiles" => [[2, 2], [2, 3]] },
+        { "type" => "high_concrete_wall_with_window", "tiles" => [[3, 2], [3, 3]] },
+        { "type" => "high_concrete_wall", "tiles" => [[4, 2], [4, 3]] },
 
         # Left wall
-        { "type" => "HighConcreteWall", "tiles" => [[0, 3], [1, 3]] },
-        # { "type" => "HighConcreteWall", "tiles" => [[0, 4], [1, 4]] },
-        { "type" => "HighConcreteWall", "tiles" => [[0, 5], [1, 5]] },
-        { "type" => "HighConcreteWall", "tiles" => [[0, 6], [1, 6]] },
+        { "type" => "high_concrete_wall", "tiles" => [[0, 3], [1, 3]] },
+        # { "type" => "high_concrete_wall", "tiles" => [[0, 4], [1, 4]] },
+        { "type" => "high_concrete_wall", "tiles" => [[0, 5], [1, 5]] },
+        { "type" => "high_concrete_wall", "tiles" => [[0, 6], [1, 6]] },
 
         # Front wall.
-        { "type" => "HighConcreteWall", "tiles" => [[1, 6], [1, 7]] },
-        { "type" => "HighConcreteWallWindow", "tiles" => [[2, 6], [2, 7]] },
-        { "type" => "HighConcreteWallWindow", "tiles" => [[3, 6], [3, 7]] },
-        { "type" => "HighConcreteWall", "tiles" => [[4, 6], [4, 7]] },
+        { "type" => "high_concrete_wall", "tiles" => [[1, 6], [1, 7]] },
+        { "type" => "high_concrete_wall_with_window", "tiles" => [[2, 6], [2, 7]] },
+        { "type" => "high_concrete_wall_with_window", "tiles" => [[3, 6], [3, 7]] },
+        { "type" => "high_concrete_wall", "tiles" => [[4, 6], [4, 7]] },
 
         # Right wall
-        { "type" => "HighConcreteWall", "tiles" => [[4, 3], [5, 3]] },
-        { "type" => "HighConcreteWall", "tiles" => [[4, 4], [5, 4]] },
-        { "type" => "HighConcreteWall", "tiles" => [[4, 5], [5, 5]] },
-        { "type" => "HighConcreteWall", "tiles" => [[4, 6], [5, 6]] },
+        { "type" => "high_concrete_wall", "tiles" => [[4, 3], [5, 3]] },
+        { "type" => "high_concrete_wall", "tiles" => [[4, 4], [5, 4]] },
+        { "type" => "high_concrete_wall", "tiles" => [[4, 5], [5, 5]] },
+        { "type" => "high_concrete_wall", "tiles" => [[4, 6], [5, 6]] },
 
 
         # Garden
         # Back wall.
-        { "type" => "LowFence", "tiles" => [[5, 2], [5, 3]] },
-        { "type" => "LowFence", "tiles" => [[6, 2], [6, 3]] },
-        #{ "type" => "LowFence", "tiles" => [[7, 2], [7, 3]] },
-        { "type" => "LowFence", "tiles" => [[8, 2], [8, 3]] },
+        { "type" => "low_fence", "tiles" => [[5, 2], [5, 3]] },
+        { "type" => "low_fence", "tiles" => [[6, 2], [6, 3]] },
+        #{ "type" => "low_fence", "tiles" => [[7, 2], [7, 3]] },
+        { "type" => "low_fence", "tiles" => [[8, 2], [8, 3]] },
 
         # Front wall.
-        { "type" => "LowBrickWall", "tiles" => [[5, 6], [5, 7]] },
-        { "type" => "LowBrickWall", "tiles" => [[6, 6], [6, 7]] },
-        { "type" => "LowBrickWall", "tiles" => [[7, 6], [7, 7]] },
-        { "type" => "LowBrickWall", "tiles" => [[8, 6], [8, 7]] },
+        { "type" => "low_brick_wall", "tiles" => [[5, 6], [5, 7]] },
+        { "type" => "low_brick_wall", "tiles" => [[6, 6], [6, 7]] },
+        { "type" => "low_brick_wall", "tiles" => [[7, 6], [7, 7]] },
+        { "type" => "low_brick_wall", "tiles" => [[8, 6], [8, 7]] },
 
         # Right wall
-        { "type" => "LowFence", "tiles" => [[8, 3], [9, 3]] },
-        { "type" => "LowFence", "tiles" => [[8, 4], [9, 4]] },
-        { "type" => "LowBrickWall", "tiles" => [[8, 5], [9, 5]] },
-        { "type" => "LowBrickWall", "tiles" => [[8, 6], [9, 6]] },
+        { "type" => "low_fence", "tiles" => [[8, 3], [9, 3]] },
+        { "type" => "low_fence", "tiles" => [[8, 4], [9, 4]] },
+        { "type" => "low_brick_wall", "tiles" => [[8, 5], [9, 5]] },
+        { "type" => "low_brick_wall", "tiles" => [[8, 6], [9, 6]] },
     ]
 
     entity_data = Array.new(200) do
@@ -216,8 +216,6 @@ class World < Fidgit::GuiState
       gz.read
     end
 
-    log.debug { "Loaded game data in #{"%.3f" % (Time.now - t)} s" }
-
     data = JSON.parse(json)
 
     @map = Map.new data
@@ -227,7 +225,7 @@ class World < Fidgit::GuiState
     @minimap.map = @map
     @minimap.refresh
 
-    log.info { "Loaded game from #{file} [#{File.size(file)} bytes]" }
+    log.info { "Loaded game from #{file} [#{File.size(file)} bytes] in #{"%.3f" % (Time.now - t) }s" }
   end
 
   def zoom_by(factor)

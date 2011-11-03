@@ -74,8 +74,8 @@ class Tile < GameObject
 
   # List of squares that can be entered from this tile.
   def exits(person)
-    walls = @walls.values.delete_if {|w| w.blocks_movement?(person) }
-    walls.select {|w| w.allows_movement?(person) and w.destination(self, person).passable?(person) }
+    walls = @walls.values.delete_if {|w| w.blocks_movement? }
+    walls.select {|w| w.allows_movement? and w.destination(self).passable?(person) }
   end
 
   def <<(object)
@@ -129,7 +129,7 @@ class Tile < GameObject
 
   def direction_to(tile)
     @walls.each_pair do |direction, wall|
-      return direction if wall.destination(self, nil) == tile
+      return direction if wall.destination(self) == tile
     end
 
     return nil
