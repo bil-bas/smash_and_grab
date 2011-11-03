@@ -6,7 +6,10 @@ class Path
 
   attr_reader :cost, :move_distance, :previous_path, :destination_distance, :first, :last
 
+  def accessible?; true; end
   def tiles; @previous_path.tiles + [@last]; end
+  def self.images; @@images ||= SpriteSheet.new("path.png", 32, 16, 4); end
+  def images; self.class.images; end
 
   def initialize(previous_path, next_tile, extra_move_distance)
     @previous_path = previous_path
@@ -18,8 +21,6 @@ class Path
   end
 
   def prepare_for_drawing(tiles_within_range)
-    @@images ||= SpriteSheet.new("path.png", 32, 16, 4)
-
     path_tiles = tiles
 
     @record = $window.record do
@@ -60,7 +61,7 @@ class Path
           Color::BLACK
         end
 
-        @@images[sheet_x, sheet_y].draw_rot tile.x, tile.y, ZOrder::PATH, 0, 0.5, 0.5, 1, 1, color
+        images[sheet_x, sheet_y].draw_rot tile.x, tile.y, ZOrder::PATH, 0, 0.5, 0.5, 1, 1, color
       end
     end
   end
@@ -82,7 +83,7 @@ class MeleePath < Path
   COLOR_IN_RANGE = Color::WHITE
   COLOR_OUT_OF_RANGE = Color.rgb(100, 100, 100)
 
-  def attacker; self[-2]; end
+  def attacker; previous_path.last; end
   def defender; last; end
   def requires_movement?; previous_path.is_a? MovePath; end
   def initialize(previous_path, last)
@@ -98,20 +99,44 @@ class MeleePath < Path
     super(*args)
 
     if last.entity.is_a? Entity
-      @@images[3, 1].draw_rot last.x, last.y, ZOrder::PATH, 0, 0.5, 0.5, 1, 1, @draw_color
+      images[3, 1].draw_rot last.x, last.y, ZOrder::PATH, 0, 0.5, 0.5, 1, 1, @draw_color
     end
   end
 end
 
+# First path in chain, others will be MovePath or MeleePath
 class PathStart < Path
-  attr_reader :tiles
-
+  def tiles; [@last]; end
   def cost; 0; end
   def move_distance; 0; end
 
-  def initialize(tile, destination)
-    @last = @first = tile
-    @tiles = [tile]
-    @destination_distance = (tile.grid_x - destination.grid_x).abs + (tile.grid_y - destination.grid_y).abs
+  def initialize(origin, destination)
+    @last = @first = origin
+    @destination_distance = (origin.grid_x - destination.grid_x).abs + (origin.grid_y - destination.grid_y).abs
   end
+end
+
+# Path where the destination is unreachable.
+class InaccessiblePath < Path
+  def accessible?; false; end
+  def tiles; [@last]; end
+
+  def initialize(destination)
+    @last = destination
+  end
+
+  def draw(*args)
+    images[2, 1].draw_rot last.x, last.y, ZOrder::PATH, 0, 0.5, 0.5
+  end
+
+  def prepare_for_drawing(tiles_within_range); end
+end
+
+# Path going to the same location as it started.
+class NoPath < Path
+  def accessible?; false; end
+  def tiles; []; end
+  def initialize; end
+  def prepare_for_drawing(tiles_within_range); end
+  def draw(*args); end
 end

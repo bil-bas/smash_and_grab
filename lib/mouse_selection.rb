@@ -37,15 +37,11 @@ class MouseSelection < GameObject
   def calculate_path
     if @selected_tile
       modify_occlusions @path.tiles, -1 if @path
-      @path_record = nil
 
       if @hover_tile
         @path = @selected_tile.objects.last.path_to(@hover_tile)
-
-        if @path
-          @path.prepare_for_drawing(@potential_moves)
-          modify_occlusions @path.tiles, +1 if @path
-        end
+        @path.prepare_for_drawing(@potential_moves)
+        modify_occlusions @path.tiles, +1
       else
         @path = nil
       end

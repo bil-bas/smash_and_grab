@@ -110,7 +110,7 @@ class Entity < StaticObject
       unless tiles.include? tile
         path = path_to(tile)
 
-        if path and @movement_points >= path.move_distance
+        if path.accessible? and @movement_points >= path.move_distance
           # Can move onto this square - calculate further paths if we can move through the square.
           tiles << tile
           if path.is_a?(MovePath) and mp > path.move_distance or ap > 0
@@ -125,8 +125,8 @@ class Entity < StaticObject
 
   # A* path-finding.
   def path_to(destination_tile)
-    return nil unless destination_tile.passable? self
-    return nil if destination_tile == tile
+    return NoPath.new if destination_tile == tile
+    return InaccessiblePath.new(destination_tile) unless destination_tile.passable?(self)
 
     closed_tiles = Set.new # Tiles we've already dealt with.
     open_paths = { tile => PathStart.new(tile, destination_tile) } # Paths to check { tile => path_to_tile }.
@@ -148,7 +148,6 @@ class Entity < StaticObject
 
         new_path = nil
 
-
         if entity = testing_tile.entity and enemy?(entity)
           # Ensure that the current tile is somewhere we could launch an attack from and we could actually perform it.
           if (current_tile.empty? or current_tile == tile) and ap >= MELEE_COST
@@ -160,7 +159,8 @@ class Entity < StaticObject
           new_path = MovePath.new(path, testing_tile, wall.movement_cost(self))
         end
 
-        return new_path if new_path.nil? or testing_tile == destination_tile
+        return InaccessiblePath.new(destination_tile) if new_path.nil?
+        return new_path if testing_tile == destination_tile
 
         # If the path is shorter than one we've already calculated, then replace it. Otherwise just store it.
         if old_path = open_paths[testing_tile]
@@ -174,7 +174,7 @@ class Entity < StaticObject
       end
     end
 
-    nil # Failed to connect at all.
+    InaccessiblePath.new(destination_tile) # Failed to connect at all.
   end
 
   def move(tiles, movement_cost)
