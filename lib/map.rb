@@ -85,7 +85,7 @@ class Map
     @factions = [@baddies, @goodies, @bystanders] # And order of play.
 
     data[DATA_ENTITIES].each do |entity_data|
-      Entity.const_get(entity_data[Entity::DATA_TYPE]).new self, entity_data
+      Entity.new self, entity_data
     end
 
     @actions = ActionHistory.new self, data[DATA_ACTIONS]

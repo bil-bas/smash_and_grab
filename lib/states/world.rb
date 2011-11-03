@@ -83,8 +83,7 @@ class World < Fidgit::GuiState
 
     entity_data = Array.new(200) do
       {
-          "type" => "Character",
-          "image_index" => rand(44),
+          "type" => Entity.types.sample,
           "tile" => [rand(map_size), rand(map_size)],
           "facing" => ['left', 'right'].sample,
       }
@@ -313,7 +312,7 @@ class World < Fidgit::GuiState
     @font.draw @fps_text, 200, 0, ZOrder::GUI
 
     active = @mouse_selection.selected
-    status_text = active ? "#{active.faction} #{active.grid_position} #{active.health} HP / #{active.mp} MP / #{active.ap} AP" : "???"
+    status_text = active ? "'#{active.name}' #{active.grid_position} #{active.health} HP / #{active.mp} MP / #{active.ap} AP" : "???"
     @font.draw status_text, 200, 475, ZOrder::GUI
 
     @font.draw "Turn: #{@map.turn + 1} Player: #{@map.active_faction}", 200, 35, ZOrder::GUI

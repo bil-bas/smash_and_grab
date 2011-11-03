@@ -12,9 +12,9 @@ concrete:
 grass:
   spritesheet_position: [1, 0]
   minimap_color: [0, 200, 0]
-  movement_cost: 1
+  movement_cost: 2
 
 lava:
   spritesheet_position: [3, 0]
   minimap_color: [200, 150, 0]
-  movement_cost: 1
+  movement_cost: .Inf

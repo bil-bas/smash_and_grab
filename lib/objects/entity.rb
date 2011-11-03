@@ -2,23 +2,16 @@ require 'set'
 require_relative "../path"
 
 class Entity < StaticObject
-  class Character < Entity; end
-
   extend Forwardable
 
   DATA_TYPE = 'type'
-  DATA_IMAGE_INDEX = 'image_index'
   DATA_TILE = 'tile'
   DATA_MOVEMENT_POINTS = 'movement_points'
   DATA_ACTION_POINTS = 'action_points'
   DATA_HEALTH = 'health'
   DATA_FACING = 'facing'
-  MOVEMENT_POINTS_PER_TURN = 4
-  ACTION_POINTS_PER_TURN = 4
   MELEE_COST = 2
   MELEE_DAMAGE = 5
-  INITIAL_HEALTH = 10
-
 
   def_delegators :@faction, :minimap_color, :active?, :inactive?
 
@@ -27,36 +20,38 @@ class Entity < StaticObject
   alias_method :mp, :movement_points
   alias_method :ap, :action_points
 
-  def to_s; "<#{self.class.name} #{grid_position}>"; end
+  def to_s; "<#{self.class.name}##{@type} #{grid_position}>"; end
+  def name; @type.split("_").map(&:capitalize).join(" "); end
+
+  def self.config; @@config ||= YAML.load_file(File.expand_path("config/entities.yml", EXTRACT_PATH)); end
+  def self.types; config.keys; end
 
   def initialize(map, data)
-    unless defined? @@sprites
-      @@sprites = SpriteSheet.new("characters.png", 64 + 2, 64 + 2)
-    end
+    @type = data['type']
+    config = self.class.config[data['type']]
 
-    @image_index = data[DATA_IMAGE_INDEX]
+    @@sprites ||= SpriteSheet.new("characters.png", 64 + 2, 64 + 2, 8)
 
     options = {
-        image: @@sprites.each.to_a[@image_index],
+        image: @@sprites[*config['spritesheet_position']],
         factor_x: data[DATA_FACING] == 'right' ? 1 : -1,
     }
 
     super(map.tile_at_grid(*data[DATA_TILE]), options)
 
-    @movement_points = data[DATA_MOVEMENT_POINTS] || MOVEMENT_POINTS_PER_TURN
-    @action_points = data[DATA_ACTION_POINTS] || ACTION_POINTS_PER_TURN
-    @health = data[DATA_HEALTH] || INITIAL_HEALTH
+    raise @type unless @image
 
-    @faction = case @image_index
-                 when 0..6, 11, 12, 13, 14, 16, 17, 18, 37, 40, 41, 42, 43
-                   map.goodies
-                 when 15, 19, 20, 23..30, 31, 32, 33, 34, 35, 36, 39
-                   map.baddies
-                 when 7, 8, 9, 10, 21, 22, 38
-                   map.bystanders
-                 else
-                   raise @image_index
-               end
+
+    @max_movement_points = config['movement_points']
+    @movement_points = data[DATA_MOVEMENT_POINTS] || @max_movement_points
+
+    @max_action_points = config['action_points']
+    @action_points = data[DATA_ACTION_POINTS] || @max_action_points
+
+    @max_health = config['health']
+    @health = data[DATA_HEALTH] || @max_health
+
+    @faction = map.send(config['faction'])
 
     @faction << self
   end
@@ -74,8 +69,8 @@ class Entity < StaticObject
   end
 
   def start_turn
-    @movement_points = MOVEMENT_POINTS_PER_TURN
-    @action_points = ACTION_POINTS_PER_TURN
+    @movement_points = @max_movement_points
+    @action_points = @max_action_points
   end
 
   def end_turn
@@ -204,8 +199,7 @@ class Entity < StaticObject
 
   def to_json(*a)
     {
-        DATA_TYPE => Inflector.demodulize(self.class.name),
-        DATA_IMAGE_INDEX => @image_index,
+        DATA_TYPE => @type,
         DATA_TILE => grid_position,
         DATA_HEALTH => @health,
         DATA_MOVEMENT_POINTS => @movement_points,
