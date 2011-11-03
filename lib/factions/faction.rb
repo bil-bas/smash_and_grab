@@ -51,19 +51,18 @@ class Faction
   end
 
   # Restart from a loaded position.
-  def restart_game
+  def resume_game
     @active = true
   end
 
   def start_turn
-    log.info "#{self} turn started"
+    log.info "#{self} started turn #{@map.turn + 1}"
     @active = true
     @entities.each(&:start_turn)
   end
 
   def end_turn
-    log.info "#{self} turn ended"
-    @active = false
     @entities.each(&:end_turn)
+    @active = false
   end
 end

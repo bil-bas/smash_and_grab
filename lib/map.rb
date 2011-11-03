@@ -102,7 +102,7 @@ class Map
     if @actions.empty?
       start_game
     else
-      restart_game
+      resume_game
     end
   end
 
@@ -110,8 +110,8 @@ class Map
     @active_faction.start_game
   end
 
-  def restart_game
-    @active_faction.restart_game
+  def resume_game
+    @active_faction.resume_game
   end
 
   def start_turn

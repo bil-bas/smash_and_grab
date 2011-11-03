@@ -85,8 +85,8 @@ class Wall < GameObject
     super(options)
 
     if @tiles.last.grid_y > @tiles.first.grid_y
-      @tiles.last.add_wall :top, self
-      @tiles.first.add_wall :bottom, self
+      @tiles.last.add_wall :up, self
+      @tiles.first.add_wall :down, self
       @image = spritesheet_pos ? @@sprites[*spritesheet_pos[SPRITESHEET_VERTICAL]] : nil
       @x += 2
     else

@@ -21,13 +21,13 @@ class Tile < GameObject
   # x, y, direction, min height to cause occlusion.
   WALL_OCCLUSION_POSITIONS = [
       [[ 0,  0], :left,   1],
-      [[ 0,  0], :bottom, 1],
+      [[ 0,  0], :down,   1],
       [[-1,  1], :right,  1],
-      [[-1,  1], :top,    1],
+      [[-1,  1], :up,     1],
 
       [[-1,  1], :left,   2],
-      [[-1,  1], :bottom, 2],
-      [[-2,  2], :top,    2],
+      [[-1,  1], :down,   2],
+      [[-2,  2], :up,     2],
       [[-2,  2], :right,  2],
   ]
 
@@ -119,12 +119,20 @@ class Tile < GameObject
   end
 
   def add_wall(direction, wall)
-    raise "Bad direction #{direction}" unless [:left, :right, :top, :bottom].include? direction
+    raise "Bad direction #{direction}" unless [:left, :right, :up, :down].include? direction
     @walls[direction] = wall
   end
 
   def wall(direction)
     @walls[direction]
+  end
+
+  def direction_to(tile)
+    @walls.each_pair do |direction, wall|
+      return direction if wall.destination(self, nil) == tile
+    end
+
+    return nil
   end
 
   def to_json(*a)

@@ -1,56 +1,8 @@
 require 'set'
+require_relative "../path"
 
 class Entity < StaticObject
   class Character < Entity; end
-
-  # Abstract path class.
-  class Path
-    TILE_SIZE = 16
-    attr_reader :cost, :move_distance, :current, :first, :previous_path, :destination_distance
-
-    def tiles; @previous_path.tiles + [current]; end
-
-    def initialize(previous_path, current, destination, extra_move_distance)
-      @previous_path, @current = previous_path, current
-
-      @move_distance = @previous_path.move_distance + extra_move_distance
-      @first = @previous_path.first
-      @destination_distance = @previous_path.destination_distance
-      @cost = @move_distance + @destination_distance
-    end
-  end
-
-  # A path consisting just of movement.
-  class MovePath < Path
-    def initialize(previous_path, current, destination, extra_move_distance)
-      super(previous_path, current, destination, current.cost + extra_move_distance)
-    end
-  end
-
-  # A path consisting of melee, possibly with some movement beforehand.
-  class MeleePath < Path
-    def attacker; @previous_path.current; end
-    def defender; @current; end
-    def requires_movement?; previous_path.is_a? MovePath; end
-    def initialize(previous_path, current, destination)
-      super(previous_path, current, destination, 0)
-    end
-  end
-
-  class PathStart < Path
-    attr_reader :tiles
-
-    def cost; 0; end
-    def move_distance; 0; end
-
-    def initialize(tile, destination)
-      @current = tile
-      @tiles = [tile]
-      @destination_distance = (@current.grid_x - destination.grid_x).abs + (@current.grid_y - destination.grid_y).abs
-    end
-  end
-
-  # --------------------
 
   extend Forwardable
 
@@ -182,7 +134,7 @@ class Entity < StaticObject
     while open_paths.any?
       # Check the (expected) shortest path and move it to closed, since we have considered it.
       path = open_paths.each_value.min_by(&:cost)
-      current_tile = path.current
+      current_tile = path.last
 
       open_paths.delete current_tile
       closed_tiles << current_tile

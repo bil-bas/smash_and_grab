@@ -13,15 +13,11 @@ class MouseSelection < GameObject
     @potential_moves = []
 
     @selected_image = Image["tile_selection.png"]
-    @partial_move_image = Image["partial_move.png"]
-    @final_move_image = Image["final_move.png"]
-    @partial_move_too_far_image = Image["partial_move_too_far.png"]
-    @final_move_too_far_image = Image["final_move_too_far.png"]
     @mouse_hover_image = Image["mouse_hover.png"]
 
     @selected_tile = @hover_tile = nil
     @path = nil
-    @path_record = @moves_record = nil
+    @moves_record = nil
 
     super(options)
 
@@ -40,13 +36,16 @@ class MouseSelection < GameObject
 
   def calculate_path
     if @selected_tile
-      modify_occlusions @path.tiles, -1 if @path
+      modify_occlusions @path.each, -1 if @path
       @path_record = nil
 
       if @hover_tile
         @path = @selected_tile.objects.last.path_to(@hover_tile)
 
-        modify_occlusions @path.tiles, +1 if @path
+        if @path
+          @path.prepare_for_drawing(@potential_moves)
+          modify_occlusions @path.each, +1 if @path
+        end
       else
         @path = nil
       end
@@ -92,33 +91,8 @@ class MouseSelection < GameObject
         @moves_record.draw -offset_x, -offset_y, ZOrder::TILE_SELECTION, zoom, zoom
       end
 
-      # Show path and end of the move-path chosen.
-      if @hover_tile and @hover_tile != @selected_tile
-        @path_record ||= $window.record do
-          tiles = @path.nil? ? [@selected_tile, @hover_tile] : @path.tiles
-          tiles[1..-1].each do |tile|
-            can_move = @potential_moves.include? tile
+      @path.draw -offset_x, -offset_y, zoom  if @path
 
-            image = if tile == tiles.last
-              if tile.objects.last.is_a? Entity
-                if can_move and tile.entity.enemy?(@selected_tile.entity)
-                  @final_move_image
-                else
-                  @final_move_too_far_image
-                end
-              else
-                can_move ? @final_move_image : @final_move_too_far_image
-              end
-            else
-              can_move ? @partial_move_image : @partial_move_too_far_image
-            end
-
-            image.draw_rot tile.x, tile.y, ZOrder::TILE_SELECTION, 0, 0.5, 0.5, 1, 1, color
-          end
-        end
-
-        @path_record.draw -offset_x, -offset_y, ZOrder::TILE_SELECTION, zoom, zoom
-      end
     elsif @hover_tile
       color = (@hover_tile.empty? or @hover_tile.entity.inactive?) ? Color::BLUE : Color::CYAN
       @mouse_hover_image.draw_rot @hover_tile.x, @hover_tile.y, ZOrder::TILE_SELECTION, 0, 0.5, 0.5, 1, 1, color
@@ -131,10 +105,10 @@ class MouseSelection < GameObject
       # Move the character.
       if @potential_moves.include? @hover_tile
         case path
-          when Entity::MovePath
+          when MovePath
             @map.actions.do :move, path
             @selected_tile = @hover_tile
-          when Entity::MeleePath
+          when MeleePath
             @map.actions.do :move, path.previous_path if path.requires_movement?
             @map.actions.do :melee, path
             @selected_tile = path.attacker
@@ -157,7 +131,7 @@ class MouseSelection < GameObject
       modify_occlusions @potential_moves, -1
       @potential_moves.clear
 
-      modify_occlusions @path.tiles, -1 if @path
+      modify_occlusions @path.each, -1 if @path
       @path = nil
 
       @selected_tile = nil

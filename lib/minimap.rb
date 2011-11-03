@@ -39,7 +39,7 @@ class Minimap < GameObject
     self.image.rect x, y, x + TILE_WIDTH - 1, y + TILE_WIDTH - 1, color: tile.minimap_color, fill: true
 
     # Draw the two walls.
-    if wall = tile.wall(:bottom) and wall.minimap_color != Color::NONE
+    if wall = tile.wall(:up) and wall.minimap_color != Color::NONE
       @image.line x, y + TILE_WIDTH - 1, x + TILE_WIDTH, y + TILE_WIDTH - 1, color: wall.minimap_color
     end
 

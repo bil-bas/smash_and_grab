@@ -66,6 +66,8 @@ class ZOrder
   BACKGROUND = -Float::INFINITY
   TILES = -99999
   TILE_SELECTION = -99998
+  SHADOW = -99997
+  PATH = -99996
   # Objects -1000 .. +1000
 
   GUI = Float::INFINITY

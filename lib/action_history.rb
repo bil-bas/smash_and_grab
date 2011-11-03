@@ -9,7 +9,7 @@ class GameAction < Fidgit::History::Action
       @map = map
 
       case data
-        when Entity::MeleePath
+        when MeleePath
           @attacker, @defender = data.attacker, data.defender
           @time = Time.now
         when Hash
@@ -43,7 +43,7 @@ class GameAction < Fidgit::History::Action
       @map = map
 
       case data
-        when Entity::MovePath
+        when MovePath
           @path = data.tiles
           @movement_cost = data.move_distance
           @time = Time.now
