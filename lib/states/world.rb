@@ -251,15 +251,15 @@ class World < Fidgit::GuiState
   def update
     start_at = Time.now
 
-    if holding? :left
+    if holding_any? :left, :a
       @camera_offset_x -= 10.0
-    elsif holding? :right
+    elsif holding_any? :right, :d
       @camera_offset_x += 10.0
     end
 
-    if holding? :up
+    if holding_any? :up, :w
       @camera_offset_y -= 10.0
-    elsif holding? :down
+    elsif holding_any? :down, :s
       @camera_offset_y += 10.0
     end
 
