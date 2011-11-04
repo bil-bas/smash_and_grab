@@ -10,6 +10,10 @@ class EditLevel < World
     @mouse_hover_image = Image["mouse_hover.png"]
 
     load_game QUICKSAVE_FILE
+
+    on_input :right_mouse_button do
+      @tile_combo.value = @hover_tile.type if @hover_tile
+    end
   end
 
   def create_gui

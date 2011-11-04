@@ -54,8 +54,16 @@ class World < Fidgit::GuiState
                y: ->{ redo_action if holding? :left_control },
                escape: :pop_game_state
     )
+  end
 
+  def setup
+    super()
     create_gui
+  end
+
+  def finalize
+    super()
+    @container.clear
   end
 
   def save_game(file)
