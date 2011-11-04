@@ -6,15 +6,31 @@ class Wall < GameObject
   DATA_TILES = 'tiles'
   
   SPRITE_WIDTH, SPRITE_HEIGHT = 32, 64
+
+  # [[x_offset, _y_offset], direction, height needed to occlude
+  WALL_OCCLUSION_POSITIONS = {
+      vertical: [
+          [[ 0,  0],  1], # Own tile.
+          [[+1,  0],  1], # Right.
+          [[+1, -1],  2], # Top right.
+          [[+2, -1],  2],
+      ],
+      horizontal: [
+          [[ 0,  0],  1], # Own tile.
+          [[ 0, -1],  1], # Top.
+          [[+1, -1],  2], # Top right.
+          [[+1, -2],  2],
+      ]
+  }
     
-  attr_reader :occlusions, :minimap_color, :tiles_high, :thickness, :movement_cost, :type, :tiles
+  attr_reader :minimap_color, :tiles_high, :thickness, :movement_cost, :type, :tiles
 
   def blocks_movement?; movement_cost == Float::INFINITY; end
   def allows_movement?; movement_cost < Float::INFINITY; end
 
   def zorder; super + 0.01; end
   def to_s; "<#{self.class.name}##{@type} #{@tiles[0].grid_position} <=> #{@tiles[1].grid_position}]>"; end
-  def occludes?; @occlusions > 0; end
+  def occludes?; @occludes; end
 
   def blocks_sight?; @blocks_sight; end
 
@@ -29,13 +45,11 @@ class Wall < GameObject
     super(options)
 
     @objects = []
-    @occlusions = 0 # Number of objects occluded by the wall.
+    @occludes = false # Does the wall occlude anything that should be seen?
 
     @map = map
 
     @tiles = data[DATA_TILES].map {|p| map.tile_at_grid(*p) }.sort_by(&:y)
-
-    self.type = data[DATA_TYPE]
 
     @destinations = {
         @tiles.first => @tiles.last,
@@ -48,12 +62,16 @@ class Wall < GameObject
     if @tiles.last.grid_y > @tiles.first.grid_y
       @tiles.last.add_wall :up, self
       @tiles.first.add_wall :down, self
+      @orientation = :vertical
       @x += 2
     else
       @tiles.last.add_wall :right, self
       @tiles.first.add_wall :left, self
       @x -= 2
+      @orientation = :horizontal
     end
+
+    self.type = data[DATA_TYPE]
   end
 
   def type=(type)
@@ -69,30 +87,39 @@ class Wall < GameObject
     @tiles_high = config['tiles_high']
     @thickness = config['thickness']
 
-    @map.remove self if @image
-
     spritesheet_positions = config['spritesheet_positions']
-    if @tiles.last.grid_y > @tiles.first.grid_y
-      @image = spritesheet_positions ? self.class.sprites[*spritesheet_positions['vertical']] : nil
+    image = if @tiles.last.grid_y > @tiles.first.grid_y
+      spritesheet_positions ? self.class.sprites[*spritesheet_positions['vertical']] : nil
     else
-      @image = spritesheet_positions ? self.class.sprites[*spritesheet_positions['horizontal']] : nil
+      spritesheet_positions ? self.class.sprites[*spritesheet_positions['horizontal']] : nil
     end
 
+    @map.remove self if @image
+    @image = image
     @map << self if @image
 
     @map.publish :wall_type_changed, self if changed
 
+    update_occlusion
+
     type
   end
 
-  def occlusions=(value)
-    @occlusions = value
+  # Recalculate possible occlusions from permanent objects.
+  def update_occlusion
+    grid_x, grid_y = tiles.first.grid_position
 
-    raise if @occlusions < 0
+    # Look at all positions that could
+    @occludes = WALL_OCCLUSION_POSITIONS[@orientation].any? do |(offset_x, offset_y), min_height|
+      if @tiles_high >= min_height
+        tile = @map.tile_at_grid(grid_x + offset_x, grid_y + offset_y)
+        tile and tile.needs_to_be_seen?
+      else
+        false
+      end
+    end
 
     @color = occludes? ? SEMI_TRANSPARENT_COLOR : OPAQUE_COLOR
-
-    @occlusions
   end
 
   def destination(from)

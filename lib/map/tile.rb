@@ -3,26 +3,25 @@ class Tile < GameObject
 
   WIDTH, HEIGHT = 32, 16
 
-  # x, y, direction, min height to cause occlusion.
+  # x, y, direction to cause occlusion.
   WALL_OCCLUSION_POSITIONS = [
-      [[ 0,  0], :left,   1],
-      [[ 0,  0], :down,   1],
-      [[-1,  1], :right,  1],
-      [[-1,  1], :up,     1],
+      [[ 0,  0], :left],
+      [[ 0,  0], :down],
+      [[-1,  1], :right],
+      [[-1,  1], :up],
 
-      [[-1,  1], :left,   2],
-      [[-1,  1], :down,   2],
-      [[-2,  2], :up,     2],
-      [[-2,  2], :right,  2],
+      [[-1,  1], :left,],
+      [[-1,  1], :down],
+      [[-2,  2], :up],
+      [[-2,  2], :right],
   ]
-
-  event :updated
 
   attr_reader :objects, :grid_x, :grid_y, :movement_cost, :map, :minimap_color, :type
 
   def empty?; @objects.empty?; end
   def to_s; "<#{self.class.name}##{@type} #{grid_position}>"; end
   def grid_position; [@grid_x, @grid_y]; end
+  def needs_to_be_seen?; (@temp_occlusions > 0) or @objects.any?; end # Causes walls to become transparent.
 
   # Blank white tile, useful for colourising tiles.
   def self.blank; @@sprites[0]; end
@@ -39,6 +38,8 @@ class Tile < GameObject
 
     @objects = []
     @walls = {}
+
+    @temp_occlusions = 0
   end
 
   def type=(type)
@@ -84,9 +85,7 @@ class Tile < GameObject
     @objects << object
     object.x, object.y = [x, y]
 
-    modify_occlusions +1
-
-    map.publish :tile_contents_changed, self
+    update_wall_occlusions
 
     object
   end
@@ -96,21 +95,32 @@ class Tile < GameObject
 
     @objects.delete object
 
-    modify_occlusions -1
-
-    map.publish :tile_contents_changed, self
+    update_wall_occlusions
 
     object
   end
 
   def modify_occlusions(value)
-    WALL_OCCLUSION_POSITIONS.each do |(offset_x, offset_y), direction, min_height|
-      if tile = @map.tile_at_grid(grid_x + offset_x, grid_y + offset_y)
-        if wall = tile.wall(direction) and wall.tiles_high >= min_height
-          wall.occlusions += value
+    @temp_occlusions += value
+    raise if @temp_occlusions < 0
+    update_wall_occlusions
+    @temp_occlusions
+  end
+
+  # Update all nearby walls, to allow them to check if they occlude (or don't occlude) this tile.
+  def update_wall_occlusions
+    unless defined? @walls_occluded_by
+      @walls_occluded_by = []
+
+      WALL_OCCLUSION_POSITIONS.each do |(offset_x, offset_y), direction|
+        if tile = @map.tile_at_grid(grid_x + offset_x, grid_y + offset_y)
+          wall = tile.wall(direction)
+          @walls_occluded_by << wall if wall
         end
       end
     end
+
+    @walls_occluded_by.each(&:update_occlusion)
   end
 
   def add_wall(direction, wall)
