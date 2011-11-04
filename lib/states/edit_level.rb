@@ -8,28 +8,35 @@ class EditLevel < World
   def initialize
     super()
 
-    @mouse_hover_image = Image["mouse_hover.png"]
+    @mouse_hover_tile_image = Image["mouse_hover.png"]
+    @mouse_hover_wall_image = Image["mouse_hover_wall.png"]
+
+    @selected_wall = nil
 
     load_game QUICKSAVE_FILE
 
     on_input :right_mouse_button do
-      if @hover_tile
+
         case @tabs_group.value
           when :tiles
-            @selector_group.value = @hover_tile.type
+            @selector_group.value = @hover_tile.type if @hover_tile
 
           when :entities
-            if @hover_tile.entity
-              @selector_group.value = @hover_tile.entity.type
-            else
-              @selector_group.value = :erase
+            if @hover_tile
+              if @hover_tile.entity
+                @selector_group.value = @hover_tile.entity.type
+              else
+                @selector_group.value = :erase
+              end
             end
 
           when :objects
 
           when :walls
-            @selector_group.value = (@hover_tile.wall(:down) ? @hover_tile.wall(:down).type : 'none')
-        end
+            @selector_group.value = @hover_wall.type if @hover_wall
+
+          else
+            raise @tabs_group.value
       end
     end
   end
@@ -184,34 +191,65 @@ class EditLevel < World
       nil
     end
 
+    if tile and @tabs_group.value == :walls
+      x, y = (@camera_offset_x + $window.mouse_x) / @zoom, (@camera_offset_y + $window.mouse_y) / @zoom
+
+      wall = if x < tile.x - 3 and y < tile.y - 1
+        tile.wall :up
+      elsif x < tile.x - 3 and y > tile.y + 1
+        tile.wall :left
+      elsif x > tile.x + 3 and y < tile.y - 1
+        tile.wall :right
+      elsif x > tile.x + 3 and y > tile.y + 1
+        tile.wall :down
+      else
+        nil
+      end
+
+      if @hover_wall != wall
+        @hover_wall.tiles.each {|t| t.modify_occlusions -1} if @hover_wall
+        @hover_wall = wall
+        @hover_wall.tiles.each {|t| t.modify_occlusions +1} if @hover_wall
+      end
+
+      tile = nil
+    else
+      @hover_wall = nil
+    end
+
     if @hover_tile != tile
       @hover_tile.modify_occlusions -1 if @hover_tile
       @hover_tile = tile
       @hover_tile.modify_occlusions +1 if @hover_tile
     end
 
-    if holding? :left_mouse_button and @hover_tile
+    if holding? :left_mouse_button
       case @tabs_group.value
         when :tiles
-          if @hover_tile.type != @selector_group.value
-            @actions.do :set_tile_type, @hover_tile, @selector_group.value
+          if @hover_tile
+            if @hover_tile.type != @selector_group.value
+              @actions.do :set_tile_type, @hover_tile, @selector_group.value
+            end
           end
 
         when :entities
-          if @selector_group.value == :erase
-            @actions.do :erase_object, @hover_tile unless @hover_tile.empty?
-          else
-            if @hover_tile.empty? or
-                (@hover_tile.entity and @hover_tile.entity.type != @selector_group.value)
+          if @hover_tile
+            if @selector_group.value == :erase
+              @actions.do :erase_object, @hover_tile unless @hover_tile.empty?
+            else
+              if @hover_tile.empty? or
+                  (@hover_tile.entity and @hover_tile.entity.type != @selector_group.value)
 
-              @actions.do :place_object, @hover_tile, @selector_group.value
+                @actions.do :place_object, @hover_tile, @selector_group.value
+              end
             end
           end
 
         when :walls
-          wall = @hover_tile.wall(:down)
-          if wall and wall.type != @selector_group.value
-            @actions.do :set_wall_type, wall, @selector_group.value
+          if @hover_wall
+            if @hover_wall and @hover_wall.type != @selector_group.value
+              @actions.do :set_wall_type, @hover_wall, @selector_group.value
+            end
           end
 
         else
@@ -223,11 +261,23 @@ class EditLevel < World
   def draw
     super()
 
-    if @hover_tile
-      $window.translate -@camera_offset_x, -@camera_offset_y do
-        $window.scale @zoom do
-          @mouse_hover_image.draw_rot @hover_tile.x, @hover_tile.y, ZOrder::TILE_SELECTION, 0, 0.5, 0.5
+    $window.translate -@camera_offset_x, -@camera_offset_y do
+      $window.scale @zoom do
+        if @hover_wall
+          tile = @hover_wall.tiles.first
+          offset_x, offset_y = if @hover_wall.orientation == :vertical
+            [+8, +4]
+          else
+            [-8, +4]
+          end
+
+          factor_x = (@hover_wall.orientation == :vertical) ? -1 : 1
+          @mouse_hover_wall_image.draw_rot tile.x + offset_x, tile.y + offset_y, ZOrder::TILE_SELECTION, 0, 0.5, 0.5, factor_x
+
+        elsif @hover_tile
+          @mouse_hover_tile_image.draw_rot @hover_tile.x, @hover_tile.y, ZOrder::TILE_SELECTION, 0, 0.5, 0.5
         end
+
       end
     end
   end

@@ -23,7 +23,7 @@ class Wall < GameObject
       ]
   }
     
-  attr_reader :minimap_color, :tiles_high, :thickness, :movement_cost, :type, :tiles
+  attr_reader :minimap_color, :tiles_high, :thickness, :movement_cost, :type, :tiles, :orientation
 
   def blocks_movement?; movement_cost == Float::INFINITY; end
   def allows_movement?; movement_cost < Float::INFINITY; end
