@@ -4,6 +4,7 @@ class EditLevel < World
   SAVE_FOLDER = File.expand_path("config/levels", ROOT_PATH)
   QUICKSAVE_FILE = File.expand_path("01_bank.sgl", SAVE_FOLDER)
   OBJECT_TABS = [:tiles, :entities, :walls]
+  GRID_COLOR = Color.rgba(150, 150, 150, 150)
 
   def initialize
     super()
@@ -39,6 +40,8 @@ class EditLevel < World
             raise @tabs_group.value
       end
     end
+
+    record_grid
   end
 
   def create_gui
@@ -258,8 +261,27 @@ class EditLevel < World
     end
   end
 
+  def record_grid
+    @grid_record = $window.record do
+      tiles = map.instance_variable_get(:@tiles)
+
+      # Lines top to bottom.
+      tiles.each do |row|
+        tile = row.first
+        $window.pixel.draw_rot tile.x - 16, tile.y, ZOrder::TILE_SELECTION, -26.55, 0, 0.5, row.size * 17.9, 1, GRID_COLOR
+      end
+
+      # Lines left to right.
+      tiles.first.each do |tile|
+        $window.pixel.draw_rot tile.x - 16, tile.y, ZOrder::TILE_SELECTION, +26.55, 0, 0.5, tiles.size * 17.9, 1, GRID_COLOR
+      end
+    end
+  end
+
   def draw
     super()
+
+    @grid_record.draw -@camera_offset_x, -@camera_offset_y, ZOrder::TILE_SELECTION, @zoom, @zoom
 
     $window.translate -@camera_offset_x, -@camera_offset_y do
       $window.scale @zoom do
@@ -277,7 +299,6 @@ class EditLevel < World
         elsif @hover_tile
           @mouse_hover_tile_image.draw_rot @hover_tile.x, @hover_tile.y, ZOrder::TILE_SELECTION, 0, 0.5, 0.5
         end
-
       end
     end
   end
