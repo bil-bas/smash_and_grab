@@ -18,7 +18,7 @@ class Tile < GameObject
 
   event :updated
 
-  attr_reader :objects, :grid_x, :grid_y, :movement_cost, :map, :minimap_color
+  attr_reader :objects, :grid_x, :grid_y, :movement_cost, :map, :minimap_color, :type
 
   def empty?; @objects.empty?; end
   def to_s; "<#{self.class.name}##{@type} #{grid_position}>"; end
@@ -30,20 +30,35 @@ class Tile < GameObject
   def self.sprites; @@sprites ||= SpriteSheet.new("floor_tiles.png", WIDTH, HEIGHT, 8); end
 
   def initialize(type, map, grid_x, grid_y)
-    @type, @map, @grid_x, @grid_y = type, map, grid_x, grid_y
+    @map, @grid_x, @grid_y = map, grid_x, grid_y
 
-    config = self.class.config[type]
+    super(x: (@grid_y + @grid_x) * WIDTH / 2, y: (@grid_y - @grid_x) * HEIGHT / 2)
 
-    @minimap_color = config['minimap_color']
-    @movement_cost = config['movement_cost']
-
-    super(image: self.class.sprites[*config['spritesheet_position']],
-          x: (@grid_y + @grid_x) * WIDTH / 2, y: (@grid_y - @grid_x) * HEIGHT / 2)
-
+    self.type = type
     self.zorder = @y
 
     @objects = []
     @walls = {}
+  end
+
+  def type=(type)
+    changed = defined? @type
+
+    @type = type
+
+    config = self.class.config[@type]
+
+    @minimap_color = config['minimap_color']
+    @movement_cost = config['movement_cost']
+    @image = if config.has_key? 'spritesheet_position'
+      self.class.sprites[*config['spritesheet_position']]
+    else
+      nil
+    end
+
+    @map.publish :tile_type_changed, self if changed
+
+    type
   end
 
   def passable?(person)
@@ -70,7 +85,7 @@ class Tile < GameObject
 
     modify_occlusions +1
 
-    map.publish :tile_updated, self
+    map.publish :tile_contents_changed, self
 
     object
   end
@@ -82,7 +97,7 @@ class Tile < GameObject
 
     modify_occlusions -1
 
-    map.publish :tile_updated, self
+    map.publish :tile_contents_changed, self
 
     object
   end

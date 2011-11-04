@@ -79,6 +79,8 @@ class PlayLevel < World
     add_inputs(space: :end_turn)
 
     save_game AUTOSAVE_FILE
+
+    @mouse_selection = MouseSelection.new @map
   end
 
   def create_gui
@@ -155,8 +157,22 @@ class PlayLevel < World
     load_game QUICKSAVE_FILE
   end
 
+  def map=(map)
+    super(map)
+
+    @mouse_selection = MouseSelection.new @map
+
+    map
+  end
+
   def draw
     super
+
+    $window.translate -@camera_offset_x, -@camera_offset_y do
+      $window.scale @zoom do
+        @mouse_selection.draw @camera_offset_x, @camera_offset_y, @zoom
+      end
+    end
 
     @font.draw "Turn: #{@map.turn + 1} Player: #{@map.active_faction}", 200, 35, ZOrder::GUI
 
@@ -165,5 +181,19 @@ class PlayLevel < World
     @font.draw status_text, 200, 475, ZOrder::GUI
 
     @font.draw "Turn: #{@map.turn + 1} Player: #{@map.active_faction}", 200, 35, ZOrder::GUI
+  end
+
+  def update
+    super
+
+    @mouse_selection.tile = if  $window.mouse_x >= 0 and $window.mouse_x < $window.width and
+                                $window.mouse_y >= 0 and $window.mouse_y < $window.height
+      @map.tile_at_position((@camera_offset_x + $window.mouse_x) / @zoom,
+         (@camera_offset_y + $window.mouse_y) / @zoom)
+    else
+      nil
+    end
+
+    @mouse_selection.update
   end
 end

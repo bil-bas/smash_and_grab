@@ -1,4 +1,3 @@
-require_relative 'action_history'
 require_relative 'faction'
 
 class Map
@@ -41,7 +40,8 @@ class Map
   DATA_OBJECTS = "objects"
   DATA_ACTIONS = 'actions'
 
-  event :tile_updated
+  event :tile_contents_changed # An object moved, etc.
+  event :tile_type_changed # The actual type itself changed.
 
   attr_reader :grid_width, :grid_height, :actions, :entities
   attr_reader :goodies, :baddies, :bystanders, :active_faction, :turn
@@ -93,7 +93,7 @@ class Map
       Entity.new self, entity_data
     end
 
-    @actions = ActionHistory.new self, data[DATA_ACTIONS]
+    @actions = GameActionHistory.new self, data[DATA_ACTIONS]
 
     @turn, active_faction_index  = @actions.completed_turns.divmod @factions.size
     @active_faction = @factions[active_faction_index]
@@ -108,6 +108,11 @@ class Map
       start_game
     else
       resume_game
+    end
+
+    # Ensure that if any tiles are changed, that the map is redrawn.
+    subscribe :tile_type_changed do
+      record
     end
   end
 

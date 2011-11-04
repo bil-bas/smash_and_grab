@@ -5,7 +5,7 @@ require 'fileutils'
 class World < Fidgit::GuiState
   include Log
 
-  attr_reader :map, :minimap, :mouse_selection
+  attr_reader :map, :minimap
 
   MAX_ZOOM = 0.5
   MIN_ZOOM = 4.0
@@ -16,11 +16,14 @@ class World < Fidgit::GuiState
     @map = map
     @camera_offset_x, @camera_offset_y = [0, -@map.to_rect.center_y]
 
-    @mouse_selection = MouseSelection.new @map
-
     @minimap = Minimap.new @map
     @minimap.refresh
-    @map.subscribe :tile_updated do |map, tile|
+
+    @map.subscribe :tile_contents_changed do |map, tile|
+      @minimap.update_tile tile
+    end
+
+   @map.subscribe :tile_type_changed do |map, tile|
       @minimap.update_tile tile
     end
   end
@@ -32,8 +35,6 @@ class World < Fidgit::GuiState
 
     @camera_offset_x, @camera_offset_y = 0, 0
     @zoom = INITIAL_ZOOM
-
-    @mouse_selection = MouseSelection.new @map
 
     @font = Font.new $window, default_font_name, 24
     @fps_text = ""
@@ -126,16 +127,6 @@ class World < Fidgit::GuiState
       @camera_offset_y += 10.0
     end
 
-    @mouse_selection.tile = if  $window.mouse_x >= 0 and $window.mouse_x < $window.width and
-                                $window.mouse_y >= 0 and $window.mouse_y < $window.height
-      @map.tile_at_position((@camera_offset_x + $window.mouse_x) / @zoom,
-         (@camera_offset_y + $window.mouse_y) / @zoom)
-    else
-      nil
-    end
-
-    @mouse_selection.update
-
     super()
 
     @used_time += (Time.now - start_at).to_f
@@ -156,17 +147,12 @@ class World < Fidgit::GuiState
     $window.pixel.draw 0, 0, -Float::INFINITY, $window.width, $window.height, BACKGROUND_COLOR
 
     # Draw the flat tiles.
-    1.times do
-      @map.draw_tiles @camera_offset_x, @camera_offset_y, @zoom
-    end
+    @map.draw_tiles @camera_offset_x, @camera_offset_y, @zoom
 
     # Draw objects, etc.
     $window.translate -@camera_offset_x, -@camera_offset_y do
       $window.scale @zoom do
-        1.times do
-          @map.draw_objects
-          @mouse_selection.draw @camera_offset_x, @camera_offset_y, @zoom
-        end
+        @map.draw_objects
       end
     end
 
