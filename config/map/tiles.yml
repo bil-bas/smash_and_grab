@@ -9,6 +9,11 @@ concrete:
   minimap_color: [200, 200, 200]
   movement_cost: 1
 
+dirt:
+  spritesheet_position: [3, 1]
+  minimap_color: [200, 50, 50]
+  movement_cost: 1
+
 grass:
   spritesheet_position: [1, 0]
   minimap_color: [0, 200, 0]
@@ -18,3 +23,19 @@ lava:
   spritesheet_position: [3, 0]
   minimap_color: [200, 150, 0]
   movement_cost: .Inf
+
+tarmac:
+  spritesheet_position: [0, 1]
+  minimap_color: [60, 60, 60]
+  movement_cost: 1
+
+tarmac_with_horizontal_line:
+  spritesheet_position: [1, 1]
+  minimap_color: [60, 60, 60]
+  movement_cost: 1
+
+tarmac_with_vertical_line:
+  spritesheet_position: [2, 1]
+  minimap_color: [60, 60, 60]
+  movement_cost: 1
+

@@ -26,7 +26,7 @@ class Tile < GameObject
   # Blank white tile, useful for colourising tiles.
   def self.blank; @@sprites[0]; end
   def self.config; @@config ||= YAML.load_file(File.expand_path("config/map/tiles.yml", EXTRACT_PATH)); end
-  def self.sprites; @@sprites ||= SpriteSheet.new("floor_tiles.png", WIDTH, HEIGHT, 8); end
+  def self.sprites; @@sprites ||= SpriteSheet.new("floor_tiles.png", WIDTH, HEIGHT, 4); end
 
   def initialize(type, map, grid_x, grid_y)
     @map, @grid_x, @grid_y = map, grid_x, grid_y

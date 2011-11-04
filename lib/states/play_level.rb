@@ -11,6 +11,8 @@ class PlayLevel < World
         *(['concrete'] * 20),
         *(['grass'] * 4),
         *(['lava'] * 1),
+        *(['dirt'] * 2),
+        *(['tarmac'] * 1),
     ]
 
     map_size = 50
