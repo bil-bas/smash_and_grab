@@ -71,7 +71,7 @@ class World < Fidgit::GuiState
       gz.write json
     end
 
-    File.open("#{file}.txt", "w") {|f| f.write json } # DEBUG ONLY!
+    File.open("#{file}.json", "w") {|f| f.write json } # DEBUG ONLY!
 
     log.info { "Saved game as #{file} [#{File.size(file)} bytes] in #{"%.3f" % (Time.now - t) }s" }
   end

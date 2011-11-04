@@ -9,3 +9,4 @@
 /saves
 /.yardoc
 /doc
+/config/levels/*.sgl.json
