@@ -86,6 +86,7 @@ class Tile < GameObject
     object.x, object.y = [x, y]
 
     update_wall_occlusions
+    map.publish :tile_contents_changed , self
 
     object
   end
@@ -96,6 +97,7 @@ class Tile < GameObject
     @objects.delete object
 
     update_wall_occlusions
+    map.publish :tile_contents_changed , self
 
     object
   end

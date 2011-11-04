@@ -23,7 +23,11 @@ class World < Fidgit::GuiState
       @minimap.update_tile tile
     end
 
-   @map.subscribe :tile_type_changed do |map, tile|
+    @map.subscribe :wall_type_changed do |map, wall|
+      wall.tiles.each {|t| @minimap.update_tile t }
+    end
+
+    @map.subscribe :tile_type_changed do |map, tile|
       @minimap.update_tile tile
     end
   end
