@@ -4,6 +4,11 @@ none:
   minimap_color: [0, 0, 0]
   movement_cost: .Inf
 
+carpet_brown_striped:
+  spritesheet_position: [0, 2]
+  minimap_color: [150, 135, 130]
+  movement_cost: 1
+
 concrete:
   spritesheet_position: [2, 0]
   minimap_color: [200, 200, 200]
@@ -26,16 +31,16 @@ lava:
 
 tarmac:
   spritesheet_position: [0, 1]
-  minimap_color: [60, 60, 60]
+  minimap_color: [100, 100, 100]
   movement_cost: 1
 
 tarmac_with_horizontal_line:
   spritesheet_position: [1, 1]
-  minimap_color: [60, 60, 60]
+  minimap_color: [100, 100, 100]
   movement_cost: 1
 
 tarmac_with_vertical_line:
   spritesheet_position: [2, 1]
-  minimap_color: [60, 60, 60]
+  minimap_color: [100, 100, 100]
   movement_cost: 1
 

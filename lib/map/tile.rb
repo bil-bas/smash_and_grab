@@ -49,7 +49,7 @@ class Tile < GameObject
 
     config = self.class.config[@type]
 
-    @minimap_color = config['minimap_color']
+    @minimap_color = Color.rgb(*config['minimap_color'])
     @movement_cost = config['movement_cost']
     @image = if config.has_key? 'spritesheet_position'
       self.class.sprites[*config['spritesheet_position']]

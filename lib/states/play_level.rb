@@ -2,83 +2,17 @@ require_relative 'world'
 
 class PlayLevel < World
   SAVE_FOLDER = File.expand_path("saves", ROOT_PATH)
+  LOAD_FOLDER = File.expand_path("config/levels", ROOT_PATH)
   QUICKSAVE_FILE = File.expand_path("quicksave.sgs", SAVE_FOLDER)
   AUTOSAVE_FILE = File.expand_path("autosave.sgs", SAVE_FOLDER)
+  ORIGINAL_FILE = File.expand_path("01_bank.sgl", LOAD_FOLDER)
 
   def initialize
-    # Create a map.
-    possible_tiles = [
-        *(['concrete'] * 20),
-        *(['grass'] * 4),
-        *(['lava'] * 1),
-        *(['dirt'] * 2),
-        *(['tarmac'] * 1),
-    ]
-
-    map_size = 50
-
-    tile_data = Array.new(map_size) { Array.new(map_size) { possible_tiles.sample } }
-
-    # Create a little house.
-    wall_data = [
-        # Back wall.
-        { "type" => "high_concrete_wall", "tiles" => [[1, 2], [1, 3]] },
-        { "type" => "high_concrete_wall_with_window", "tiles" => [[2, 2], [2, 3]] },
-        { "type" => "high_concrete_wall_with_window", "tiles" => [[3, 2], [3, 3]] },
-        { "type" => "high_concrete_wall", "tiles" => [[4, 2], [4, 3]] },
-
-        # Left wall
-        { "type" => "high_concrete_wall", "tiles" => [[0, 3], [1, 3]] },
-        # { "type" => "high_concrete_wall", "tiles" => [[0, 4], [1, 4]] },
-        { "type" => "high_concrete_wall", "tiles" => [[0, 5], [1, 5]] },
-        { "type" => "high_concrete_wall", "tiles" => [[0, 6], [1, 6]] },
-
-        # Front wall.
-        { "type" => "high_concrete_wall", "tiles" => [[1, 6], [1, 7]] },
-        { "type" => "high_concrete_wall_with_window", "tiles" => [[2, 6], [2, 7]] },
-        { "type" => "high_concrete_wall_with_window", "tiles" => [[3, 6], [3, 7]] },
-        { "type" => "high_concrete_wall", "tiles" => [[4, 6], [4, 7]] },
-
-        # Right wall
-        { "type" => "high_concrete_wall", "tiles" => [[4, 3], [5, 3]] },
-        { "type" => "high_concrete_wall", "tiles" => [[4, 4], [5, 4]] },
-        { "type" => "high_concrete_wall", "tiles" => [[4, 5], [5, 5]] },
-        { "type" => "high_concrete_wall", "tiles" => [[4, 6], [5, 6]] },
-
-
-        # Garden
-        # Back wall.
-        { "type" => "low_fence", "tiles" => [[5, 2], [5, 3]] },
-        { "type" => "low_fence", "tiles" => [[6, 2], [6, 3]] },
-        #{ "type" => "low_fence", "tiles" => [[7, 2], [7, 3]] },
-        { "type" => "low_fence", "tiles" => [[8, 2], [8, 3]] },
-
-        # Front wall.
-        { "type" => "low_brick_wall", "tiles" => [[5, 6], [5, 7]] },
-        { "type" => "low_brick_wall", "tiles" => [[6, 6], [6, 7]] },
-        { "type" => "low_brick_wall", "tiles" => [[7, 6], [7, 7]] },
-        { "type" => "low_brick_wall", "tiles" => [[8, 6], [8, 7]] },
-
-        # Right wall
-        { "type" => "low_fence", "tiles" => [[8, 3], [9, 3]] },
-        { "type" => "low_fence", "tiles" => [[8, 4], [9, 4]] },
-        { "type" => "low_brick_wall", "tiles" => [[8, 5], [9, 5]] },
-        { "type" => "low_brick_wall", "tiles" => [[8, 6], [9, 6]] },
-    ]
-
-    entity_data = Array.new(200) do
-      {
-          "type" => Entity.types.sample,
-          "tile" => [rand(map_size), rand(map_size)],
-          "facing" => ['left', 'right'].sample,
-      }
-    end
-
-    self.map = Map.new "tiles" => tile_data, "walls" => wall_data, "entities" => entity_data, "objects" => [], 'actions' => []
-
     super()
 
     add_inputs(space: :end_turn)
+
+    load_game ORIGINAL_FILE
 
     save_game AUTOSAVE_FILE
 
