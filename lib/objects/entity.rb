@@ -15,7 +15,7 @@ class Entity < StaticObject
 
   def_delegators :@faction, :minimap_color, :active?, :inactive?
 
-  attr_reader :faction, :movement_points, :action_points, :health
+  attr_reader :faction, :movement_points, :action_points, :health, :type
 
   alias_method :mp, :movement_points
   alias_method :ap, :action_points
@@ -25,22 +25,23 @@ class Entity < StaticObject
 
   def self.config; @@config ||= YAML.load_file(File.expand_path("config/map/entities.yml", EXTRACT_PATH)); end
   def self.types; config.keys; end
+  def self.sprites; @@sprites ||= SpriteSheet.new("characters.png", 64 + 2, 64 + 2, 8); end
+
 
   def initialize(map, data)
     @type = data['type']
     config = self.class.config[data['type']]
 
-    @@sprites ||= SpriteSheet.new("characters.png", 64 + 2, 64 + 2, 8)
+    @faction = map.send(config['faction'])
 
     options = {
-        image: @@sprites[*config['spritesheet_position']],
+        image: self.class.sprites[*config['spritesheet_position']],
         factor_x: data[DATA_FACING] == 'right' ? 1 : -1,
     }
 
     super(map.tile_at_grid(*data[DATA_TILE]), options)
 
     raise @type unless @image
-
 
     @max_movement_points = config['movement_points']
     @movement_points = data[DATA_MOVEMENT_POINTS] || @max_movement_points
@@ -50,8 +51,6 @@ class Entity < StaticObject
 
     @max_health = config['health']
     @health = data[DATA_HEALTH] || @max_health
-
-    @faction = map.send(config['faction'])
 
     @faction << self
   end

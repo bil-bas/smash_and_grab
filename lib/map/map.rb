@@ -173,11 +173,15 @@ class Map
   end
 
   def <<(object)
+    raise "can't add null object" if object.nil?
+
     case object
       when Entity
         @entities << object
       when Wall
         @walls << object
+      else
+        raise object.inspect
     end
 
     @objects << object
@@ -191,6 +195,8 @@ class Map
         @entities.delete object
       when Wall
         @walls.delete object
+      else
+        raise object.inspect
     end
   end
 

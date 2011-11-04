@@ -36,7 +36,7 @@ class Minimap < GameObject
     x, y = tile.grid_x * TILE_WIDTH + MARGIN, tile.grid_y * TILE_WIDTH + MARGIN
 
     # Draw the tile
-    self.image.rect x, y, x + TILE_WIDTH - 1, y + TILE_WIDTH - 1, color: tile.minimap_color, fill: true
+    @image.rect x, y, x + TILE_WIDTH - 1, y + TILE_WIDTH - 1, color: tile.minimap_color, fill: true
 
     # Draw the two walls.
     if wall = tile.wall(:up) and wall.minimap_color != Color::NONE
@@ -49,7 +49,7 @@ class Minimap < GameObject
 
     # Draw the tile object.
     unless tile.empty?
-      self.image.rect x + 1, y, x + TILE_WIDTH - 1, y + TILE_WIDTH - 2, color: tile.objects.last.minimap_color, fill: true
+      @image.rect x + 1, y, x + TILE_WIDTH - 1, y + TILE_WIDTH - 2, color: tile.objects.last.minimap_color, fill: true
     end
 
     tile

@@ -24,6 +24,52 @@ class EditorAction < Fidgit::History::Action
     end
   end
 
+  class PlaceObject < self
+    def initialize(tile, type)
+      @tile, @type = tile, type
+      @old_object = @tile.objects.last
+    end
+
+    def do
+      if @old_object
+        @tile.remove @old_object
+        @tile.map.remove @old_object
+      end
+
+      @new_object = Entity.new @tile.map,
+                               'type' => @type,
+                               'tile' => @tile.grid_position,
+                               'facing' => :right
+    end
+
+    def undo
+      @tile.remove @new_object
+      @tile.map.remove @new_object
+
+      if @old_object
+        @tile.map << @old_object
+        @tile << @old_object
+      end
+    end
+  end
+
+  class EraseObject < self
+    def initialize(tile)
+      @tile = tile
+      @object = @tile.objects.last
+    end
+
+    def do
+      @tile.remove @object
+      @tile.map.remove @object
+    end
+
+    def undo
+      @tile.map << @object
+      @tile << @object
+    end
+  end
+
   # --------------------------
 
   include Log

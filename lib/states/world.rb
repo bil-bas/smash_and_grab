@@ -57,6 +57,7 @@ class World < Fidgit::GuiState
   end
 
   def setup
+    log.info "Entered State: #{self.class.name}"
     super()
     create_gui
   end

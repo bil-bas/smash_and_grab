@@ -78,7 +78,8 @@ class Tile < GameObject
   end
 
   def <<(object)
-    raise "can't re-add object" if @objects.include? object
+    raise "can't add null object" if object.nil?
+    raise "can't re-add object #{object.inspect}" if @objects.include? object
 
     @objects << object
     object.x, object.y = [x, y]
@@ -91,7 +92,7 @@ class Tile < GameObject
   end
 
   def remove(object)
-    raise "can't remove object" unless @objects.include? object
+    raise "can't remove object #{object.inspect}" unless @objects.include? object
 
     @objects.delete object
 
