@@ -119,6 +119,8 @@ class World < Fidgit::GuiState
     )
 
     create_gui
+
+    save_game AUTOSAVE_FILE
   end
 
   def end_turn
