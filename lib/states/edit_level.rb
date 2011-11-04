@@ -3,7 +3,7 @@ require_relative 'world'
 class EditLevel < World
   SAVE_FOLDER = File.expand_path("config/levels", ROOT_PATH)
   QUICKSAVE_FILE = File.expand_path("01_bank.sgl", SAVE_FOLDER)
-  OBJECT_TABS = [:tiles, :entities]
+  OBJECT_TABS = [:tiles, :entities, :walls]
 
   def initialize
     super()
@@ -13,21 +13,23 @@ class EditLevel < World
     load_game QUICKSAVE_FILE
 
     on_input :right_mouse_button do
-      case @tabs_group.value
-        when :tiles
-          @selector_group.value = @hover_tile.type if @hover_tile
+      if @hover_tile
+        case @tabs_group.value
+          when :tiles
+            @selector_group.value = @hover_tile.type
 
-        when :entities
-          if @hover_tile and @hover_tile.entity
-            @selector_group.value = @hover_tile.entity.type
-          else
-            @selector_group.value = :erase
-          end
+          when :entities
+            if @hover_tile.entity
+              @selector_group.value = @hover_tile.entity.type
+            else
+              @selector_group.value = :erase
+            end
 
-        when :objects
+          when :objects
 
-        when :walls
-
+          when :walls
+            @selector_group.value = (@hover_tile.wall(:down) ? @hover_tile.wall(:down).type : 'none')
+        end
       end
     end
   end
@@ -48,7 +50,7 @@ class EditLevel < World
         @tabs_group = group do
           @tab_buttons = horizontal padding: 0, spacing: 2 do
             OBJECT_TABS.each do |name|
-              radio_button(name, name, border_thickness: 0)
+              radio_button(name.to_s[0].capitalize, name, border_thickness: 0)
             end
           end
 
@@ -114,6 +116,27 @@ class EditLevel < World
 
         @selector_window = @entities_window
 
+      when :walls
+        unless defined? @walls_window
+          @walls_window = Fidgit::ScrollWindow.new width: 45, height: 120 do
+            buttons = group do
+              vertical padding: 1 do
+                radio_button 'Erase', 'none'
+
+                Wall.config.each_pair do |type, data|
+                  next if type == 'none'
+                  radio_button '', type, icon: Wall.sprites[*(data['spritesheet_positions']['vertical'])],
+                               tip: type, padding: 0, icon_options: { factor: 0.25 }
+                end
+              end
+            end
+
+            buttons.value = 'none'
+          end
+        end
+
+        @selector_window = @walls_window
+
       else
         raise tab.to_s
     end
@@ -146,9 +169,7 @@ class EditLevel < World
   def update
     super()
 
-    @hover_tile.modify_occlusions -1 if @hover_tile
-
-    @hover_tile = if  $window.mouse_x >= 0 and $window.mouse_x < $window.width and
+    tile = if $window.mouse_x >= 0 and $window.mouse_x < $window.width and
                                 $window.mouse_y >= 0 and $window.mouse_y < $window.height
       @map.tile_at_position((@camera_offset_x + $window.mouse_x) / @zoom,
          (@camera_offset_y + $window.mouse_y) / @zoom)
@@ -156,7 +177,11 @@ class EditLevel < World
       nil
     end
 
-    @hover_tile.modify_occlusions +1 if @hover_tile
+    if @hover_tile != tile
+      @hover_tile.modify_occlusions -1 if @hover_tile
+      @hover_tile = tile
+      @hover_tile.modify_occlusions +1 if @hover_tile
+    end
 
     if holding? :left_mouse_button and @hover_tile
       case @tabs_group.value
@@ -176,8 +201,14 @@ class EditLevel < World
             end
           end
 
-        when :objects
+        when :walls
+          wall = @hover_tile.wall(:down)
+          if wall and wall.type != @selector_group.value
+            @actions.do :set_wall_type, wall, @selector_group.value
+          end
 
+        else
+          raise @tabs_group.value
       end
     end
   end

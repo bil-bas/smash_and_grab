@@ -7,7 +7,7 @@ class Wall < GameObject
   
   SPRITE_WIDTH, SPRITE_HEIGHT = 32, 64
     
-  attr_reader :occlusions, :minimap_color, :tiles_high, :thickness, :movement_cost
+  attr_reader :occlusions, :minimap_color, :tiles_high, :thickness, :movement_cost, :type, :tiles
 
   def blocks_movement?; movement_cost == Float::INFINITY; end
   def allows_movement?; movement_cost < Float::INFINITY; end
@@ -18,54 +18,71 @@ class Wall < GameObject
 
   def blocks_sight?; @blocks_sight; end
 
+  def self.config; @@config ||= YAML.load_file(File.expand_path("config/map/walls.yml", EXTRACT_PATH)); end
+  def self.sprites; @@sprites ||= SpriteSheet.new("walls.png", SPRITE_WIDTH, SPRITE_HEIGHT, 8); end
+
   def initialize(map, data)
-    @@walls_config ||= YAML.load_file(File.expand_path("config/map/walls.yml", EXTRACT_PATH))
-    @@sprites ||= SpriteSheet.new("walls.png", SPRITE_WIDTH, SPRITE_HEIGHT, 8)
-
-    @type = data[DATA_TYPE]
-    @config = @@walls_config[@type]
-
-    @minimap_color = Color.rgba(*@config['minimap_color'])
-    @blocks_sight = @config['blocks_sight']
-    @movement_cost = @config['movement_cost']
-    @tiles_high = @config['tiles_high']
-    @thickness = @config['thickness']
-
-    @tiles = data[DATA_TILES].map {|p| map.tile_at_grid(*p) }.sort_by(&:y)
-
     options = {
         rotation_center: :bottom_center,
-        x: @tiles.first.x,
-        y: @tiles.first.y + (SPRITE_HEIGHT / 8) + 1,
-        zorder: @tiles.first.y + 0.01,
     }
+
+    super(options)
 
     @objects = []
     @occlusions = 0 # Number of objects occluded by the wall.
+
+    @map = map
+
+    @tiles = data[DATA_TILES].map {|p| map.tile_at_grid(*p) }.sort_by(&:y)
+
+    self.type = data[DATA_TYPE]
 
     @destinations = {
         @tiles.first => @tiles.last,
         @tiles.last => @tiles.first,
     }
 
-    super(options)
+    self.x, self.y = @tiles.first.x, @tiles.first.y + (SPRITE_HEIGHT / 8) + 1,
+    self.zorder = @tiles.first.y + 0.01
 
-    spritesheet_positions = @config['spritesheet_positions']
     if @tiles.last.grid_y > @tiles.first.grid_y
       @tiles.last.add_wall :up, self
       @tiles.first.add_wall :down, self
-      @image = spritesheet_positions ? @@sprites[*spritesheet_positions['vertical']] : nil
       @x += 2
     else
       @tiles.last.add_wall :right, self
       @tiles.first.add_wall :left, self
-      @image = spritesheet_positions ? @@sprites[*spritesheet_positions['horizontal']] : nil
       @x -= 2
     end
+  end
 
-    @color = OPAQUE_COLOR
+  def type=(type)
+    changed = defined? @type
 
-    map << self if @image
+    @type = type
+
+    config = self.class.config[@type]
+
+    @minimap_color = Color.rgba(*config['minimap_color'])
+    @blocks_sight = config['blocks_sight']
+    @movement_cost = config['movement_cost']
+    @tiles_high = config['tiles_high']
+    @thickness = config['thickness']
+
+    @map.remove self if @image
+
+    spritesheet_positions = config['spritesheet_positions']
+    if @tiles.last.grid_y > @tiles.first.grid_y
+      @image = spritesheet_positions ? self.class.sprites[*spritesheet_positions['vertical']] : nil
+    else
+      @image = spritesheet_positions ? self.class.sprites[*spritesheet_positions['horizontal']] : nil
+    end
+
+    @map << self if @image
+
+    @map.publish :wall_type_changed, self if changed
+
+    type
   end
 
   def occlusions=(value)

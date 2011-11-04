@@ -40,8 +40,9 @@ class Map
   DATA_OBJECTS = "objects"
   DATA_ACTIONS = 'actions'
 
-  event :tile_contents_changed # An object moved, etc.
+  event :tile_contents_changed # An object moved or wall changed, etc.
   event :tile_type_changed # The actual type itself changed.
+  event :wall_type_changed # The actual type itself changed.
 
   attr_reader :grid_width, :grid_height, :actions, :entities
   attr_reader :goodies, :baddies, :bystanders, :active_faction, :turn
@@ -113,6 +114,10 @@ class Map
     # Ensure that if any tiles are changed, that the map is redrawn.
     subscribe :tile_type_changed do
       record
+    end
+
+    subscribe :wall_type_changed do |sender, wall|
+      publish :tile_contents_changed, wall.tiles.first
     end
   end
 

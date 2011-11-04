@@ -24,6 +24,21 @@ class EditorAction < Fidgit::History::Action
     end
   end
 
+  class SetWallType < self
+    def initialize(wall, new_type)
+      @wall, @new_type = wall, new_type
+      @old_type = @wall.type
+    end
+
+    def do
+      @wall.type = @new_type
+    end
+
+    def undo
+      @wall.type = @old_type
+    end
+  end
+
   class PlaceObject < self
     def initialize(tile, type)
       @tile, @type = tile, type
