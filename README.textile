@@ -64,8 +64,8 @@ h2. Credits
 
 Many thanks to:
 
-* SiliconEidolon and Michael Margerison for epic brainstorming sessions.
-* Michael Margerison for play-testing and suggestions.
+* Kaiserbill and SiliconEidolon for epic brainstorming sessions.
+* Kaiserbill and SiliconEidolon and for play-testing and feedback.
 
 h2. Third party tools and assets used
 

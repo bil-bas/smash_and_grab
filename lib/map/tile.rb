@@ -1,4 +1,6 @@
 class Tile < GameObject
+  include Fidgit::Event
+
   WIDTH, HEIGHT = 32, 16
 
   # x, y, direction, min height to cause occlusion.
@@ -14,6 +16,8 @@ class Tile < GameObject
       [[-2,  2], :right,  2],
   ]
 
+  event :updated
+
   attr_reader :objects, :grid_x, :grid_y, :movement_cost, :map, :minimap_color
 
   def empty?; @objects.empty?; end
@@ -22,19 +26,18 @@ class Tile < GameObject
 
   # Blank white tile, useful for colourising tiles.
   def self.blank; @@sprites[0]; end
-  
+  def self.config; @@config ||= YAML.load_file(File.expand_path("config/map/tiles.yml", EXTRACT_PATH)); end
+  def self.sprites; @@sprites ||= SpriteSheet.new("floor_tiles.png", WIDTH, HEIGHT, 8); end
+
   def initialize(type, map, grid_x, grid_y)
     @type, @map, @grid_x, @grid_y = type, map, grid_x, grid_y
 
-    @@tiles_config ||= YAML.load_file(File.expand_path("config/map/tiles.yml", EXTRACT_PATH))
-    config = @@tiles_config[type]
+    config = self.class.config[type]
 
     @minimap_color = config['minimap_color']
     @movement_cost = config['movement_cost']
 
-    @@sprites ||= SpriteSheet.new("floor_tiles.png", WIDTH, HEIGHT, 8)
-
-    super(image: @@sprites[*config['spritesheet_position']],
+    super(image: self.class.sprites[*config['spritesheet_position']],
           x: (@grid_y + @grid_x) * WIDTH / 2, y: (@grid_y - @grid_x) * HEIGHT / 2)
 
     self.zorder = @y
@@ -67,6 +70,8 @@ class Tile < GameObject
 
     modify_occlusions +1
 
+    map.publish :tile_updated, self
+
     object
   end
 
@@ -76,6 +81,8 @@ class Tile < GameObject
     @objects.delete object
 
     modify_occlusions -1
+
+    map.publish :tile_updated, self
 
     object
   end

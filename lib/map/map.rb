@@ -2,6 +2,7 @@ require_relative 'action_history'
 require_relative 'faction'
 
 class Map
+  include Fidgit::Event
   include Log
 
   class TileRow
@@ -27,6 +28,8 @@ class Map
     end
   end
 
+  # --------------------------------------------
+
   DATA_COMMENT = 'comment'
   DATA_GAME_STARTED_AT = 'game_started_at'
   DATA_LAST_SAVED_AT = 'last_saved_at'
@@ -37,6 +40,8 @@ class Map
   DATA_ENTITIES = "entities"
   DATA_OBJECTS = "objects"
   DATA_ACTIONS = 'actions'
+
+  event :tile_updated
 
   attr_reader :grid_width, :grid_height, :actions, :entities
   attr_reader :goodies, :baddies, :bystanders, :active_faction, :turn

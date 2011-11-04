@@ -175,8 +175,6 @@ class Entity < StaticObject
   def move(tiles, movement_cost)
     raise "Not enough movement points (tried to move #{movement_cost} with #{@movement_points} left)" unless movement_cost <= @movement_points
 
-    parent.mouse_selection.select nil
-
     destination = tiles.last
     @movement_points -= movement_cost
 
@@ -190,11 +188,7 @@ class Entity < StaticObject
     @tile.remove self
     destination << self
 
-    [@tile, destination].each {|t| parent.minimap.update_tile t }
-
     @tile = destination
-
-    parent.mouse_selection.select self
   end
 
   def to_json(*a)
