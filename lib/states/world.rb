@@ -167,7 +167,7 @@ class World < Fidgit::GuiState
 
     @minimap.draw
 
-    @font.draw @fps_text, 200, 0, ZOrder::GUI
+    @font.draw @fps_text, 220, 0, ZOrder::GUI
 
     # Draw the gui in large.
     $window.scale 4 do

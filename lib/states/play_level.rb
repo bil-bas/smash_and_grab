@@ -174,13 +174,13 @@ class PlayLevel < World
       end
     end
 
-    @font.draw "Turn: #{@map.turn + 1} Player: #{@map.active_faction}", 200, 35, ZOrder::GUI
+    @font.draw "Turn: #{@map.turn + 1} Player: #{@map.active_faction}", 220, 35, ZOrder::GUI
 
     active = @mouse_selection.selected
     status_text = active ? "'#{active.name}' #{active.grid_position} #{active.health} HP / #{active.mp} MP / #{active.ap} AP" : "???"
     @font.draw status_text, 200, 475, ZOrder::GUI
 
-    @font.draw "Turn: #{@map.turn + 1} Player: #{@map.active_faction}", 200, 35, ZOrder::GUI
+    @font.draw "Turn: #{@map.turn + 1} Player: #{@map.active_faction}", 220, 35, ZOrder::GUI
   end
 
   def update

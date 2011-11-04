@@ -36,27 +36,18 @@ class EditLevel < World
 
   def create_gui
     vertical padding: 1, background_color: Color::BLACK do
-      horizontal padding: 0 do
-        button "Undo", padding_h: 1, font_height: 5 do
-          undo_action
-        end
-
-        button "Redo", padding_h: 1, font_height: 5, align_h: :right do
-          redo_action
-        end
-      end
-
       vertical padding: 0, spacing: 0 do
         @tabs_group = group do
           @tab_buttons = horizontal padding: 0, spacing: 2 do
             OBJECT_TABS.each do |name|
-              radio_button(name.to_s[0].capitalize, name, border_thickness: 0)
+              radio_button(name.to_s[0].capitalize, name, border_thickness: 0, tip: name.to_s.capitalize)
             end
           end
 
           subscribe :changed do |sender, value|
             current = @tab_buttons.find {|elem| elem.value == value }
             @tab_buttons.each {|t| t.enabled = (t != current) }
+            current.color, current.background_color = current.background_color, current.color
 
             setup_tab value
           end
@@ -64,6 +55,16 @@ class EditLevel < World
 
         @tab_contents = vertical padding: 0 do
           # put a tab in here at a later date.
+        end
+      end
+
+      horizontal padding: 0, padding_top: 5 do
+        button "Undo", padding_h: 1, font_height: 5 do
+          undo_action
+        end
+
+        button "Redo", padding_h: 1, font_height: 5 do
+          redo_action
         end
       end
     end
@@ -74,18 +75,21 @@ class EditLevel < World
   def setup_tab(tab)
     @tab_contents.clear
 
+    scroll_options = { width: 50, height: 120 }
+
     case tab
       when :tiles
         unless defined? @tiles_window
-          @tiles_window = Fidgit::ScrollWindow.new width: 45, height: 120 do
+          @tiles_window = Fidgit::ScrollWindow.new scroll_options do
             buttons = group do
               vertical padding: 1 do
                 radio_button 'Erase', 'none'
-
-                Tile.config.each_pair do |type, data|
-                  next if type == 'none'
-                  radio_button '', type, icon: Tile.sprites[*data['spritesheet_position']],
-                               tip: type, padding: 0, icon_options: { factor: 0.5 }
+                grid padding: 0, num_columns: 2 do
+                  Tile.config.each_pair.sort.each do |type, data|
+                    next if type == 'none'
+                    radio_button '', type, icon: Tile.sprites[*data['spritesheet_position']],
+                                 tip: type, padding: 0, icon_options: { factor: 0.5 }
+                  end
                 end
               end
             end
@@ -98,14 +102,16 @@ class EditLevel < World
 
       when :entities
         unless defined? @entities_window
-          @entities_window = Fidgit::ScrollWindow.new width: 45, height: 120 do
+          @entities_window = Fidgit::ScrollWindow.new scroll_options do
             buttons = group do
               vertical padding: 1 do
                 radio_button 'Erase', :erase
+                grid padding: 0, num_columns: 2 do
 
-                Entity.config.each_pair do |type, data|
-                  radio_button '', type, icon: Entity.sprites[*data['spritesheet_position']],
-                               tip: type, padding: 0, icon_options: { factor: 0.25 }
+                  Entity.config.each_pair.sort.each do |type, data|
+                    radio_button '', type, icon: Entity.sprites[*data['spritesheet_position']],
+                                 tip: "#{type} (#{data['faction']})", padding: 0, icon_options: { factor: 0.25 }
+                  end
                 end
               end
             end
@@ -118,15 +124,16 @@ class EditLevel < World
 
       when :walls
         unless defined? @walls_window
-          @walls_window = Fidgit::ScrollWindow.new width: 45, height: 120 do
+          @walls_window = Fidgit::ScrollWindow.new scroll_options do
             buttons = group do
               vertical padding: 1 do
                 radio_button 'Erase', 'none'
-
-                Wall.config.each_pair do |type, data|
-                  next if type == 'none'
-                  radio_button '', type, icon: Wall.sprites[*(data['spritesheet_positions']['vertical'])],
-                               tip: type, padding: 0, icon_options: { factor: 0.25 }
+                grid padding: 0, num_columns: 3 do
+                  Wall.config.each_pair.sort.each do |type, data|
+                    next if type == 'none'
+                    radio_button '', type, icon: Wall.sprites[*(data['spritesheet_positions']['vertical'])],
+                                 tip: type, padding: 0, icon_options: { factor: 0.25 }
+                  end
                 end
               end
             end
