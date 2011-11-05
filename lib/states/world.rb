@@ -11,9 +11,12 @@ class World < Fidgit::GuiState
   MIN_ZOOM = 4.0
   INITIAL_ZOOM = 2.0
   BACKGROUND_COLOR = Color.rgba(35, 20, 20, 255)
+  GRID_COLOR = Color.rgba(150, 150, 150, 150)
 
   def map=(map)
     @map = map
+    @map.record_grid GRID_COLOR
+
     @camera_offset_x, @camera_offset_y = [0, -@map.to_rect.center_y]
 
     @minimap = Minimap.new @map

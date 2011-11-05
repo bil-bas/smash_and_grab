@@ -21,7 +21,9 @@ class Tile < GameObject
   def empty?; @object.nil?; end
   def to_s; "<#{self.class.name}##{@type} #{grid_position}>"; end
   def grid_position; [@grid_x, @grid_y]; end
+  def position; [@x, @y]; end
   def needs_to_be_seen?; (@temp_occlusions > 0) or @object; end # Causes walls to become transparent.
+  def blocks_sight?; @type == 'none' or (@object and @object.blocks_sight?); end
 
   # Blank white tile, useful for colourising tiles.
   def self.blank; @@sprites[0]; end

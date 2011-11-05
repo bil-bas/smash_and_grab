@@ -173,7 +173,8 @@ class Map
   end
   
   def tile_at_position(x, y)
-    x += Tile::WIDTH / 2
+    x += Tile::WIDTH / 2.0
+    y = y.to_f
     tile_at_grid(x / Tile::WIDTH - y / Tile::HEIGHT,
                  x / Tile::WIDTH + y / Tile::HEIGHT)
   end
@@ -224,6 +225,25 @@ class Map
 
   def draw_objects
     @drawable_objects.each(&:draw)
+  end
+
+  def record_grid(color)
+    @grid_record = $window.record do
+      # Lines top to bottom.
+      @tiles.each do |row|
+        tile = row.first
+        $window.pixel.draw_rot tile.x - 16, tile.y, ZOrder::TILE_SELECTION, -26.55, 0, 0.5, row.size * 17.9, 1, color
+      end
+
+      # Lines left to right.
+      @tiles.first.each do |tile|
+        $window.pixel.draw_rot tile.x - 16, tile.y, ZOrder::TILE_SELECTION, +26.55, 0, 0.5, @grid_width * 17.9, 1, color
+      end
+    end
+  end
+
+  def draw_grid(camera_offset_x, camera_offset_y, zoom)
+    @grid_record.draw -camera_offset_x, -camera_offset_y, ZOrder::TILE_SELECTION, zoom, zoom
   end
 
   def save_data

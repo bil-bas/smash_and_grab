@@ -14,6 +14,7 @@ class WorldObject < GameObject
   attr_accessor :z
 
   def id; @map.id_for_object(self); end
+  def blocks_sight?; true; end
 
   OUTLINE_SCALE = Image::THIN_OUTLINE_SCALE
 

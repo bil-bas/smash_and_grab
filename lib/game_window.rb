@@ -7,7 +7,7 @@ class GameWindow < Chingu::Window
     @pixel = Image.create 1, 1
     @pixel.clear color: :white
 
-    self.caption = "Smash and Grab - By Spooner [Escape - exit; Space - end turn; F5/F6 - quicksave/load; Ctrl-z/y - undo/redo; Arrows - scroll map]"
+    self.caption = "Smash and Grab - By Spooner [Escape - exit; Space - end turn; F5/F6 - quicksave/load; G - grid; Arrows - scroll]"
 
     self.cursor = true
 
