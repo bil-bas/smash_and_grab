@@ -1,3 +1,5 @@
+Config = RbConfig if RUBY_VERSION > '1.9.2' # Hack to allow stuff that isn't compatible with 1.9.3 to work.
+
 require 'rake/clean'
 require 'redcloth'
 require_relative "lib/version"

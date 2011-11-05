@@ -23,7 +23,7 @@ class PlayLevel < World
     horizontal spacing: 0, padding: 0 do
       horizontal spacing: 2, padding: 0 do
         group do
-          vertical padding: 1, spacing: 2, background_color: Color::BLACK, do
+          vertical padding: 1, spacing: 2, background_color: Color::BLACK do
             [@map.baddies.size, 8].min.times do |i|
               horizontal background_color: Color::BLUE, padding: 0 do
                 image_frame @map.baddies[i].image, factor: 0.25, padding: 0, background_color: Color::GRAY

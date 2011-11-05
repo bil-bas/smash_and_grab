@@ -1,3 +1,5 @@
+Config = RbConfig if RUBY_VERSION > '1.9.2' # Hack to allow stuff that isn't compatible with 1.9.3 to work.
+
 def require_folder(path, files)
   files.each do |file|
     if path.empty?
