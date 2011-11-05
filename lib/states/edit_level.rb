@@ -1,7 +1,7 @@
 require_relative 'world'
 
 class EditLevel < World
-  SAVE_FOLDER = File.expand_path("config/levels", ROOT_PATH)
+  SAVE_FOLDER = File.expand_path("config/levels", EXTRACT_PATH)
   QUICKSAVE_FILE = File.expand_path("01_bank.sgl", SAVE_FOLDER)
   OBJECT_TABS = [:tiles, :entities, :objects, :walls]
 

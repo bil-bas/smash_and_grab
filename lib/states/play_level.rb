@@ -2,7 +2,7 @@ require_relative 'world'
 
 class PlayLevel < World
   SAVE_FOLDER = File.expand_path("saves", ROOT_PATH)
-  LOAD_FOLDER = File.expand_path("config/levels", ROOT_PATH)
+  LOAD_FOLDER = File.expand_path("config/levels", EXTRACT_PATH)
   QUICKSAVE_FILE = File.expand_path("quicksave.sgs", SAVE_FOLDER)
   AUTOSAVE_FILE = File.expand_path("autosave.sgs", SAVE_FOLDER)
   ORIGINAL_FILE = File.expand_path("01_bank.sgl", LOAD_FOLDER)
