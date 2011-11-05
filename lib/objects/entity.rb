@@ -120,7 +120,8 @@ class Entity < WorldObject
       end
     end
 
-    tiles.reject {|t| t.object and friend? t.object }
+    # Don't highlight anything you can run through (but not move onto).
+    tiles.reject {|t| t.object and t.object.passable?(self) }
   end
 
   # A* path-finding.
@@ -148,7 +149,8 @@ class Entity < WorldObject
 
         new_path = nil
 
-        if entity = testing_tile.object and enemy?(entity)
+        object = testing_tile.object
+        if object and object.is_a?(Entity) and enemy?(object)
           # Ensure that the current tile is somewhere we could launch an attack from and we could actually perform it.
           if (current_tile.empty? or current_tile == tile) and ap >= MELEE_COST
             new_path = MeleePath.new(path, testing_tile)
@@ -156,7 +158,11 @@ class Entity < WorldObject
             next
           end
         elsif testing_tile.passable?(self)
-          new_path = MovePath.new(path, testing_tile, wall.movement_cost)
+          if (object.nil? or object.passable?(self))
+            new_path = MovePath.new(path, testing_tile, wall.movement_cost)
+          else
+            next
+          end
         end
 
         return InaccessiblePath.new(destination_tile) if new_path.nil?

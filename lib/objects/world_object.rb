@@ -23,7 +23,7 @@ class WorldObject < GameObject
         z: 0,
     }.merge! options
   
-    create_shadow(options[:position]) 
+    create_shadow(options[:position])
 
     super(options)
 

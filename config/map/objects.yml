@@ -1,0 +1,14 @@
+---
+
+# === OBJECTS CONFIG ===
+# Objects are immobile, and cannot be controlled by the player/AI.
+
+bag_of_cash:
+  spritesheet_position: [1, 0]
+  minimap_color: [255, 255, 255]
+  passable: true
+
+tree:
+  spritesheet_position: [0, 0]
+  minimap_color: [0, 150, 0]
+  passable: false

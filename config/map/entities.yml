@@ -1,5 +1,8 @@
 ---
 
+# === ENTITIES CONFIG ===
+# Entities are mobile people and creatures, which can be moved by player/AI.
+
 # === BADDIES ===
 
 # - Supervillains -

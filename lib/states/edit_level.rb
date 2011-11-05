@@ -3,7 +3,7 @@ require_relative 'world'
 class EditLevel < World
   SAVE_FOLDER = File.expand_path("config/levels", ROOT_PATH)
   QUICKSAVE_FILE = File.expand_path("01_bank.sgl", SAVE_FOLDER)
-  OBJECT_TABS = [:tiles, :entities, :walls]
+  OBJECT_TABS = [:tiles, :entities, :objects, :walls]
   GRID_COLOR = Color.rgba(150, 150, 150, 150)
 
   def initialize
@@ -22,16 +22,21 @@ class EditLevel < World
           when :tiles
             @selector_group.value = @hover_tile.type if @hover_tile
 
-          when :entities
+          when :entities, :objects
             if @hover_tile
-              if @hover_tile.object
-                @selector_group.value = @hover_tile.object.type
+              object = @hover_tile.object
+              if object
+                if (@tabs_group.value == :entities) and not object.is_a?(Entity)
+                  @tabs_group.value = :objects
+                elsif (@tabs_group.value == :objects) and not object.is_a?(StaticObject)
+                  @tabs_group.value = :entities
+                end
+
+                @selector_group.value = object.type
               else
                 @selector_group.value = :erase
               end
             end
-
-          when :objects
 
           when :walls
             @selector_group.value = @hover_wall.type if @hover_wall
@@ -59,7 +64,7 @@ class EditLevel < World
             @tab_buttons.each {|t| t.enabled = (t != current) }
             current.color, current.background_color = current.background_color, current.color
 
-            setup_tab value
+            select_tab value
           end
         end
 
@@ -82,7 +87,7 @@ class EditLevel < World
     @tabs_group.value = OBJECT_TABS.first
   end
 
-  def setup_tab(tab)
+  def select_tab(tab)
     @tab_contents.clear
 
     scroll_options = { width: 50, height: 120 }
@@ -98,7 +103,7 @@ class EditLevel < World
                   Tile.config.each_pair.sort.each do |type, data|
                     next if type == 'none'
                     radio_button '', type, icon: Tile.sprites[*data['spritesheet_position']],
-                                 tip: type, padding: 0, icon_options: { factor: 0.5 }
+                                 tip: "Tile: #{type}", padding: 0, icon_options: { factor: 0.5 }
                   end
                 end
               end
@@ -120,7 +125,7 @@ class EditLevel < World
 
                   Entity.config.each_pair.sort.each do |type, data|
                     radio_button '', type, icon: Entity.sprites[*data['spritesheet_position']],
-                                 tip: "#{type} (#{data['faction']})", padding: 0, icon_options: { factor: 0.25 }
+                                 tip: "Entity: #{type} (#{data['faction']})", padding: 0, icon_options: { factor: 0.25 }
                   end
                 end
               end
@@ -132,6 +137,28 @@ class EditLevel < World
 
         @selector_window = @entities_window
 
+      when :objects
+        unless defined? @objects_window
+          @objects_window = Fidgit::ScrollWindow.new scroll_options do
+            buttons = group do
+              vertical padding: 1 do
+                radio_button 'Erase', :erase
+                grid padding: 0, num_columns: 2 do
+
+                  StaticObject.config.each_pair.sort.each do |type, data|
+                    radio_button '', type, icon: StaticObject.sprites[*data['spritesheet_position']],
+                                 tip: "Object: #{type}", padding: 0, icon_options: { factor: 0.25 }
+                  end
+                end
+              end
+            end
+
+            buttons.value = :erase
+          end
+        end
+
+        @selector_window = @objects_window
+
       when :walls
         unless defined? @walls_window
           @walls_window = Fidgit::ScrollWindow.new scroll_options do
@@ -142,7 +169,7 @@ class EditLevel < World
                   Wall.config.each_pair.sort.each do |type, data|
                     next if type == 'none'
                     radio_button '', type, icon: Wall.sprites[*(data['spritesheet_positions']['vertical'])],
-                                 tip: type, padding: 0, icon_options: { factor: 0.25 }
+                                 tip: "Wall: #{type}", padding: 0, icon_options: { factor: 0.25 }
                   end
                 end
               end
@@ -235,7 +262,9 @@ class EditLevel < World
             end
           end
 
-        when :entities
+        when :entities, :objects
+          klass = (@tabs_group.value == :entities) ? Entity : StaticObject
+
           if @hover_tile
             if @selector_group.value == :erase
               @actions.do :erase_object, @hover_tile unless @hover_tile.empty?
@@ -243,7 +272,7 @@ class EditLevel < World
               if @hover_tile.empty? or
                   (@hover_tile.object and @hover_tile.object.type != @selector_group.value)
 
-                @actions.do :place_object, @hover_tile, Entity, @selector_group.value
+                @actions.do :place_object, @hover_tile, klass, @selector_group.value
               end
             end
           end
