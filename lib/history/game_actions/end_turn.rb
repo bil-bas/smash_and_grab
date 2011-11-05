@@ -1,7 +1,7 @@
 class GameAction::EndTurn < GameAction
   def initialize(map, data = nil)
     @map = map
-    super
+    super()
   end
 
   def can_be_undone?; false; end
