@@ -1,5 +1,11 @@
 class WorldObject < GameObject
+  include Log
   extend Forwardable
+
+  DATA_CLASS = 'class'
+  DATA_TYPE = 'type'
+  DATA_ID = 'id'
+  DATA_TILE = 'tile'
 
   def_delegators :@tile, :map, :grid_position, :grid_x, :grid_y
 
@@ -7,23 +13,33 @@ class WorldObject < GameObject
 
   attr_accessor :z
 
+  def id; @map.id_for_object(self); end
+
   OUTLINE_SCALE = Image::THIN_OUTLINE_SCALE
 
-  def initialize(tile, options = {})
+  def initialize(map, data, options = {})
     options = {
         rotation_center: :bottom_center,
         z: 0,
-    }.merge! options  
+    }.merge! options
   
     create_shadow(options[:position]) 
-  
-    @z = options[:z]
-    @tile = tile
 
     super(options)
 
-    @tile.map << self
-    @tile << self
+    @map = map
+    @map << self
+
+    if data[DATA_TILE]
+      @tile = @map.tile_at_grid(*data[DATA_TILE])
+      @tile << self
+    else
+      @tile = nil
+    end
+
+    @z = options[:z]
+
+    log.debug { "Created #{self}" }
   end
 
   def create_shadow(position)
@@ -45,7 +61,7 @@ class WorldObject < GameObject
   end
 
   def destroy
-    tile.remove self
+    tile.remove self if tile
     map.remove self
 
     super

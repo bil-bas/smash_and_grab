@@ -56,7 +56,7 @@ Font.autoload_dirs.unshift File.join(media_dir, 'fonts')
 # Include other files.
 require_folder("", %w[log version sprite_sheet z_order z_order_recorder game_window minimap mouse_selection])
 require_folder("map", %w[tile wall map])
-require_folder("objects", %w[static_object dynamic_object entity])
+require_folder("objects", %w[static_object entity])
 require_folder("states", %w[edit_level play_level main_menu])
 require_folder("history", %w[editor_action_history game_action_history])
 

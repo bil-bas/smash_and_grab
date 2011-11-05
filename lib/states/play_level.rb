@@ -24,7 +24,7 @@ class PlayLevel < World
       horizontal spacing: 2, padding: 0 do
         group do
           vertical padding: 1, spacing: 2, background_color: Color::BLACK, do
-            8.times do |i|
+            [@map.baddies.size, 8].min.times do |i|
               horizontal background_color: Color::BLUE, padding: 0 do
                 image_frame @map.baddies[i].image, factor: 0.25, padding: 0, background_color: Color::GRAY
                 vertical padding: 0, spacing: 0 do
@@ -40,7 +40,7 @@ class PlayLevel < World
 
         horizontal padding: 0, padding_top: 125 do
           horizontal padding: 1, spacing: 2, background_color: Color::BLACK do
-            image_frame @map.entities[0].image, factor: 0.25, padding: 0, background_color: Color::GRAY
+            image_frame @map.baddies[0].image, factor: 0.25, padding: 0, background_color: Color::GRAY
             text_area text: "Detailed info about the currently selected super-chicken (of prodigious size).\nAnd superpower buttons ......",
                       width: 100, font_height: 4
           end

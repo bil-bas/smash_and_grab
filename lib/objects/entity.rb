@@ -1,15 +1,16 @@
 require 'set'
 require_relative "../path"
+require_relative "world_object"
 
-class Entity < StaticObject
+class Entity < WorldObject
   extend Forwardable
 
-  DATA_TYPE = 'type'
-  DATA_TILE = 'tile'
+  CLASS = 'entity'
   DATA_MOVEMENT_POINTS = 'movement_points'
   DATA_ACTION_POINTS = 'action_points'
   DATA_HEALTH = 'health'
   DATA_FACING = 'facing'
+
   MELEE_COST = 2
   MELEE_DAMAGE = 5
 
@@ -20,13 +21,13 @@ class Entity < StaticObject
   alias_method :mp, :movement_points
   alias_method :ap, :action_points
 
-  def to_s; "<#{self.class.name}##{@type} #{grid_position}>"; end
+  def to_s; "<#{self.class.name}/#{@type}##{id} #{tile ? grid_position : "[off-map]"}>"; end
   def name; @type.split("_").map(&:capitalize).join(" "); end
+  def alive?; @health > 0 and @tile; end
 
   def self.config; @@config ||= YAML.load_file(File.expand_path("config/map/entities.yml", EXTRACT_PATH)); end
   def self.types; config.keys; end
   def self.sprites; @@sprites ||= SpriteSheet.new("characters.png", 64 + 2, 64 + 2, 8); end
-
 
   def initialize(map, data)
     @type = data['type']
@@ -39,7 +40,7 @@ class Entity < StaticObject
         factor_x: data[DATA_FACING] == 'right' ? 1 : -1,
     }
 
-    super(map.tile_at_grid(*data[DATA_TILE]), options)
+    super(map, data, options)
 
     raise @type unless @image
 
@@ -57,8 +58,9 @@ class Entity < StaticObject
 
   def health=(value)
     @health = [value, 0].max
-    if @health == 0
-      destroy
+    if @health == 0 and @tile
+      @tile.remove self
+      @tile = nil
     end
   end
 
@@ -74,6 +76,10 @@ class Entity < StaticObject
 
   def end_turn
     # Do something?
+  end
+
+  def draw
+    super() if @tile
   end
 
   def friend?(character); @faction.friend? character.faction; end
@@ -191,13 +197,18 @@ class Entity < StaticObject
   end
 
   def to_json(*a)
-    {
+    data = {
+        DATA_CLASS => CLASS,
         DATA_TYPE => @type,
-        DATA_TILE => grid_position,
+        DATA_ID => id,
         DATA_HEALTH => @health,
         DATA_MOVEMENT_POINTS => @movement_points,
         DATA_ACTION_POINTS => @action_points,
         DATA_FACING => factor_x > 0 ? :right : :left,
-    }.to_json(*a)
+    }
+
+    data[DATA_TILE] = grid_position if @tile
+
+    data.to_json(*a)
   end
 end

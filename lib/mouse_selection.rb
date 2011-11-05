@@ -39,7 +39,7 @@ class MouseSelection < GameObject
       modify_occlusions @path.tiles, -1 if @path
 
       if @hover_tile
-        @path = @selected_tile.objects.last.path_to(@hover_tile)
+        @path = @selected_tile.entity.path_to(@hover_tile)
         @path.prepare_for_drawing(@potential_moves)
         modify_occlusions @path.tiles, +1
       else
@@ -107,7 +107,7 @@ class MouseSelection < GameObject
           when MeleePath
             @map.actions.do :move, path.previous_path if path.requires_movement?
             @map.actions.do :melee, path
-            @selected_tile = path.attacker
+            @selected_tile = path.attacker.tile
         end
         calculate_path
         calculate_potential_moves

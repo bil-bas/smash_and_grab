@@ -36,7 +36,6 @@ class Map
   DATA_SIZE = "map_size"
   DATA_TILES = "tiles"
   DATA_WALLS = "walls"
-  DATA_ENTITIES = "entities"
   DATA_OBJECTS = "objects"
   DATA_ACTIONS = 'actions'
 
@@ -44,7 +43,7 @@ class Map
   event :tile_type_changed # The actual type itself changed.
   event :wall_type_changed # The actual type itself changed.
 
-  attr_reader :grid_width, :grid_height, :actions, :entities
+  attr_reader :grid_width, :grid_height, :actions
   attr_reader :goodies, :baddies, :bystanders, :active_faction, :turn
     
   def to_rect; Rect.new(0, 0, @grid_width * Tile::WIDTH, @grid_height * Tile::HEIGHT); end
@@ -53,10 +52,9 @@ class Map
   def initialize(data)
     t = Time.now
 
-    @objects = []
-    @entities = []
-    @static_objects = []
-    @walls = [] # Only the visible walls are stored. Others are ignored.
+    @world_objects = []
+    @drawable_objects = []
+    @drawable_walls = [] # Only the visible walls are stored. Others are ignored.
 
     @grid_width, @grid_height = data[DATA_TILES].size, data[DATA_TILES][0].size
     @tiles = data[DATA_TILES].map.with_index do |row, y|
@@ -90,8 +88,15 @@ class Map
 
     @factions = [@baddies, @goodies, @bystanders] # And order of play.
 
-    data[DATA_ENTITIES].each do |entity_data|
-      Entity.new self, entity_data
+    data[DATA_OBJECTS].each do |object_data|
+      case object_data[WorldObject::DATA_CLASS]
+        when Entity::CLASS
+          Entity.new self, object_data
+        when StaticObject::CLASS
+          StaticObject.new self, object_data
+        else
+          raise "Bad object class #{object_data[WorldObject::DATA_CLASS].inspect}"
+      end
     end
 
     @actions = GameActionHistory.new self, data[DATA_ACTIONS]
@@ -119,6 +124,15 @@ class Map
     subscribe :wall_type_changed do |sender, wall|
       publish :tile_contents_changed, wall.tiles.first
     end
+  end
+
+  def object_by_id(id)
+    raise "Bad id #{id.inspect}" unless (0...@world_objects.size).include? id
+    @world_objects[id]
+  end
+
+  def id_for_object(object)
+    @world_objects.index(object) || raise(ArgumentError, "Bad id #{id.inspect}")
   end
 
   def start_game
@@ -177,36 +191,38 @@ class Map
     @recorded_tiles.draw -offset_x, -offset_y, ZOrder::TILES, zoom, zoom
   end
 
+  # Add an object to the map.
   def <<(object)
     raise "can't add null object" if object.nil?
 
     case object
-      when Entity
-        @entities << object
+      when Entity, StaticObject
+        @world_objects << object
       when Wall
-        @walls << object
+        @drawable_walls << object
       else
         raise object.inspect
     end
 
-    @objects << object
+    @drawable_objects << object
   end
 
+  # Permanently remove an object from the map.
   def remove(object)
-    @objects.delete object
+    @drawable_objects.delete object
 
     case object
-      when Entity
-        @entities.delete object
+      when Entity, StaticObject
+        @world_objects.delete object
       when Wall
-        @walls.delete object
+        @drawable_walls.delete object
       else
         raise object.inspect
     end
   end
 
   def draw_objects
-    @objects.each(&:draw)
+    @drawable_objects.each(&:draw)
   end
 
   def save_data
@@ -217,9 +233,8 @@ class Map
         DATA_LAST_SAVED_AT => Time.now,
         DATA_SIZE => [@grid_width, @grid_height],
         DATA_TILES => @tiles,
-        DATA_WALLS => @walls,
-        DATA_ENTITIES => @entities,
-        DATA_OBJECTS => @static_objects,
+        DATA_WALLS => @drawable_walls,
+        DATA_OBJECTS => @world_objects,
         DATA_ACTIONS => @actions,
     }
   end

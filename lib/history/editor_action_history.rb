@@ -40,8 +40,8 @@ class EditorAction < Fidgit::History::Action
   end
 
   class PlaceObject < self
-    def initialize(tile, type)
-      @tile, @type = tile, type
+    def initialize(tile, object_class, type)
+      @tile, @object_class, @type = tile, object_class, type
       @old_object = @tile.objects.last
     end
 
@@ -51,10 +51,10 @@ class EditorAction < Fidgit::History::Action
         @tile.map.remove @old_object
       end
 
-      @new_object = Entity.new @tile.map,
-                               'type' => @type,
-                               'tile' => @tile.grid_position,
-                               'facing' => :right
+      @new_object = @object_class.new @tile.map,
+                                   'type' => @type,
+                                   'tile' => @tile.grid_position,
+                                   'facing' => :right
     end
 
     def undo

@@ -22,7 +22,7 @@ class Faction
   extend Forwardable
   include Log
 
-  def_delegators :@entities, :[]
+  def_delegators :@entities, :[], :size, :each
 
   def friend?(faction); faction.is_a? self.class; end
   def enemy?(faction); not friend?(faction); end

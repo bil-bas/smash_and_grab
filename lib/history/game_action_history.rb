@@ -23,8 +23,8 @@ class GameAction < Fidgit::History::Action
   include Log
 
   class Melee < self
-    DATA_ATTACKER = 'attacker'
-    DATA_DEFENDER = 'defender'
+    DATA_ATTACKER = 'attacker_id'
+    DATA_DEFENDER = 'defender_id'
 
     def initialize(map, data)
       @map = map
@@ -34,8 +34,8 @@ class GameAction < Fidgit::History::Action
           @attacker, @defender = data.attacker, data.defender
           @time = Time.now
         when Hash
-          @attacker = @map.tile_at_grid(*data[DATA_ATTACKER])
-          @defender = @map.tile_at_grid(*data[DATA_DEFENDER])
+          @attacker = @map.object_by_id data[DATA_ATTACKER]
+          @defender = @map.object_by_id data[DATA_DEFENDER]
           @time = data[DATA_TIME]
         else
           raise data.to_s
@@ -43,21 +43,22 @@ class GameAction < Fidgit::History::Action
     end
 
     def do
-      @attacker.entity.melee(@defender.entity)
+      @attacker.melee(@defender)
     end
 
     def can_be_undone?; false; end
 
     def save_data
       {
-        DATA_ATTACKER => @attacker.grid_position,
-        DATA_DEFENDER => @defender.grid_position,
+        DATA_ATTACKER => @attacker.id,
+        DATA_DEFENDER => @defender.id,
       }
     end
   end
 
   class Move < self
     DATA_PATH = 'path'
+    DATA_ID = 'entity_id' # Ignored when reading.
     DATA_MOVEMENT_COST = 'movement_cost'
 
     def initialize(map, data)
@@ -65,10 +66,12 @@ class GameAction < Fidgit::History::Action
 
       case data
         when MovePath
+          @mover = data.mover
           @path = data.tiles
           @movement_cost = data.move_distance
           @time = Time.now
         when Hash
+          @mover = map.object_by_id(data[DATA_ID])
           @path = data[DATA_PATH].map {|x, y| @map.tile_at_grid(x, y) }
           @movement_cost = data[DATA_MOVEMENT_COST]
           @time = data[DATA_TIME]
@@ -78,17 +81,16 @@ class GameAction < Fidgit::History::Action
     end
 
     def do
-      object = @path.first.objects.last
-      object.move(@path[1..-1], @movement_cost)
+      @mover.move(@path[1..-1], @movement_cost)
     end
 
     def undo
-      object = @path.last.objects.last
-      object.move(@path.reverse[1..-1], -@movement_cost)
+      @mover.move(@path.reverse[1..-1], -@movement_cost)
     end
 
     def save_data
       {
+        DATA_ID => @mover.id,
         DATA_PATH => @path.map(&:grid_position),
         DATA_MOVEMENT_COST => @movement_cost,
       }

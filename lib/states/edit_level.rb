@@ -243,7 +243,7 @@ class EditLevel < World
               if @hover_tile.empty? or
                   (@hover_tile.entity and @hover_tile.entity.type != @selector_group.value)
 
-                @actions.do :place_object, @hover_tile, @selector_group.value
+                @actions.do :place_object, @hover_tile, Entity, @selector_group.value
               end
             end
           end
