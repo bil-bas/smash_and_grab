@@ -49,7 +49,7 @@ class Minimap < GameObject
 
     # Draw the tile object.
     unless tile.empty?
-      @image.rect x + 1, y, x + TILE_WIDTH - 1, y + TILE_WIDTH - 2, color: tile.objects.last.minimap_color, fill: true
+      @image.rect x + 1, y, x + TILE_WIDTH - 1, y + TILE_WIDTH - 2, color: tile.object.minimap_color, fill: true
     end
 
     tile

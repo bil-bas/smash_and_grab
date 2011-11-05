@@ -24,8 +24,8 @@ class EditLevel < World
 
           when :entities
             if @hover_tile
-              if @hover_tile.entity
-                @selector_group.value = @hover_tile.entity.type
+              if @hover_tile.object
+                @selector_group.value = @hover_tile.object.type
               else
                 @selector_group.value = :erase
               end
@@ -241,7 +241,7 @@ class EditLevel < World
               @actions.do :erase_object, @hover_tile unless @hover_tile.empty?
             else
               if @hover_tile.empty? or
-                  (@hover_tile.entity and @hover_tile.entity.type != @selector_group.value)
+                  (@hover_tile.object and @hover_tile.object.type != @selector_group.value)
 
                 @actions.do :place_object, @hover_tile, Entity, @selector_group.value
               end

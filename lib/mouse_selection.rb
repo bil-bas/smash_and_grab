@@ -5,7 +5,7 @@ class MouseSelection < GameObject
   MELEE_COLOR = Color.rgba(255, 0, 0, 120)
   NO_MOVE_COLOR = Color.rgba(255, 0, 0, 25)
 
-  def selected; @selected_tile ? @selected_tile.entity : nil; end
+  def selected; @selected_tile ? @selected_tile.object : nil; end
   
   def initialize(map, options = {})
     @map = map
@@ -39,7 +39,7 @@ class MouseSelection < GameObject
       modify_occlusions @path.tiles, -1 if @path
 
       if @hover_tile
-        @path = @selected_tile.entity.path_to(@hover_tile)
+        @path = @selected_tile.object.path_to(@hover_tile)
         @path.prepare_for_drawing(@potential_moves)
         modify_occlusions @path.tiles, +1
       else
@@ -53,7 +53,7 @@ class MouseSelection < GameObject
 
   def calculate_potential_moves
     modify_occlusions @potential_moves, -1
-    @potential_moves = @selected_tile.objects.last.potential_moves
+    @potential_moves = @selected_tile.object.potential_moves
     modify_occlusions @potential_moves, +1
     @moves_record = nil
   end
@@ -67,14 +67,14 @@ class MouseSelection < GameObject
   def draw(offset_x, offset_y, zoom)
     # Draw a disc under the selected object.
     if @selected_tile
-      selected_color = @selected_tile.objects.last.move? ? Color::GREEN : Color::BLACK
+      selected_color = @selected_tile.object.move? ? Color::GREEN : Color::BLACK
       @selected_image.draw_rot @selected_tile.x, @selected_tile.y, ZOrder::TILE_SELECTION, 0, 0.5, 0.5, 1, 1, selected_color
 
       # Highlight all squares that character can travel to.
       unless @potential_moves.empty?
         @moves_record ||= $window.record do
           @potential_moves.each do |tile|
-            color = if entity = tile.objects.last and entity.enemy?(@selected_tile.objects.last)
+            color = if entity = tile.object and entity.enemy?(@selected_tile.object)
               MELEE_COLOR
             else
               MOVE_COLOR
@@ -90,7 +90,7 @@ class MouseSelection < GameObject
       @path.draw -offset_x, -offset_y, zoom  if @path
 
     elsif @hover_tile
-      color = (@hover_tile.empty? or @hover_tile.entity.inactive?) ? Color::BLUE : Color::CYAN
+      color = (@hover_tile.empty? or @hover_tile.object.inactive?) ? Color::BLUE : Color::CYAN
       @mouse_hover_image.draw_rot @hover_tile.x, @hover_tile.y, ZOrder::TILE_SELECTION, 0, 0.5, 0.5, 1, 1, color
     end
   end
@@ -112,9 +112,9 @@ class MouseSelection < GameObject
         calculate_path
         calculate_potential_moves
       end
-    elsif @hover_tile and @hover_tile.entity.is_a? Entity and @hover_tile.entity.active?
+    elsif @hover_tile and @hover_tile.object.is_a? Entity and @hover_tile.object.active?
       # Select a character to move.
-      select(@hover_tile.objects.last)
+      select(@hover_tile.object)
     end
   end
 

@@ -120,7 +120,7 @@ class Entity < WorldObject
       end
     end
 
-    tiles.reject {|t| t.entity and friend? t.entity }
+    tiles.reject {|t| t.object and friend? t.object }
   end
 
   # A* path-finding.
@@ -148,7 +148,7 @@ class Entity < WorldObject
 
         new_path = nil
 
-        if entity = testing_tile.entity and enemy?(entity)
+        if entity = testing_tile.object and enemy?(entity)
           # Ensure that the current tile is somewhere we could launch an attack from and we could actually perform it.
           if (current_tile.empty? or current_tile == tile) and ap >= MELEE_COST
             new_path = MeleePath.new(path, testing_tile)

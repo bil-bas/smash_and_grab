@@ -73,7 +73,7 @@ end
 
 # A path consisting just of movement.
 class MovePath < Path
-  def mover; first.entity; end
+  def mover; first.object; end
   def initialize(previous_path, last, extra_move_distance)
     super(previous_path, last, last.movement_cost + extra_move_distance)
   end
@@ -84,8 +84,8 @@ class MeleePath < Path
   COLOR_IN_RANGE = Color::WHITE
   COLOR_OUT_OF_RANGE = Color.rgb(100, 100, 100)
 
-  def attacker; previous_path.last.entity; end
-  def defender; last.entity; end
+  def attacker; previous_path.last.object; end
+  def defender; last.object; end
   def requires_movement?; previous_path.is_a? MovePath; end
   def initialize(previous_path, last)
     super(previous_path, last, 0)
@@ -99,7 +99,7 @@ class MeleePath < Path
   def draw(*args)
     super(*args)
 
-    if last.entity.is_a? Entity
+    if last.object.is_a? Entity
       images[3, 1].draw_rot last.x, last.y, ZOrder::PATH, 0, 0.5, 0.5, 1, 1, @draw_color
     end
   end

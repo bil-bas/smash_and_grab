@@ -192,7 +192,7 @@ class Map
   end
 
   # Add an object to the map.
-  def <<(object)
+  def add(object)
     raise "can't add null object" if object.nil?
 
     case object
@@ -206,6 +206,7 @@ class Map
 
     @drawable_objects << object
   end
+  alias_method :<<, :add
 
   # Permanently remove an object from the map.
   def remove(object)

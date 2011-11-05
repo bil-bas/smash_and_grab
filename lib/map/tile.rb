@@ -16,12 +16,12 @@ class Tile < GameObject
       [[-2,  2], :right],
   ]
 
-  attr_reader :objects, :grid_x, :grid_y, :movement_cost, :map, :minimap_color, :type
+  attr_reader :object, :grid_x, :grid_y, :movement_cost, :map, :minimap_color, :type
 
-  def empty?; @objects.empty?; end
+  def empty?; @object.nil?; end
   def to_s; "<#{self.class.name}##{@type} #{grid_position}>"; end
   def grid_position; [@grid_x, @grid_y]; end
-  def needs_to_be_seen?; (@temp_occlusions > 0) or @objects.any?; end # Causes walls to become transparent.
+  def needs_to_be_seen?; (@temp_occlusions > 0) or @object; end # Causes walls to become transparent.
 
   # Blank white tile, useful for colourising tiles.
   def self.blank; @@sprites[0]; end
@@ -36,7 +36,7 @@ class Tile < GameObject
     self.type = type
     self.zorder = @y
 
-    @objects = []
+    @object = nil
     @walls = {}
 
     @temp_occlusions = 0
@@ -67,10 +67,8 @@ class Tile < GameObject
   end
 
   def end_turn_on?(person)
-    passable?(person) and @objects.all? {|o| o.end_turn_on?(person) }
+    passable?(person) and @object.end_turn_on?(person)
   end
-
-  def entity; @objects.find {|o| o.is_a? Entity }; end
 
   # List of squares that can be entered from this tile.
   def exits(person)
@@ -78,11 +76,11 @@ class Tile < GameObject
     walls.select {|w| w.allows_movement? and w.destination(self).passable?(person) }
   end
 
-  def <<(object)
-    raise "can't add null object" if object.nil?
-    raise "can't re-add object #{object.inspect}" if @objects.include? object
+  def add(object)
+    raise "Can't add null object" if object.nil?
+    raise "Tile already has an object, so can't add object #{object.inspect}" unless @object.nil?
 
-    @objects << object
+    @object = object
     object.x, object.y = [x, y]
 
     update_wall_occlusions
@@ -90,11 +88,12 @@ class Tile < GameObject
 
     object
   end
+  alias_method :<<, :add
 
   def remove(object)
-    raise "can't remove object #{object.inspect}" unless @objects.include? object
+    raise "Can't remove object #{object.inspect}" unless object == @object
 
-    @objects.delete object
+    @object = nil
 
     update_wall_occlusions
     map.publish :tile_contents_changed , self

@@ -1,7 +1,7 @@
 class EditorAction::PlaceObject < EditorAction
   def initialize(tile, object_class, type)
     @tile, @object_class, @type = tile, object_class, type
-    @old_object = @tile.objects.last
+    @old_object = @tile.object
   end
 
   def do

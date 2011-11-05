@@ -1,7 +1,7 @@
 class EditorAction::EraseObject < EditorAction
   def initialize(tile)
     @tile = tile
-    @object = @tile.objects.last
+    @object = @tile.object
   end
 
   def do
