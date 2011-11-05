@@ -23,11 +23,11 @@ class GameAction::Move < GameAction
   end
 
   def do
-    @mover.move(@path[1..-1], @movement_cost)
+    @mover.move(@path, @movement_cost)
   end
 
   def undo
-    @mover.move(@path.reverse[1..-1], -@movement_cost)
+    @mover.move(@path.reverse, -@movement_cost)
   end
 
   def save_data

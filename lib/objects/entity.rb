@@ -189,7 +189,7 @@ class Entity < WorldObject
     destination = tiles.last
     @movement_points -= movement_cost
 
-    change_in_x = destination.x - @tile.x
+    change_in_x = destination.x - tiles[-2].x
 
     # Turn based on movement.
     unless change_in_x == 0
