@@ -16,12 +16,12 @@ concrete:
 
 dirt:
   spritesheet_position: [3, 1]
-  minimap_color: [200, 50, 50]
+  minimap_color: [150, 75, 75]
   movement_cost: 1
 
 grass:
   spritesheet_position: [1, 0]
-  minimap_color: [0, 200, 0]
+  minimap_color: [50, 150, 50]
   movement_cost: 2
 
 lava:
