@@ -20,49 +20,52 @@ class PlayLevel < World
   end
 
   def create_gui
-    horizontal spacing: 0, padding: 0 do
-      horizontal spacing: 2, padding: 0 do
-        group do
-          vertical padding: 1, spacing: 2, background_color: Color::BLACK do
-            [@map.baddies.size, 8].min.times do |i|
-              horizontal background_color: Color::BLUE, padding: 0 do
-                image_frame @map.baddies[i].image, factor: 0.25, padding: 0, background_color: Color::GRAY
-                vertical padding: 0, spacing: 0 do
-                  label "##{i + 1}", font_size: 4.5
-                  label "bar1", font_height: 3.5
-                  label "bar2", font_height: 3.5
-                  label "icons", font_height: 3.5
-                end
+    # Unit roster.
+    @container = Fidgit::Container.new
+
+    Fidgit::Horizontal.new parent: @container, spacing: 2, padding: 0 do
+      group do
+        vertical padding: 1, spacing: 2, background_color: Color::BLACK do
+          [@map.baddies.size, 8].min.times do |i|
+            horizontal background_color: Color::BLUE, padding: 0 do
+              image_frame @map.baddies[i].image, factor: 0.25, padding: 0, background_color: Color::GRAY
+              vertical padding: 0, spacing: 0 do
+                label "##{i + 1}", font_height: 3.5
+                label "bar1", font_height: 3.5
+                label "bar2", font_height: 3.5
+                label "icons", font_height: 3.5
               end
-            end
-          end
-        end
-
-        horizontal padding: 0, padding_top: 125 do
-          horizontal padding: 1, spacing: 2, background_color: Color::BLACK do
-            image_frame @map.baddies[0].image, factor: 0.25, padding: 0, background_color: Color::GRAY
-            text_area text: "Detailed info about the currently selected super-chicken (of prodigious size).\nAnd superpower buttons ......",
-                      width: 100, font_height: 4
-          end
-
-          vertical padding: 1, spacing: 2, background_color: Color::BLACK do
-            horizontal padding: 0 do
-              button "Undo", padding_h: 1, font_height: 5 do
-                undo_action
-              end
-
-              button "Redo", padding_h: 1, font_height: 5, align_h: :right do
-                redo_action
-              end
-            end
-
-            button "End turn" do
-              end_turn
             end
           end
         end
       end
     end
+
+    # Info panel.
+    info_panel = Fidgit::Horizontal.new parent: @container, x: 35, y: 120, padding: 1, spacing: 2, background_color: Color::BLACK do
+      image_frame @map.baddies[0].image, factor: 0.25, padding: 0, background_color: Color::GRAY
+      text_area text: "Detailed info about the currently selected super-chicken (of prodigious size).\nAnd superpower buttons ......",
+                width: 90, font_height: 4
+    end
+    info_panel.x, info_panel.y = ($window.width / 4 - info_panel.width) / 2, $window.height / 4 - info_panel.height
+
+    # Button box.
+    button_box = Fidgit::Vertical.new parent: @container, padding: 1, spacing: 2, background_color: Color::BLACK do
+      horizontal padding: 0 do
+        button "Undo", padding_h: 1, font_height: 5 do
+          undo_action
+        end
+
+        button "Redo", padding_h: 1, font_height: 5, align_h: :right do
+          redo_action
+        end
+      end
+
+      button "End turn" do
+        end_turn
+      end
+    end
+    button_box.x, button_box.y = $window.width / 4 - button_box.width, $window.height / 4 - button_box.height
   end
 
   def end_turn
@@ -124,7 +127,9 @@ class PlayLevel < World
     super
 
     @mouse_selection.tile = if  $window.mouse_x >= 0 and $window.mouse_x < $window.width and
-                                $window.mouse_y >= 0 and $window.mouse_y < $window.height
+                                $window.mouse_y >= 0 and $window.mouse_y < $window.height and
+                                @container.each.none? {|e| e.hit? $window.mouse_x / 4, $window.mouse_y / 4 }
+
       @map.tile_at_position((@camera_offset_x + $window.mouse_x) / @zoom,
          (@camera_offset_y + $window.mouse_y) / @zoom)
     else

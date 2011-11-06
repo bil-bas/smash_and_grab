@@ -45,7 +45,7 @@ TexPlay.set_options(caching: false)
 
 include Gosu
 Font.factor_stored = 2
-Font.factor_rendered = 1.0 / 2
+Font.factor_rendered = 1.0 / Font.factor_stored
 include Chingu
 
 # Setup Chingu's autoloading media directories.

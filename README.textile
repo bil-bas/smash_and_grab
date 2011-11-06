@@ -72,6 +72,7 @@ h2. Third party tools and assets used
 * Original music by "Maverick (Brian Peppers)":http://polyhedricpeppers.weebly.com/. !http://i.creativecommons.org/l/by-sa/3.0/88x31.png(CC BY-SA)!:http://creativecommons.org/licenses/by-sa/3.0/
 * Original sprites created with "GIMP":http://www.gimp.org/ and Graphics Gale [Free Edition]
 * Sound effects created using "bfxr":http://www.bfxr.net/ and converted using "Audacity":http://audacity.sourceforge.net/
+* "Comic Book" "font":http://www.dafont.com/comic-book.font by "Neale Davidson":http://www.dafont.com/profile.php?user=374785 [Free]
 * "Gosu":http://libgosu.org/ game development library
 * "Chingu":http://ippa.se/chingu game library (extending Gosu)
 * "Fidgit":https://github.com/Spooner/fidgit gui library (extending Chingu)

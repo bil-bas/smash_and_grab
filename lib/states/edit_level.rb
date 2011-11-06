@@ -211,7 +211,8 @@ class EditLevel < World
     super()
 
     tile = if $window.mouse_x >= 0 and $window.mouse_x < $window.width and
-                                $window.mouse_y >= 0 and $window.mouse_y < $window.height
+              $window.mouse_y >= 0 and $window.mouse_y < $window.height and
+              @container.each.none? {|e| e.hit? $window.mouse_x / 4, $window.mouse_y / 4 }
       @map.tile_at_position((@camera_offset_x + $window.mouse_x) / @zoom,
          (@camera_offset_y + $window.mouse_y) / @zoom)
     else
