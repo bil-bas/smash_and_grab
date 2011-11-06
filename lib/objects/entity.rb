@@ -11,7 +11,7 @@ class Entity < WorldObject
   DATA_HEALTH = 'health'
   DATA_FACING = 'facing'
 
-  MELEE_COST = 2
+  MELEE_COST = 1
   MELEE_DAMAGE = 5
 
   def_delegators :@faction, :minimap_color, :active?, :inactive?

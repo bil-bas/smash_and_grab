@@ -17,12 +17,12 @@ high_concrete_wall:
   tiles_high: 2
 
 high_concrete_wall_with_window:
-  blocks_sight: true
+  blocks_sight: false
   spritesheet_positions:
     vertical: [2, 1]
     horizontal: [1, 1]
   minimap_color: [150, 150, 150, 255]
-  movement_cost: .Inf
+  movement_cost: 4
   thickness: 4
   tiles_high: 2
 
