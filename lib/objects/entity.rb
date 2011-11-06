@@ -95,33 +95,54 @@ class Entity < WorldObject
     super
   end
 
-  def potential_moves(options = {})
-    options = {
-        starting_tile: tile,
-        tiles: Set.new,
-    }.merge! options
+  # Returns a list of tiles this entity could move to (including those they could melee at) [Set]
+  def potential_moves
+    destination_tile = tile # We are sort of working backwards here.
 
-    starting_tile = options[:starting_tile]
-    tiles = options[:tiles]
+    # Tiles we've already dealt with.
+    closed_tiles = Set.new
+    # Tiles we've looked at and that are in-range.
+    valid_tiles = Set.new
+    # Paths to check { tile => path_to_tile }.
+    open_paths = { destination_tile => PathStart.new(destination_tile, destination_tile) }
 
-    starting_tile.exits(self).each do |wall|
+    while open_paths.any?
+      path = open_paths.each_value.min_by(&:cost)
+      current_tile = path.last
 
-      tile = wall.destination(starting_tile)
-      unless tiles.include? tile
-        path = path_to(tile)
+      open_paths.delete current_tile
+      closed_tiles << current_tile
 
-        if path.accessible? and @movement_points >= path.move_distance
-          # Can move onto this square - calculate further paths if we can move through the square.
-          tiles << tile
-          if path.is_a?(MovePath) and mp > path.move_distance or ap > 0
-            potential_moves(starting_tile: tile, tiles: tiles)
+      exits = current_tile.exits(self).reject {|wall| closed_tiles.include? wall.destination(current_tile) }
+      exits.each do |wall|
+        testing_tile = wall.destination(current_tile)
+        object = testing_tile.object
+
+        if object and object.is_a?(Entity) and enemy?(object)
+          # Ensure that the current tile is somewhere we could launch an attack from and we could actually perform it.
+          if current_tile.empty? and ap >= MELEE_COST
+            valid_tiles << testing_tile
+          end
+
+        elsif testing_tile.passable?(self) and (object.nil? or object.passable?(self))
+          new_path = MovePath.new(path, testing_tile, wall.movement_cost)
+
+          # If the path is shorter than one we've already calculated, then replace it. Otherwise just store it.
+          if new_path.move_distance <= movement_points
+            if old_path = open_paths[testing_tile]
+              if new_path.move_distance < old_path.move_distance
+                open_paths[testing_tile] = new_path
+              end
+            else
+              open_paths[testing_tile] = new_path
+              valid_tiles << testing_tile if testing_tile.empty?
+            end
           end
         end
       end
     end
 
-    # Don't highlight anything you can run through (but not move onto).
-    tiles.reject {|t| t.object and t.object.passable?(self) }
+    valid_tiles
   end
 
   # A* path-finding.
@@ -165,13 +186,11 @@ class Entity < WorldObject
           end
         end
 
-        return InaccessiblePath.new(destination_tile) if new_path.nil?
         return new_path if testing_tile == destination_tile
 
         # If the path is shorter than one we've already calculated, then replace it. Otherwise just store it.
         if old_path = open_paths[testing_tile]
           if new_path.move_distance < old_path.move_distance
-            open_paths.delete old_path
             open_paths[testing_tile] = new_path
           end
         else
