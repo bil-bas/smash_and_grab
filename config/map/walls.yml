@@ -9,7 +9,7 @@ none:
 high_concrete_wall:
   blocks_sight: true
   spritesheet_positions:
-   vertical: [2, 0]
+   vertical: [0, 0]
    horizontal: [1, 0]
   minimap_color: [100, 100, 100, 255]
   movement_cost: .Inf
@@ -19,8 +19,8 @@ high_concrete_wall:
 high_concrete_wall_with_window:
   blocks_sight: false
   spritesheet_positions:
-    vertical: [2, 1]
-    horizontal: [1, 1]
+    vertical: [2, 0]
+    horizontal: [3, 0]
   minimap_color: [150, 150, 150, 255]
   movement_cost: 4
   thickness: 4
@@ -29,18 +29,48 @@ high_concrete_wall_with_window:
 low_brick_wall:
   blocks_sight: false
   spritesheet_positions:
-    vertical: [3, 0]
-    horizontal: [4, 0]
-  minimap_color: [150, 150, 150, 255]
+    vertical: [2, 1]
+    horizontal: [3, 1]
+  minimap_color: [100, 100, 100, 255]
   movement_cost: 2
   thickness: 2
   tiles_high: 1
 
+high_brick_wall:
+  blocks_sight: true
+  spritesheet_positions:
+    vertical: [4, 1]
+    horizontal: [5, 1]
+  minimap_color: [100, 100, 100, 255]
+  movement_cost: .Inf
+  thickness: 2
+  tiles_high: 2
+
+high_plaster_wall:
+  blocks_sight: true
+  spritesheet_positions:
+    vertical: [6, 1]
+    horizontal: [7, 1]
+  minimap_color: [200, 200, 200, 255]
+  movement_cost: .Inf
+  thickness: 2
+  tiles_high: 2
+
+high_plaster_wall_into_other:
+  blocks_sight: true
+  spritesheet_positions:
+    vertical: [6, 0]
+    horizontal: [7, 0]
+  minimap_color: [200, 200, 200, 255]
+  movement_cost: .Inf
+  thickness: 2
+  tiles_high: 2
+
 low_fence:
   blocks_sight: false
   spritesheet_positions:
-    vertical: [3, 1]
-    horizontal: [4, 1]
+    vertical: [0, 1]
+    horizontal: [1, 1]
   minimap_color: [150, 150, 150, 255]
   movement_cost: 2
   thickness: 0

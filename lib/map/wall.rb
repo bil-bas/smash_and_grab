@@ -56,18 +56,16 @@ class Wall < GameObject
         @tiles.last => @tiles.first,
     }
 
-    self.x, self.y = @tiles.first.x, @tiles.first.y + (SPRITE_HEIGHT / 8) + 1,
+    self.x, self.y = @tiles.first.x, @tiles.first.y + (SPRITE_HEIGHT / 8),
     self.zorder = @tiles.first.y + 0.01
 
     if @tiles.last.grid_y > @tiles.first.grid_y
       @tiles.last.add_wall :up, self
       @tiles.first.add_wall :down, self
       @orientation = :vertical
-      @x += 2
     else
       @tiles.last.add_wall :right, self
       @tiles.first.add_wall :left, self
-      @x -= 2
       @orientation = :horizontal
     end
 
@@ -85,7 +83,10 @@ class Wall < GameObject
     @blocks_sight = config['blocks_sight']
     @movement_cost = config['movement_cost']
     @tiles_high = config['tiles_high']
+
+    #@y -= (4 - @thickness) / 2 if @thickness
     @thickness = config['thickness']
+    #@y += (4 - @thickness) / 2 if @thickness
 
     spritesheet_positions = config['spritesheet_positions']
     image = if @tiles.last.grid_y > @tiles.first.grid_y
