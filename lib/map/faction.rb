@@ -19,10 +19,17 @@ class Faction
 
   # -----------------------------------------------
 
+  include Fidgit::Event
   extend Forwardable
   include Log
 
+  event :turn_started
+  event :turn_ended
+
   def_delegators :@entities, :[], :size, :each
+
+  attr_reader :entities, :map
+  attr_accessor :player
 
   def friend?(faction); faction.is_a? self.class; end
   def enemy?(faction); not friend?(faction); end
@@ -35,6 +42,7 @@ class Faction
     @map = map
     @entities = []
     @active = false
+    @player = nil
   end
 
   def <<(entity)
@@ -59,10 +67,15 @@ class Faction
     log.info "#{self} started turn #{@map.turn + 1}"
     @active = true
     @entities.each(&:start_turn)
+
+    publish :turn_started, @entities.dup
   end
 
   def end_turn
     @entities.each(&:end_turn)
+    @map.end_turn
     @active = false
+
+    publish :turn_ended
   end
 end

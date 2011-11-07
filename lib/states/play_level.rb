@@ -12,7 +12,14 @@ class PlayLevel < World
 
     add_inputs(space: :end_turn)
 
+    @players = [Player::Human.new, Player::AI.new, Player::AI.new]
+
     load_game ORIGINAL_FILE
+
+    @players.each.with_index do |player, i|
+      map.factions[i].player = player
+      player.faction = map.factions[i]
+    end
 
     save_game AUTOSAVE_FILE
 
@@ -65,12 +72,13 @@ class PlayLevel < World
         end_turn
       end
     end
+
     button_box.x, button_box.y = $window.width / 4 - button_box.width, $window.height / 4 - button_box.height
   end
 
   def end_turn
     @mouse_selection.select nil
-    @map.end_turn
+    @map.active_faction.end_turn
     save_game AUTOSAVE_FILE
   end
 
@@ -137,5 +145,7 @@ class PlayLevel < World
     end
 
     @mouse_selection.update
+
+    @map.active_faction.player.update
   end
 end

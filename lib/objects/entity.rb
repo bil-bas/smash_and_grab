@@ -120,7 +120,7 @@ class Entity < WorldObject
 
         if object and object.is_a?(Entity) and enemy?(object)
           # Ensure that the current tile is somewhere we could launch an attack from and we could actually perform it.
-          if current_tile.empty? and ap >= MELEE_COST
+          if (current_tile.empty? or current_tile == tile) and ap >= MELEE_COST
             valid_tiles << testing_tile
           end
 
@@ -158,6 +158,8 @@ class Entity < WorldObject
       path = open_paths.each_value.min_by(&:cost)
       current_tile = path.last
 
+      return path if current_tile == destination_tile
+
       open_paths.delete current_tile
       closed_tiles << current_tile
 
@@ -186,8 +188,6 @@ class Entity < WorldObject
           end
         end
 
-        return new_path if testing_tile == destination_tile
-
         # If the path is shorter than one we've already calculated, then replace it. Otherwise just store it.
         if old_path = open_paths[testing_tile]
           if new_path.move_distance < old_path.move_distance
@@ -203,7 +203,7 @@ class Entity < WorldObject
   end
 
   def move(tiles, movement_cost)
-    raise "Not enough movement points (tried to move #{movement_cost} with #{@movement_points} left)" unless movement_cost <= @movement_points
+    raise "Not enough movement points (#{self} tried to move #{movement_cost} with #{@movement_points} left #{tiles} )" unless movement_cost <= @movement_points
 
     destination = tiles.last
     @movement_points -= movement_cost

@@ -60,6 +60,7 @@ require_folder("", %w[log version sprite_sheet z_order z_order_recorder game_win
 require_folder("map", %w[tile wall map])
 require_folder("objects", %w[static_object entity])
 require_folder("states", %w[edit_level play_level main_menu])
+require_folder("players", %w[player])
 require_folder("history", %w[editor_action_history game_action_history])
 
 Log.log.debug { "Scripts loaded in #{"%.3f" % (Time.now - t)} s" }

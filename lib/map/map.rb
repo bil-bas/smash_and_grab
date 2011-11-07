@@ -44,7 +44,7 @@ class Map
   event :wall_type_changed # The actual type itself changed.
 
   attr_reader :grid_width, :grid_height, :actions
-  attr_reader :goodies, :baddies, :bystanders, :active_faction, :turn
+  attr_reader :goodies, :baddies, :bystanders, :active_faction, :turn, :factions
     
   def to_rect; Rect.new(0, 0, @grid_width * Tile::WIDTH, @grid_height * Tile::HEIGHT); end
 
@@ -157,7 +157,6 @@ class Map
     end
 
     @actions.do :end_turn
-    current_faction.end_turn
 
     start_turn # For the next faction.
   end
