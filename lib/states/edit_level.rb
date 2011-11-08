@@ -3,7 +3,7 @@ require_relative 'world'
 class EditLevel < World
   SAVE_FOLDER = File.expand_path("config/levels", EXTRACT_PATH)
   QUICKSAVE_FILE = File.expand_path("01_bank.sgl", SAVE_FOLDER)
-  OBJECT_TABS = [:tiles, :entities, :objects, :walls]
+
 
   def initialize
     super()
@@ -16,174 +16,30 @@ class EditLevel < World
     load_game QUICKSAVE_FILE
 
     on_input :right_mouse_button do
-
-        case @tabs_group.value
-          when :tiles
-            @selector_group.value = @hover_tile.type if @hover_tile
-
-          when :entities, :objects
-            if @hover_tile
-              object = @hover_tile.object
-              if object
-                if (@tabs_group.value == :entities) and not object.is_a?(Entity)
-                  @tabs_group.value = :objects
-                elsif (@tabs_group.value == :objects) and not object.is_a?(StaticObject)
-                  @tabs_group.value = :entities
-                end
-
-                @selector_group.value = object.type
-              else
-                @selector_group.value = :erase
-              end
-            end
-
-          when :walls
-            @selector_group.value = @hover_wall.type if @hover_wall
-
-          else
-            raise @tabs_group.value
-      end
+      @selector.pick_up(@hover_tile, @hover_wall)
     end
   end
 
   def create_gui
-    vertical padding: 1, background_color: Color::BLACK do
-      vertical padding: 0, spacing: 0 do
-        @tabs_group = group do
-          @tab_buttons = horizontal padding: 0, spacing: 2 do
-            OBJECT_TABS.each do |name|
-              radio_button(name.to_s[0].capitalize, name, border_thickness: 0, tip: name.to_s.capitalize)
-            end
+    @container = Fidgit::Container.new do |container|
+      @minimap = Minimap.new parent: container
+
+      @selector = EditorSelector.new parent: container
+
+      @button_box = vertical parent: container, padding: 1, spacing: 2, background_color: Color::BLACK do
+        horizontal padding: 0 do
+          @undo_button = button "Undo", padding_h: 1, font_height: 5 do
+            undo_action
           end
 
-          subscribe :changed do |sender, value|
-            current = @tab_buttons.find {|elem| elem.value == value }
-            @tab_buttons.each {|t| t.enabled = (t != current) }
-            current.color, current.background_color = current.background_color, current.color
-
-            select_tab value
+          @redo_button = button "Redo", padding_h: 1, font_height: 5 do
+            redo_action
           end
-        end
-
-        @tab_contents = vertical padding: 0 do
-          # put a tab in here at a later date.
         end
       end
 
-      horizontal padding: 0, padding_top: 5 do
-        button "Undo", padding_h: 1, font_height: 5 do
-          undo_action
-        end
-
-        button "Redo", padding_h: 1, font_height: 5 do
-          redo_action
-        end
-      end
+      @button_box.x, @button_box.y = $window.width / 4 - @button_box.width, $window.height / 4 - @button_box.height
     end
-
-    @tabs_group.value = OBJECT_TABS.first
-  end
-
-  def select_tab(tab)
-    @tab_contents.clear
-
-    scroll_options = { width: 50, height: 120 }
-
-    case tab
-      when :tiles
-        unless defined? @tiles_window
-          @tiles_window = Fidgit::ScrollWindow.new scroll_options do
-            buttons = group do
-              vertical padding: 1 do
-                radio_button 'Erase', 'none'
-                grid padding: 0, num_columns: 2 do
-                  Tile.config.each_pair.sort.each do |type, data|
-                    next if type == 'none'
-                    radio_button '', type, icon: Tile.sprites[*data['spritesheet_position']],
-                                 tip: "Tile: #{type}", padding: 0, icon_options: { factor: 0.5 }
-                  end
-                end
-              end
-            end
-
-            buttons.value = 'none'
-          end
-        end
-
-        @selector_window = @tiles_window
-
-      when :entities
-        unless defined? @entities_window
-          @entities_window = Fidgit::ScrollWindow.new scroll_options do
-            buttons = group do
-              vertical padding: 1 do
-                radio_button 'Erase', :erase
-                grid padding: 0, num_columns: 2 do
-
-                  Entity.config.each_pair.sort.each do |type, data|
-                    radio_button '', type, icon: Entity.sprites[*data['spritesheet_position']],
-                                 tip: "Entity: #{type} (#{data['faction']})", padding: 0, icon_options: { factor: 0.25 }
-                  end
-                end
-              end
-            end
-
-            buttons.value = :erase
-          end
-        end
-
-        @selector_window = @entities_window
-
-      when :objects
-        unless defined? @objects_window
-          @objects_window = Fidgit::ScrollWindow.new scroll_options do
-            buttons = group do
-              vertical padding: 1 do
-                radio_button 'Erase', :erase
-                grid padding: 0, num_columns: 2 do
-
-                  StaticObject.config.each_pair.sort.each do |type, data|
-                    radio_button '', type, icon: StaticObject.sprites[*data['spritesheet_position']],
-                                 tip: "Object: #{type}", padding: 0, icon_options: { factor: 0.25 }
-                  end
-                end
-              end
-            end
-
-            buttons.value = :erase
-          end
-        end
-
-        @selector_window = @objects_window
-
-      when :walls
-        unless defined? @walls_window
-          @walls_window = Fidgit::ScrollWindow.new scroll_options do
-            buttons = group do
-              vertical padding: 1 do
-                radio_button 'Erase', 'none'
-                grid padding: 0, num_columns: 3 do
-                  Wall.config.each_pair.sort.each do |type, data|
-                    next if type == 'none'
-                    radio_button '', type, icon: Wall.sprites[*(data['spritesheet_positions']['vertical'])],
-                                 tip: "Wall: #{type}", padding: 0, icon_options: { factor: 0.25 }
-                  end
-                end
-              end
-            end
-
-            buttons.value = 'none'
-          end
-        end
-
-        @selector_window = @walls_window
-
-      else
-        raise tab.to_s
-    end
-
-    @tab_contents.add @selector_window
-    @selector_group = @selector_window.content[0]
   end
 
   def undo_action
@@ -219,7 +75,7 @@ class EditLevel < World
       nil
     end
 
-    if tile and @tabs_group.value == :walls
+    if tile and @selector.tab == :walls
       x, y = (@camera_offset_x + $window.mouse_x) / @zoom, (@camera_offset_y + $window.mouse_y) / @zoom
 
       wall = if x < tile.x - 3 and y < tile.y - 1
@@ -252,40 +108,43 @@ class EditLevel < World
     end
 
     if holding? :left_mouse_button
-      case @tabs_group.value
+      case @selector.tab
         when :tiles
           if @hover_tile
-            if @hover_tile.type != @selector_group.value
-              @actions.do :set_tile_type, @hover_tile, @selector_group.value
+            if @hover_tile.type != @selector.selected
+              @actions.do :set_tile_type, @hover_tile, @selector.selected
             end
           end
 
         when :entities, :objects
-          klass = (@tabs_group.value == :entities) ? Entity : StaticObject
+          klass = (@selector.tab == :entities) ? Entity : StaticObject
 
           if @hover_tile
-            if @selector_group.value == :erase
+            if @selector.selected == :erase
               @actions.do :erase_object, @hover_tile unless @hover_tile.empty?
             else
               if @hover_tile.empty? or
-                  (@hover_tile.object and @hover_tile.object.type != @selector_group.value)
+                  (@hover_tile.object and @hover_tile.object.type != @selector.selected)
 
-                @actions.do :place_object, @hover_tile, klass, @selector_group.value
+                @actions.do :place_object, @hover_tile, klass, @selector.selected
               end
             end
           end
 
         when :walls
           if @hover_wall
-            if @hover_wall and @hover_wall.type != @selector_group.value
-              @actions.do :set_wall_type, @hover_wall, @selector_group.value
+            if @hover_wall and @hover_wall.type != @selector.selected
+              @actions.do :set_wall_type, @hover_wall, @selector.selected
             end
           end
 
         else
-          raise @tabs_group.value
+          raise @selector.tab
       end
     end
+
+    @undo_button.enabled = @actions.can_undo?
+    @redo_button.enabled = @actions.can_redo?
   end
 
   def draw

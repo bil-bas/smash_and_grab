@@ -21,6 +21,10 @@ class Minimap < Fidgit::Vertical
     end
   end
 
+  def hit_element(x, y)
+    hit?(x, y) ? self : nil
+  end
+
   public
   def map=(map)
     @map = map

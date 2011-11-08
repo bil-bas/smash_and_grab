@@ -27,10 +27,10 @@ class PlayLevel < World
   end
 
   def create_gui
-    # Unit roster.
     @container = Fidgit::Container.new do |container|
       @minimap = Minimap.new parent: container
 
+      # Unit roster.
       @summary_bar = vertical parent: container, padding: 1, spacing: 1, background_color: Color::BLACK do |packer|
         [@map.baddies.size, 8].min.times do |i|
           baddy = @map.baddies[i]
@@ -55,11 +55,11 @@ class PlayLevel < World
         end
 
         horizontal padding: 0 do
-          button "Undo", padding_h: 1, font_height: 5 do
+          @undo_button = button "Undo", padding_h: 1, font_height: 5 do
             undo_action
           end
 
-          button "Redo", padding_h: 1, font_height: 5, align_h: :right do
+          @redo_button = button "Redo", padding_h: 1, font_height: 5 do
             redo_action
           end
         end
@@ -134,5 +134,8 @@ class PlayLevel < World
     @map.active_faction.player.update
 
     @turn_label.text = "Turn: #{@map.turn + 1} (#{@map.active_faction})"
+
+    @undo_button.enabled = @map.actions.can_undo?
+    @redo_button.enabled = @map.actions.can_redo?
   end
 end

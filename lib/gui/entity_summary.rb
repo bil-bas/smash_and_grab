@@ -34,7 +34,7 @@ class Fidgit::EntitySummary < Fidgit::Vertical
 
   public
   def hit_element(x, y)
-    self if hit?(x, y)
+    hit?(x, y) ? self : nil
   end
 
   public
