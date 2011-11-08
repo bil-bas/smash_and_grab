@@ -16,7 +16,10 @@ class Entity < WorldObject
 
   def_delegators :@faction, :minimap_color, :active?, :inactive?
 
-  attr_reader :faction, :movement_points, :action_points, :health, :type
+  attr_reader :faction, :movement_points, :action_points, :health, :type, :max_movement_points, :max_action_points, :max_health
+
+  alias_method :max_mp, :max_movement_points
+  alias_method :max_ap, :max_action_points
 
   alias_method :mp, :movement_points
   alias_method :ap, :action_points

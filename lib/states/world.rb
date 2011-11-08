@@ -19,8 +19,9 @@ class World < Fidgit::GuiState
 
     @camera_offset_x, @camera_offset_y = [0, -@map.to_rect.center_y]
 
-    @minimap = Minimap.new @map
-    @minimap.refresh
+    create_gui
+
+    @minimap.map = @map
 
     @map.subscribe :tile_contents_changed do |map, tile|
       @minimap.update_tile tile
@@ -66,12 +67,6 @@ class World < Fidgit::GuiState
   def setup
     log.info "Entered State: #{self.class.name}"
     super()
-    create_gui
-  end
-
-  def finalize
-    super()
-    @container.clear
   end
 
   def save_game(file)

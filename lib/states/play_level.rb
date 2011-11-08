@@ -28,52 +28,44 @@ class PlayLevel < World
 
   def create_gui
     # Unit roster.
-    @container = Fidgit::Container.new
+    @container = Fidgit::Container.new do |container|
+      @minimap = Minimap.new parent: container
 
-    Fidgit::Horizontal.new parent: @container, spacing: 2, padding: 0 do
-      group do
-        vertical padding: 1, spacing: 2, background_color: Color::BLACK do
-          [@map.baddies.size, 8].min.times do |i|
-            horizontal background_color: Color::BLUE, padding: 0 do
-              image_frame @map.baddies[i].image, factor: 0.25, padding: 0, background_color: Color::GRAY
-              vertical padding: 0, spacing: 0 do
-                label "##{i + 1}", font_height: 3.5
-                label "bar1", font_height: 3.5
-                label "bar2", font_height: 3.5
-                label "icons", font_height: 3.5
-              end
-            end
+      @summary_bar = vertical parent: container, padding: 1, spacing: 1, background_color: Color::BLACK do |packer|
+        [@map.baddies.size, 8].min.times do |i|
+          baddy = @map.baddies[i]
+          summary = Fidgit::EntitySummary.new baddy, parent: packer
+          summary.subscribe :left_mouse_button do
+            @mouse_selection.select baddy if baddy.alive?
+            @info_panel.entity = baddy
           end
         end
       end
-    end
 
-    # Info panel.
-    info_panel = Fidgit::Horizontal.new parent: @container, x: 35, y: 120, padding: 1, spacing: 2, background_color: Color::BLACK do
-      image_frame @map.baddies[0].image, factor: 0.25, padding: 0, background_color: Color::GRAY
-      text_area text: "Detailed info about the currently selected super-chicken (of prodigious size).\nAnd superpower buttons ......",
-                width: 90, font_height: 4
-    end
-    info_panel.x, info_panel.y = ($window.width / 4 - info_panel.width) / 2, $window.height / 4 - info_panel.height
+      # Info panel.
+      @info_panel = InfoPanel.new parent: container
 
-    # Button box.
-    button_box = Fidgit::Vertical.new parent: @container, padding: 1, spacing: 2, background_color: Color::BLACK do
-      horizontal padding: 0 do
-        button "Undo", padding_h: 1, font_height: 5 do
-          undo_action
+      # Button box.
+      @button_box = vertical parent: container, padding: 1, spacing: 2, background_color: Color::BLACK do
+        @turn_label = label " ", font_height: 3.5, padding_left: 1
+
+        horizontal padding: 0 do
+          button "Undo", padding_h: 1, font_height: 5 do
+            undo_action
+          end
+
+          button "Redo", padding_h: 1, font_height: 5, align_h: :right do
+            redo_action
+          end
         end
 
-        button "Redo", padding_h: 1, font_height: 5, align_h: :right do
-          redo_action
+        button "End turn" do
+          end_turn
         end
       end
 
-      button "End turn" do
-        end_turn
-      end
+      @button_box.x, @button_box.y = $window.width / 4 - @button_box.width, $window.height / 4 - @button_box.height
     end
-
-    button_box.x, button_box.y = $window.width / 4 - button_box.width, $window.height / 4 - button_box.height
   end
 
   def end_turn
@@ -121,14 +113,6 @@ class PlayLevel < World
         @map.draw_grid @camera_offset_x, @camera_offset_y, @zoom if holding? :g
       end
     end
-
-    @font.draw "Turn: #{@map.turn + 1} Player: #{@map.active_faction}", 220, 35, ZOrder::GUI
-
-    active = @mouse_selection.selected
-    status_text = active ? "'#{active.name}' #{active.grid_position} #{active.health} HP / #{active.mp} MP / #{active.ap} AP" : "???"
-    @font.draw status_text, 200, 475, ZOrder::GUI
-
-    @font.draw "Turn: #{@map.turn + 1} Player: #{@map.active_faction}", 220, 35, ZOrder::GUI
   end
 
   def update
@@ -147,5 +131,7 @@ class PlayLevel < World
     @mouse_selection.update
 
     @map.active_faction.player.update
+
+    @turn_label.text = "Turn: #{@map.turn + 1} (#{@map.active_faction})"
   end
 end
