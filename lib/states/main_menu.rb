@@ -2,7 +2,7 @@ class MainMenu < Fidgit::GuiState
   def setup
     super
 
-    vertical do
+    vertical align: :center do
       button "Play" do
         push_game_state PlayLevel
       end
@@ -14,12 +14,6 @@ class MainMenu < Fidgit::GuiState
       button "Quit" do
         exit
       end
-    end
-  end
-
-  def draw
-    $window.scale 4 do
-      super
     end
   end
 

@@ -44,7 +44,7 @@ require_folder('texplay_ext', %w[color image window])
 TexPlay.set_options(caching: false)
 
 include Gosu
-Font.factor_stored = 2
+Font.factor_stored = 1
 Font.factor_rendered = 1.0 / Font.factor_stored
 include Chingu
 

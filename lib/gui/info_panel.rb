@@ -1,34 +1,34 @@
 class InfoPanel < Fidgit::Vertical
   def initialize(options = {})
     options = {
-        padding: 1,
+        padding: 4,
         background_color: Color::BLACK,
     }.merge! options
     super options
 
-    horizontal padding: 1, spacing: 2, background_color: Color.rgb(0, 0, 150), width: 110, height: 28 do
-      @portrait = image_frame Entity.sprites[0, 0], factor: 0.25, padding: 0, background_color: Color::GRAY
+    horizontal padding: 4, spacing: 8, background_color: Color.rgb(0, 0, 150), width: 440, height: 112 do
+      @portrait = image_frame Entity.sprites[0, 0], padding: 0, background_color: Color::GRAY
 
-      vertical padding: 0, spacing: 1 do
-        @name = label " ", font_size: 6
+      vertical padding: 0, spacing: 4 do
+        @name = label " "
 
         horizontal padding: 0, spacing: 0 do
-          vertical padding: 0, spacing: 1, width: 40 do
-            @health = label "", font_height: 4
-            @movement_points = label "", font_height: 4
-            @action_points = label "", font_height: 4
+          vertical padding: 0, spacing: 1, width: 160 do
+            @health = label "", font_height: 16
+            @movement_points = label "", font_height: 16
+            @action_points = label "", font_height: 16
           end
 
-          grid num_columns: 4, spacing: 1, padding: 0 do
-            button_options = { font_height: 4, width: 7, height: 7, padding: 0, padding_left: 2 }
+          grid num_columns: 4, spacing: 4, padding: 0 do
+            button_options = { font_height: 16, width: 28, height: 28, padding: 0, padding_left: 8 }
 
-            button "M", button_options.merge(tip: "melee")
-            button "R", button_options.merge(tip: "ranged")
-            @sprint = button "S", button_options.merge(tip: "Sprint - gain (maximum MP / 2) movement points") do
+            button "Me", button_options.merge(tip: "Melee")
+            button "Ra", button_options.merge(tip: "Ranged")
+            @sprint = button "Sp", button_options.merge(tip: "Sprint - gain (maximum MP / 2) movement points") do
               @entity.map.actions.do :sprint, @entity if @entity.sprint?
             end
 
-            button "?", button_options.merge(tip: "???")
+            button "??", button_options.merge(tip: "???")
 
             button "P1", button_options.merge(tip: "power1")
             button "P2", button_options.merge(tip: "power2")
@@ -41,7 +41,7 @@ class InfoPanel < Fidgit::Vertical
 
     recalc
 
-    self.x, self.y = ($window.width / 4 - width) / 2, $window.height / 4 - height
+    self.x, self.y = ($window.width - width) / 2, $window.height - height
   end
 
   public

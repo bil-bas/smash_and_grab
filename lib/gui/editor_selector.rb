@@ -6,7 +6,7 @@ class EditorSelector < Fidgit::Vertical
 
   def initialize(options = {})
     options = {
-        padding: 1,
+        padding: 4,
         background_color: Color::BLACK,
     }.merge! options
 
@@ -14,9 +14,9 @@ class EditorSelector < Fidgit::Vertical
 
     vertical padding: 0, spacing: 0 do
       @tabs_group = group do
-        @tab_buttons = horizontal padding: 0, spacing: 1 do
+        @tab_buttons = horizontal padding: 0, spacing: 4 do
           OBJECT_TABS.each do |name|
-            radio_button(name.to_s[0].capitalize, name, border_thickness: 0, padding: 2, tip: name.to_s.capitalize)
+            radio_button(name.to_s[0].capitalize, name, border_thickness: 0, padding: 8, tip: name.to_s.capitalize)
           end
         end
 
@@ -70,7 +70,7 @@ class EditorSelector < Fidgit::Vertical
   def tab=(tab)
     @tab_contents.clear
 
-    scroll_options = { width: 50, height: 135 }
+    scroll_options = { width: 200, height: 540 }
 
     case tab
       when :tiles
@@ -83,7 +83,7 @@ class EditorSelector < Fidgit::Vertical
                   Tile.config.each_pair.sort.each do |type, data|
                     next if type == 'none'
                     radio_button '', type, icon: Tile.sprites[*data['spritesheet_position']],
-                                 tip: "Tile: #{type}", padding: 0, icon_options: { factor: 0.5 }
+                                 tip: "Tile: #{type}", padding: 0, icon_options: { factor: 2 }
                   end
                 end
               end
@@ -105,7 +105,7 @@ class EditorSelector < Fidgit::Vertical
 
                   Entity.config.each_pair.sort.each do |type, data|
                     radio_button '', type, icon: Entity.sprites[*data['spritesheet_position']],
-                                 tip: "Entity: #{type} (#{data['faction']})", padding: 0, icon_options: { factor: 0.25 }
+                                 tip: "Entity: #{type} (#{data['faction']})", padding: 0
                   end
                 end
               end
@@ -127,7 +127,7 @@ class EditorSelector < Fidgit::Vertical
 
                   StaticObject.config.each_pair.sort.each do |type, data|
                     radio_button '', type, icon: StaticObject.sprites[*data['spritesheet_position']],
-                                 tip: "Object: #{type}", padding: 0, icon_options: { factor: 0.25 }
+                                 tip: "Object: #{type}", padding: 0
                   end
                 end
               end
@@ -149,7 +149,7 @@ class EditorSelector < Fidgit::Vertical
                   Wall.config.each_pair.sort.each do |type, data|
                     next if type == 'none'
                     radio_button '', type, icon: Wall.sprites[*(data['spritesheet_positions']['vertical'])],
-                                 tip: "Wall: #{type}", padding: 0, icon_options: { factor: 0.25 }
+                                 tip: "Wall: #{type}", padding: 0
                   end
                 end
               end

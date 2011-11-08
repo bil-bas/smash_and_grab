@@ -171,10 +171,7 @@ class World < Fidgit::GuiState
 
     @font.draw @fps_text, 220, 0, ZOrder::GUI
 
-    # Draw the gui in large.
-    $window.scale 4 do
-      super()
-    end
+    super()
 
     @used_time += (Time.now - start_at).to_f
 

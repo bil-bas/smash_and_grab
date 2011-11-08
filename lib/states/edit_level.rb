@@ -26,19 +26,19 @@ class EditLevel < World
 
       @selector = EditorSelector.new parent: container
 
-      @button_box = vertical parent: container, padding: 1, spacing: 2, background_color: Color::BLACK do
+      @button_box = vertical parent: container, padding: 4, spacing: 8, background_color: Color::BLACK do
         horizontal padding: 0 do
-          @undo_button = button "Undo", padding_h: 1, font_height: 5 do
+          @undo_button = button "Undo", padding_h: 4, font_height: 16 do
             undo_action
           end
 
-          @redo_button = button "Redo", padding_h: 1, font_height: 5 do
+          @redo_button = button "Redo", padding_h: 4, font_height: 16 do
             redo_action
           end
         end
       end
 
-      @button_box.x, @button_box.y = $window.width / 4 - @button_box.width, $window.height / 4 - @button_box.height
+      @button_box.x, @button_box.y = $window.width - @button_box.width, $window.height - @button_box.height
     end
   end
 
@@ -68,7 +68,7 @@ class EditLevel < World
 
     tile = if $window.mouse_x >= 0 and $window.mouse_x < $window.width and
               $window.mouse_y >= 0 and $window.mouse_y < $window.height and
-              @container.each.none? {|e| e.hit? $window.mouse_x / 4, $window.mouse_y / 4 }
+              @container.each.none? {|e| e.hit? $window.mouse_x, $window.mouse_y }
       @map.tile_at_position((@camera_offset_x + $window.mouse_x) / @zoom,
          (@camera_offset_y + $window.mouse_y) / @zoom)
     else

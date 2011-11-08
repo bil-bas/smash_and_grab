@@ -5,22 +5,22 @@ class Fidgit::EntitySummary < Fidgit::Vertical
     options = {
       background_color: BACKGROUND_COLOR,
       padding_h: 0,
-      padding_v: 0.5,
-      spacing: 0.5,
-      width: 30,
+      padding_v: 2,
+      spacing: 2,
+      width: 120,
     }.merge! options
 
     super options
 
-    @name = label "", font_height: 3
+    @name = label "", font_height: 12
 
-    horizontal padding: 0, spacing: 1 do
-      @portrait = image_frame nil, factor: 0.25, padding: 0, background_color: Color::GRAY
+    horizontal padding: 0, spacing: 4 do
+      @portrait = image_frame nil, padding: 0, background_color: Color::GRAY
 
       vertical padding: 0, spacing: 0 do
-        @health = label "", font_height: 3
-        @movement_points = label "", font_height: 3
-        @action_points = label "", font_height: 3
+        @health = label "", font_height: 12
+        @movement_points = label "", font_height: 12
+        @action_points = label "", font_height: 12
       end
     end
 

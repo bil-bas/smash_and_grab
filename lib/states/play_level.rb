@@ -31,7 +31,7 @@ class PlayLevel < World
       @minimap = Minimap.new parent: container
 
       # Unit roster.
-      @summary_bar = vertical parent: container, padding: 1, spacing: 1, background_color: Color::BLACK do |packer|
+      @summary_bar = vertical parent: container, padding: 4, spacing: 8, background_color: Color::BLACK do |packer|
         [@map.baddies.size, 8].min.times do |i|
           baddy = @map.baddies[i]
           summary = Fidgit::EntitySummary.new baddy, parent: packer
@@ -47,25 +47,25 @@ class PlayLevel < World
       @info_panel.entity = @map.baddies[0]
 
       # Button box.
-      @button_box = vertical parent: container, padding: 1, spacing: 2, background_color: Color::BLACK do
-        @turn_label = label " ", font_height: 3.5, padding_left: 1
+      @button_box = vertical parent: container, padding: 4, spacing: 8, width: 150, background_color: Color::BLACK do
+        @turn_label = label " ", font_height: 14
 
         button "End turn" do
           end_turn
         end
 
         horizontal padding: 0 do
-          @undo_button = button "Undo", padding_h: 1, font_height: 5 do
+          @undo_button = button "Undo", padding_h: 4, font_height: 16 do
             undo_action
           end
 
-          @redo_button = button "Redo", padding_h: 1, font_height: 5 do
+          @redo_button = button "Redo", padding_h: 4, font_height: 16 do
             redo_action
           end
         end
       end
 
-      @button_box.x, @button_box.y = $window.width / 4 - @button_box.width, $window.height / 4 - @button_box.height
+      @button_box.x, @button_box.y = $window.width - @button_box.width, $window.height - @button_box.height
     end
   end
 
@@ -121,7 +121,7 @@ class PlayLevel < World
 
     @mouse_selection.tile = if  $window.mouse_x >= 0 and $window.mouse_x < $window.width and
                                 $window.mouse_y >= 0 and $window.mouse_y < $window.height and
-                                @container.each.none? {|e| e.hit? $window.mouse_x / 4, $window.mouse_y / 4 }
+                                @container.each.none? {|e| e.hit? $window.mouse_x, $window.mouse_y }
 
       @map.tile_at_position((@camera_offset_x + $window.mouse_x) / @zoom,
          (@camera_offset_y + $window.mouse_y) / @zoom)

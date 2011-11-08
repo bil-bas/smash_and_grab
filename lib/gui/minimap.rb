@@ -1,6 +1,6 @@
 class Minimap < Fidgit::Vertical
   TILE_WIDTH = 3
-  BACKGROUND_COLOR = Color.rgba(50, 50, 50, 200)
+  BACKGROUND_COLOR = Color::BLACK
   MARGIN = TILE_WIDTH * 2
   MARGIN_COLOR = Color.rgba(0, 0, 0, 255)
 
@@ -9,7 +9,7 @@ class Minimap < Fidgit::Vertical
   def initialize(options = {})
     options = {
         background_color: BACKGROUND_COLOR,
-        padding: 10,
+        padding: 4,
     }.merge! options
 
     @map = nil

@@ -1,6 +1,10 @@
 class GameWindow < Chingu::Window
   attr_reader :pixel
 
+  def initialize
+    super(800, 600, false)
+  end
+
   def setup
     enable_undocumented_retrofication
 
