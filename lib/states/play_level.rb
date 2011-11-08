@@ -44,10 +44,15 @@ class PlayLevel < World
 
       # Info panel.
       @info_panel = InfoPanel.new parent: container
+      @info_panel.entity = @map.baddies[0]
 
       # Button box.
       @button_box = vertical parent: container, padding: 1, spacing: 2, background_color: Color::BLACK do
         @turn_label = label " ", font_height: 3.5, padding_left: 1
+
+        button "End turn" do
+          end_turn
+        end
 
         horizontal padding: 0 do
           button "Undo", padding_h: 1, font_height: 5 do
@@ -57,10 +62,6 @@ class PlayLevel < World
           button "Redo", padding_h: 1, font_height: 5, align_h: :right do
             redo_action
           end
-        end
-
-        button "End turn" do
-          end_turn
         end
       end
 

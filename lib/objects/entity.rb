@@ -17,12 +17,16 @@ class Entity < WorldObject
   def_delegators :@faction, :minimap_color, :active?, :inactive?
 
   attr_reader :faction, :movement_points, :action_points, :health, :type, :max_movement_points, :max_action_points, :max_health
+  attr_writer :movement_points, :action_points
 
   alias_method :max_mp, :max_movement_points
   alias_method :max_ap, :max_action_points
 
   alias_method :mp, :movement_points
   alias_method :ap, :action_points
+
+  alias_method :mp=, :movement_points=
+  alias_method :ap=, :action_points=
 
   def to_s; "<#{self.class.name}/#{@type}##{id} #{tile ? grid_position : "[off-map]"}>"; end
   def name; @type.split("_").map(&:capitalize).join(" "); end
@@ -31,6 +35,9 @@ class Entity < WorldObject
   def self.config; @@config ||= YAML.load_file(File.expand_path("config/map/entities.yml", EXTRACT_PATH)); end
   def self.types; config.keys; end
   def self.sprites; @@sprites ||= SpriteSheet.new("characters.png", 64 + 2, 64 + 2, 8); end
+
+  def sprint?; @action_points >= @max_action_points; end
+  def sprint_bonus; @max_movement_points / 2; end
 
   def initialize(map, data)
     @type = data['type']
@@ -57,6 +64,14 @@ class Entity < WorldObject
     @health = data[DATA_HEALTH] || @max_health
 
     @faction << self
+  end
+
+  def sprint
+    raise unless sprint?
+
+    @movement_points += sprint_bonus
+    @action_points = 0
+    self
   end
 
   def health=(value)

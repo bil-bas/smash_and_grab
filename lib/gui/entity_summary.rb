@@ -27,10 +27,17 @@ class Fidgit::EntitySummary < Fidgit::Vertical
      self.entity = entity
   end
 
+  public
+  def update
+    self.entity = @entity if @entity
+  end
+
+  public
   def hit_element(x, y)
     self if hit?(x, y)
   end
 
+  public
   def entity=(entity)
     @entity = entity
 
@@ -39,8 +46,6 @@ class Fidgit::EntitySummary < Fidgit::Vertical
     @movement_points.text = "MP: #{@entity.mp}"
     @action_points.text = "AP: #{@entity.ap}"
     @portrait.image = entity.image
-
-    # TODO: get updates on changes to the entity's status.
 
     entity
   end

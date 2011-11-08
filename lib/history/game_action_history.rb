@@ -39,4 +39,4 @@ class GameAction < Fidgit::History::Action
   end
 end
 
-require_folder 'history/game_actions', %w[end_turn melee move]
+require_folder 'history/game_actions', %w[end_turn melee move sprint]
