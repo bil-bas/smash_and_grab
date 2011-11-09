@@ -29,14 +29,25 @@ class Vehicle < WorldObject
 
     super(map, data, options)
 
+    @center_x, @center_y = 2.0 / 3.0, 1
+
     @minimap_color = Color.rgb(*config[CONFIG_MINIMAP_COLOR])
 
     raise @type unless @image
   end
 
   def draw
-    # TODO: Draw as multiple fragments, so that zorder is correct.
-    @image.draw_rot @x - 14, @y + 2.5 + 4, @y, 0, 0.5, 1, OUTLINE_SCALE * @factor_x, OUTLINE_SCALE
+    # Draw the image in sections, since it has to exist at several zorder positions in order to render correctly.
+    [
+        [32, 0],
+        [64, -8],
+        [96, -16],
+        [128, -24],
+    ].each do |clip_width, offset_z|
+      $window.clip_to @x - clip_width / 2, -10000, clip_width, 20000 do
+        @image.draw_rot @x, @y + 2.5, @y + offset_z, 0, @center_x, @center_y, OUTLINE_SCALE * @factor_x, OUTLINE_SCALE
+      end
+    end
   end
 
   def to_json(*a)
