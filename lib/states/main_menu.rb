@@ -1,4 +1,6 @@
 class MainMenu < Fidgit::GuiState
+  PRELOAD_CLASSES = [Entity, StaticObject, Tile, Vehicle, Wall]
+
   def setup
     super
 
@@ -37,6 +39,21 @@ class MainMenu < Fidgit::GuiState
 
         image_frame Entity.sprites[7, 3], factor: 4
       end
+    end
+  end
+
+  def update
+    super
+
+    # Preload.
+    @preloads ||= PRELOAD_CLASSES.dup
+    unless @preloads.empty?
+      klass = @preloads.pop
+      t = Time.now
+      #klass.sprites
+      klass.config
+
+      Log.log.debug { "Preloaded #{klass} in #{Time.now - t}s" }
     end
   end
 
