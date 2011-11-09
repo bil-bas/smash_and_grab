@@ -116,8 +116,12 @@ class EditLevel < World
             end
           end
 
-        when :entities, :objects
-          klass = (@selector.tab == :entities) ? Entity : StaticObject
+        when :entities, :objects, :vehicles
+          klass = case @selector.tab
+                    when :entities then Entity
+                    when :objects then StaticObject
+                    when :vehicles then Vehicle
+                  end
 
           if @hover_tile
             if @selector.selected == :erase

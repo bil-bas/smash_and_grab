@@ -1,5 +1,5 @@
 class EditorSelector < Fidgit::Vertical
-  OBJECT_TABS = [:tiles, :entities, :objects, :walls]
+  OBJECT_TABS = [:tiles, :entities, :objects, :vehicles, :walls]
 
   def tab; @tabs_group.value; end
   def selected; @selector_group.value ;end
@@ -42,15 +42,15 @@ class EditorSelector < Fidgit::Vertical
       when :tiles
         @selector_group.value = tile.type if tile
 
-      when :entities, :objects
+      when :entities, :objects, :vehicles
         if tile
           object = tile.object
           if object
-            if tab == :entities and not object.is_a?(Entity)
-              self.tab = :objects
-            elsif tab == :objects and not object.is_a?(StaticObject)
-              self.tab = :entities
-            end
+            self.tab = case object
+                         when Entity then :entities
+                         when StaticObject then :objects
+                         when Vehicle then :vehicles
+                       end
 
             @selector_group.value = object.type
           else
@@ -138,6 +138,28 @@ class EditorSelector < Fidgit::Vertical
         end
 
         @selector_window = @objects_window
+
+      when :vehicles
+        unless defined? @vehicles_window
+          @vehicles_window = Fidgit::ScrollWindow.new scroll_options do
+            buttons = group do
+              vertical padding: 1 do
+                radio_button 'Erase', :erase
+                grid padding: 0, num_columns: 1 do
+
+                  Vehicle.config.each_pair.sort.each do |type, data|
+                    radio_button '', type, icon: Vehicle.sprites[*data['spritesheet_position']],
+                                 tip: "Vehicle: #{type}", padding: 0, icon_options: { factor: 0.5 }
+                  end
+                end
+              end
+            end
+
+            buttons.value = :erase
+          end
+        end
+
+        @selector_window = @vehicles_window
 
       when :walls
         unless defined? @walls_window

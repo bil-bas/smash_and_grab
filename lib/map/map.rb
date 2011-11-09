@@ -94,6 +94,8 @@ class Map
           Entity.new self, object_data
         when StaticObject::CLASS
           StaticObject.new self, object_data
+        when Vehicle::CLASS
+          Vehicle.new self, object_data
         else
           raise "Bad object class #{object_data[WorldObject::DATA_CLASS].inspect}"
       end
@@ -196,7 +198,7 @@ class Map
     raise "can't add null object" if object.nil?
 
     case object
-      when Entity, StaticObject
+      when Entity, StaticObject, Vehicle
         @world_objects << object
       when Wall
         @drawable_walls << object
@@ -213,7 +215,7 @@ class Map
     @drawable_objects.delete object
 
     case object
-      when Entity, StaticObject
+      when Entity, StaticObject, Vehicle
         @world_objects.delete object
       when Wall
         @drawable_walls.delete object
