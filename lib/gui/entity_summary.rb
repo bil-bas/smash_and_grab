@@ -12,15 +12,15 @@ class Fidgit::EntitySummary < Fidgit::Vertical
 
     super options
 
-    @name = label "", font_height: 12
+    @name = label "", font_height: 15
 
     horizontal padding: 0, spacing: 4 do
       @portrait = image_frame nil, padding: 0, background_color: Color::GRAY
 
       vertical padding: 0, spacing: 0 do
-        @health = label "", font_height: 12
-        @movement_points = label "", font_height: 12
-        @action_points = label "", font_height: 12
+        @health = label "", font_height: 15
+        @movement_points = label "", font_height: 15
+        @action_points = label "", font_height: 15
       end
     end
 

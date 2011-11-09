@@ -14,13 +14,13 @@ class InfoPanel < Fidgit::Vertical
 
         horizontal padding: 0, spacing: 0 do
           vertical padding: 0, spacing: 1, width: 160 do
-            @health = label "", font_height: 16
-            @movement_points = label "", font_height: 16
-            @action_points = label "", font_height: 16
+            @health = label "", font_height: 20
+            @movement_points = label "", font_height: 20
+            @action_points = label "", font_height: 20
           end
 
           grid num_columns: 4, spacing: 4, padding: 0 do
-            button_options = { font_height: 16, width: 28, height: 28, padding: 0, padding_left: 8 }
+            button_options = { font_height: 20, width: 28, height: 28, padding: 0, padding_left: 8 }
 
             button "Me", button_options.merge(tip: "Melee")
             button "Ra", button_options.merge(tip: "Ranged")
