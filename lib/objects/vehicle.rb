@@ -1,5 +1,6 @@
 require_relative "world_object"
 
+# A vehicle is a 4x2 tile object.
 class Vehicle < WorldObject
   CLASS = 'vehicle'
 

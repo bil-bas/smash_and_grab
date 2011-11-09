@@ -13,7 +13,7 @@ class GameWindow < Chingu::Window
 
     self.caption = "Smash and Grab - By Spooner [Escape - exit; Space - end turn; F5/F6 - quicksave/load; G - grid; Arrows - scroll]"
 
-    self.cursor = true
+    self.cursor = false
 
     push_game_state MainMenu
   end
