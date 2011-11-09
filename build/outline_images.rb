@@ -4,7 +4,7 @@ MODIFIED_IMAGE_PATH = File.expand_path("../../media/images", __FILE__)
 IMAGES = [
     ["characters.png", [32, 32], 8],
     ["objects.png",    [32, 32], 8],
-    ["vehicles.png",   [64, 32], 4],
+    ["vehicles.png",   [96, 64], 4],
 ]
 
 desc "Process images (double in size and add an outline)"
