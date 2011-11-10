@@ -4,6 +4,7 @@ class MouseSelection < GameObject
   MOVE_COLOR = Color.rgba(0, 255, 0, 90)
   MELEE_COLOR = Color.rgba(255, 0, 0, 120)
   NO_MOVE_COLOR = Color.rgba(255, 0, 0, 25)
+  ZOC_COLOR = Color.rgba(255, 0, 0, 255)
 
   def selected; @selected_tile ? @selected_tile.object : nil; end
   
@@ -79,15 +80,21 @@ class MouseSelection < GameObject
             else
               MOVE_COLOR
             end
-            # TODO: Additive doesn't work in Gosu recordings :(
-            Tile.blank.draw_rot tile.x, tile.y, ZOrder::TILE_SELECTION, 0, 0.5, 0.5, 1, 1, color, :additive
+
+            # Tile background
+            Tile.blank.draw_rot tile.x, tile.y, 0, 0, 0.5, 0.5, 1, 1, color
+
+            # ZOC indicator.
+            if tile.entities_exerting_zoc(@selected_tile.object.faction).any?
+              Tile.blank.draw_rot tile.x, tile.y, 0, 0, 0.5, 0.5, 0.2, 0.2, ZOC_COLOR
+            end
           end
         end
 
         @moves_record.draw -offset_x, -offset_y, ZOrder::TILE_SELECTION, zoom, zoom
       end
 
-      @path.draw -offset_x, -offset_y, zoom  if @path
+      @path.draw -offset_x, -offset_y, zoom if @path
 
     elsif @hover_tile
       color = (@hover_tile.empty? or @hover_tile.object.inactive?) ? Color::BLUE : Color::CYAN

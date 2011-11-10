@@ -30,6 +30,8 @@ class Tile < GameObject
   def self.config; @@config ||= YAML.load_file(File.expand_path("config/map/tiles.yml", EXTRACT_PATH)); end
   def self.sprites; @@sprites ||= SpriteSheet.new("floor_tiles.png", WIDTH, HEIGHT, 4); end
 
+  attr_reader :entities_exerting_zoc
+
   def initialize(type, map, grid_x, grid_y)
     @map, @grid_x, @grid_y = map, grid_x, grid_y
 
@@ -42,6 +44,20 @@ class Tile < GameObject
     @walls = {}
 
     @temp_occlusions = 0
+
+    @entities_exerting_zoc = Set.new
+  end
+
+  def entities_exerting_zoc(faction)
+    @entities_exerting_zoc.select {|e| e.action? and e.faction.enemy? faction }
+  end
+
+  def add_zoc(entity)
+    @entities_exerting_zoc << entity
+  end
+
+  def remove_zoc(entity)
+    @entities_exerting_zoc.delete entity
   end
 
   def type=(type)
@@ -88,6 +104,10 @@ class Tile < GameObject
     update_wall_occlusions
     map.publish :tile_contents_changed , self
 
+    if object.exerts_zoc?
+      adjacent_tiles(object).each {|t| t.add_zoc object }
+    end
+
     object
   end
   alias_method :<<, :add
@@ -99,6 +119,10 @@ class Tile < GameObject
 
     update_wall_occlusions
     map.publish :tile_contents_changed , self
+
+    if object.exerts_zoc?
+      adjacent_tiles(object).each {|t| t.remove_zoc object }
+    end
 
     object
   end
@@ -124,6 +148,10 @@ class Tile < GameObject
     end
 
     @walls_occluded_by.each(&:update_occlusion)
+  end
+
+  def adjacent_tiles(entity)
+    exits(entity).map {|wall| wall.destination(self) }
   end
 
   def add_wall(direction, wall)

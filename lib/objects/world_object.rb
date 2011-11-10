@@ -15,6 +15,7 @@ class WorldObject < GameObject
 
   def id; @map.id_for_object(self); end
   def blocks_sight?; true; end
+  def exerts_zoc?; false; end
 
   OUTLINE_SCALE = Image::THIN_OUTLINE_SCALE
 

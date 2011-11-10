@@ -97,12 +97,14 @@ class Entity < WorldObject
   end
 
   def draw
-    super() if @tile
+    super() if alive?
   end
 
   def friend?(character); @faction.friend? character.faction; end
   def enemy?(character); @faction.enemy? character.faction; end
 
+  def exerts_zoc?; true; end
+  def action?; @action_points > 0; end
   def move?; @movement_points > 0; end
   def end_turn_on?(person); false; end
   def impassable?(character); enemy? character; end
@@ -220,6 +222,7 @@ class Entity < WorldObject
     InaccessiblePath.new(destination_tile) # Failed to connect at all.
   end
 
+  # Actually perform movement (called from GameAction::Move).
   def move(tiles, movement_cost)
     raise "Not enough movement points (#{self} tried to move #{movement_cost} with #{@movement_points} left #{tiles} )" unless movement_cost <= @movement_points
 
@@ -229,14 +232,20 @@ class Entity < WorldObject
     change_in_x = destination.x - tiles[-2].x
 
     # Turn based on movement.
-    unless change_in_x == 0
-      self.factor_x = change_in_x > 0 ? 1 : -1
-    end
+    self.factor_x = change_in_x > 0 ? 1 : -1
 
     @tile.remove self
-    destination << self
 
+    destination << self
     @tile = destination
+  end
+
+  # TODO: Need to think of the best way to trigger this. It should only happen once, when you actually "first" move.
+  def trigger_zoc_attacks
+    enemies = tile.entities_exerting_zoc(self)
+    enemies.each do |enemy|
+      map.actions.do :melee, enemy, self # Only get one opportunity attack per enemy entering.
+    end
   end
 
   #
