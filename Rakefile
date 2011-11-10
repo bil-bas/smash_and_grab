@@ -27,6 +27,7 @@ CLOBBER.include("doc/**/*", "#{APP}.exe", RELEASE_FOLDER, README_HTML)
 
 require_relative 'build/rake_osx_package'
 require_relative 'build/outline_images'
+require_relative 'build/create_portraits'
 
 desc "Generate Yard docs."
 task :yard do

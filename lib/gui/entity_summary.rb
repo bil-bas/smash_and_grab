@@ -15,7 +15,8 @@ class Fidgit::EntitySummary < Fidgit::Vertical
     @name = label "", font_height: 15
 
     horizontal padding: 0, spacing: 4 do
-      @portrait = image_frame nil, padding: 0, background_color: Color::GRAY
+      @portrait = image_frame nil, padding: 0, background_color: Color::GRAY,
+                              border_thickness: 1, border_color: Color::BLACK
 
       vertical padding: 0, spacing: 0 do
         @health = label "", font_height: 15
@@ -45,7 +46,7 @@ class Fidgit::EntitySummary < Fidgit::Vertical
     @health.text = "HP: #{@entity.health}"
     @movement_points.text = "MP: #{@entity.mp}"
     @action_points.text = "AP: #{@entity.ap}"
-    @portrait.image = entity.image
+    @portrait.image = entity.portrait
 
     entity
   end

@@ -11,12 +11,17 @@ class Entity < WorldObject
   DATA_HEALTH = 'health'
   DATA_FACING = 'facing'
 
+  SPRITE_WIDTH, SPRITE_HEIGHT = 66, 66
+  PORTRAIT_WIDTH, PORTRAIT_HEIGHT = 36, 36
+
   MELEE_COST = 1
   MELEE_DAMAGE = 5
 
   def_delegators :@faction, :minimap_color, :active?, :inactive?
 
-  attr_reader :faction, :movement_points, :action_points, :health, :type, :max_movement_points, :max_action_points, :max_health
+  attr_reader :faction, :movement_points, :action_points, :health, :type, :portrait,
+              :max_movement_points, :max_action_points, :max_health
+
   attr_writer :movement_points, :action_points
 
   alias_method :max_mp, :max_movement_points
@@ -34,7 +39,8 @@ class Entity < WorldObject
 
   def self.config; @@config ||= YAML.load_file(File.expand_path("config/map/entities.yml", EXTRACT_PATH)); end
   def self.types; config.keys; end
-  def self.sprites; @@sprites ||= SpriteSheet.new("characters.png", 64 + 2, 64 + 2, 8); end
+  def self.sprites; @@sprites ||= SpriteSheet.new("entities.png", SPRITE_WIDTH, SPRITE_HEIGHT, 8); end
+  def self.portraits; @@portraits ||= SpriteSheet.new("entity_portraits.png", PORTRAIT_WIDTH, PORTRAIT_HEIGHT, 8); end
 
   def sprint?; @action_points >= @max_action_points; end
   def sprint_bonus; @max_movement_points / 2; end
@@ -49,6 +55,8 @@ class Entity < WorldObject
         image: self.class.sprites[*config['spritesheet_position']],
         factor_x: data[DATA_FACING] == 'right' ? 1 : -1,
     }
+
+    @portrait = self.class.portraits[*config['spritesheet_position']]
 
     super(map, data, options)
 

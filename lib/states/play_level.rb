@@ -27,7 +27,7 @@ class PlayLevel < World
       @minimap = Minimap.new parent: container
 
       # Unit roster.
-      @summary_bar = vertical parent: container, padding: 4, spacing: 8, background_color: Color::BLACK do |packer|
+      @summary_bar = vertical parent: container, padding: 4, spacing: 4, background_color: Color::BLACK do |packer|
         [@map.baddies.size, 8].min.times do |i|
           baddy = @map.baddies[i]
           summary = Fidgit::EntitySummary.new baddy, parent: packer

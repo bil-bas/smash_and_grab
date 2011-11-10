@@ -92,14 +92,14 @@ g_man_shirt_with_gun:
 
 soldier_with_gun:
   faction: goodies
-  spritesheet_position: [4, 0]
+  spritesheet_position: [3, 0]
   movement_points: 8
   action_points: 1
   health: 5
 
 soldier_with_bazooka:
   faction: goodies
-  spritesheet_position: [5, 0]
+  spritesheet_position: [4, 0]
   movement_points: 6
   action_points: 1
   health: 5

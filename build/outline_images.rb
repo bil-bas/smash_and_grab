@@ -2,13 +2,13 @@ ORIGINAL_IMAGE_PATH = File.expand_path("../../raw_media/images", __FILE__)
 MODIFIED_IMAGE_PATH = File.expand_path("../../media/images", __FILE__)
 
 IMAGES = [
-    ["characters.png", [32, 32], 8],
+    ["entities.png", [32, 32], 8],
     ["objects.png",    [32, 32], 8],
     ["vehicles.png",   [96, 64], 4],
 ]
 
 desc "Process images (double in size and add an outline)"
-task :process_images do
+task :outline_images do
   require 'texplay'
   require_relative '../lib/texplay_ext/color'
   require_relative '../lib/texplay_ext/image'
@@ -40,7 +40,7 @@ task :process_images do
                                    large_outlined.first.height * large_outlined.size / num_columns
     new_image.refresh_cache
 
-    print "\n  Merging:   "
+    print "\n  Splicing:   "
     large_outlined.each.with_index do |sprite, i|
       sprite.clear(dest_ignore: :alpha, color: Gosu::Color.rgb(50, 50, 50))
       sprite.splice large_sprites[i], 1, 1, alpha_blend: true
