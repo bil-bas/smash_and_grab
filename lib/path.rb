@@ -8,8 +8,8 @@ class Path
 
   def accessible?; true; end
   def tiles; @previous_path.tiles + [@last]; end
-  def self.images; @@images ||= SpriteSheet.new("path.png", 32, 16, 4); end
-  def images; self.class.images; end
+  def self.sprites; @@sprites ||= SpriteSheet.new("path.png", 32, 16, 4); end
+  def sprites; self.class.sprites; end
 
   def initialize(previous_path, next_tile, extra_move_distance)
     @previous_path = previous_path
@@ -61,7 +61,7 @@ class Path
           Color::BLACK
         end
 
-        images[sheet_x, sheet_y].draw_rot tile.x, tile.y, ZOrder::PATH, 0, 0.5, 0.5, 1, 1, color
+        sprites[sheet_x, sheet_y].draw_rot tile.x, tile.y, ZOrder::PATH, 0, 0.5, 0.5, 1, 1, color
       end
     end
   end
@@ -100,7 +100,7 @@ class MeleePath < Path
     super(*args)
 
     if last.object.is_a? Entity
-      images[3, 1].draw_rot last.x, last.y, ZOrder::PATH, 0, 0.5, 0.5, 1, 1, @draw_color
+      sprites[3, 1].draw_rot last.x, last.y, ZOrder::PATH, 0, 0.5, 0.5, 1, 1, @draw_color
     end
   end
 end
@@ -127,7 +127,7 @@ class InaccessiblePath < Path
   end
 
   def draw(*args)
-    images[2, 1].draw_rot last.x, last.y, ZOrder::PATH, 0, 0.5, 0.5
+    sprites[2, 1].draw_rot last.x, last.y, ZOrder::PATH, 0, 0.5, 0.5
   end
 
   def prepare_for_drawing(tiles_within_range); end

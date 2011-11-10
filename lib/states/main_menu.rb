@@ -53,7 +53,7 @@ class MainMenu < Fidgit::GuiState
     unless @preloads.empty?
       klass = @preloads.pop
       t = Time.now
-      #klass.sprites
+      klass.sprites
       klass.config
 
       Log.log.debug { "Preloaded #{klass} in #{Time.now - t}s" }
