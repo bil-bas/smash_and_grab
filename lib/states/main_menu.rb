@@ -1,6 +1,9 @@
 class MainMenu < Fidgit::GuiState
   PRELOAD_CLASSES = [Entity, StaticObject, Tile, Vehicle, Wall]
 
+  LOAD_FOLDER = File.expand_path("config/levels", EXTRACT_PATH)
+  GAME_FILE = File.expand_path("01_bank.sgl", LOAD_FOLDER)
+
   def setup
     super
 
@@ -25,11 +28,11 @@ class MainMenu < Fidgit::GuiState
         vertical align: :center do
           options = { width: 120, justify: :center }
           button "Play", options do
-            push_game_state PlayLevel
+            push_game_state PlayLevel.new(GAME_FILE)
           end
 
           button "Edit", options do
-            push_game_state EditLevel
+            push_game_state EditLevel.new(GAME_FILE)
           end
 
           button "Quit", options do

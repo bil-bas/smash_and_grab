@@ -1,11 +1,7 @@
 require_relative 'world'
 
 class EditLevel < World
-  SAVE_FOLDER = File.expand_path("config/levels", EXTRACT_PATH)
-  QUICKSAVE_FILE = File.expand_path("01_bank.sgl", SAVE_FOLDER)
-
-
-  def initialize
+  def initialize(file)
     super()
 
     @mouse_hover_tile_image = Image["mouse_hover.png"]
@@ -13,7 +9,7 @@ class EditLevel < World
 
     @selected_wall = nil
 
-    load_game QUICKSAVE_FILE
+    load_game file
 
     on_input :right_mouse_button do
       @selector.pick_up(@hover_tile, @hover_wall)
@@ -51,15 +47,16 @@ class EditLevel < World
   end
 
   def quicksave
-    save_game QUICKSAVE_FILE
+    save_game_as @editing_file
   end
 
   def quickload
-    load_game QUICKSAVE_FILE
+    load_game @editing_file
   end
 
   def load_game(file)
     super
+    @editing_file = file
     @actions = EditorActionHistory.new
   end
 

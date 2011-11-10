@@ -1,27 +1,23 @@
 require_relative 'world'
 
 class PlayLevel < World
-  SAVE_FOLDER = File.expand_path("saves", ROOT_PATH)
-  LOAD_FOLDER = File.expand_path("config/levels", EXTRACT_PATH)
-  QUICKSAVE_FILE = File.expand_path("quicksave.sgs", SAVE_FOLDER)
-  AUTOSAVE_FILE = File.expand_path("autosave.sgs", SAVE_FOLDER)
-  ORIGINAL_FILE = File.expand_path("01_bank.sgl", LOAD_FOLDER)
-
-  def initialize
+  def initialize(file)
     super()
 
     add_inputs(space: :end_turn)
 
     @players = [Player::Human.new, Player::AI.new, Player::AI.new]
 
-    load_game ORIGINAL_FILE
+    @quicksaved = false
+
+    load_game file
 
     @players.each.with_index do |player, i|
       map.factions[i].player = player
       player.faction = map.factions[i]
     end
 
-    save_game AUTOSAVE_FILE
+    save_game_as AUTOSAVE_FILE
 
     @mouse_selection = MouseSelection.new @map
   end
@@ -72,7 +68,7 @@ class PlayLevel < World
   def end_turn
     @mouse_selection.select nil
     @map.active_faction.end_turn
-    save_game AUTOSAVE_FILE
+    save_game_as AUTOSAVE_FILE
   end
 
   def undo_action
@@ -87,14 +83,6 @@ class PlayLevel < World
     @mouse_selection.select nil
     @map.actions.redo if @map.actions.can_redo?
     @mouse_selection.select selection if selection
-  end
-
-  def quicksave
-    save_game QUICKSAVE_FILE
-  end
-
-  def quickload
-    load_game QUICKSAVE_FILE
   end
 
   def map=(map)
@@ -137,5 +125,16 @@ class PlayLevel < World
 
     @undo_button.enabled = @map.actions.can_undo?
     @redo_button.enabled = @map.actions.can_redo?
+  end
+
+  def quickload
+    if @quicksaved
+      switch_game_state self.class.new(QUICKSAVE_FILE)
+    end
+  end
+
+  def quicksave
+    save_game_as QUICKSAVE_FILE
+    @quicksaved = true
   end
 end

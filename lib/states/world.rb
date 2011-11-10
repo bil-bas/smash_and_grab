@@ -13,6 +13,10 @@ class World < Fidgit::GuiState
   BACKGROUND_COLOR = Color.rgba(35, 20, 20, 255)
   GRID_COLOR = Color.rgba(150, 150, 150, 150)
 
+  SAVE_FOLDER = File.expand_path("saves", ROOT_PATH)
+  QUICKSAVE_FILE = File.expand_path("quicksave.sgs", SAVE_FOLDER)
+  AUTOSAVE_FILE = File.expand_path("autosave.sgs", SAVE_FOLDER)
+
   def map=(map)
     @map = map
     @map.record_grid GRID_COLOR
@@ -69,7 +73,8 @@ class World < Fidgit::GuiState
     super()
   end
 
-  def save_game(file)
+
+  def save_game_as(file)
     t = Time.now
 
     data = @map.save_data
@@ -100,6 +105,10 @@ class World < Fidgit::GuiState
     self.map = Map.new data
 
     log.info { "Loaded game from #{file} [#{File.size(file)} bytes] in #{"%.3f" % (Time.now - t) }s" }
+  end
+
+  def autosave
+    save_game_as AUTOSAVE_FILE
   end
 
   def zoom_by(factor)

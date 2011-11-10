@@ -12,7 +12,7 @@ class GameAction::Sprint < GameAction
         @time = Time.now
       when Hash
         @sprinter = map.object_by_id(data[DATA_ID])
-        @bonus = data[DATA_BONUS]
+        @sprint_bonus = data[DATA_BONUS]
         @time = data[DATA_TIME]
       else
         raise data.to_s
