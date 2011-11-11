@@ -53,7 +53,7 @@ class Entity < WorldObject
 
     options = {
         image: self.class.sprites[*config['spritesheet_position']],
-        factor_x: data[DATA_FACING] == 'right' ? 1 : -1,
+        factor_x: data[DATA_FACING].to_sym == :right ? 1 : -1,
     }
 
     @portrait = self.class.portraits[*config['spritesheet_position']]
