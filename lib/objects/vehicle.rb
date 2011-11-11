@@ -18,7 +18,7 @@ class Vehicle < WorldObject
 
   def self.config; @@config ||= YAML.load_file(File.expand_path("config/map/vehicles.yml", EXTRACT_PATH)); end
   def self.types; config.keys; end
-  def self.sprites; @@sprites ||= SpriteSheet.new("vehicles.png", (96 * 2) + 2, (64 * 2) + 2, 4); end
+  def self.sprites; @@sprites ||= SpriteSheet.new("vehicles.png", (128 * 2) + 2, (128 * 2) + 2, 3); end
 
   def initialize(map, data)
     @type = data[DATA_TYPE]
@@ -30,7 +30,7 @@ class Vehicle < WorldObject
 
     super(map, data, options)
 
-    @center_x, @center_y = 2.0 / 3.0, 1
+    @center_x, @center_y = 0.5, 1
 
     @minimap_color = Color.rgb(*config[CONFIG_MINIMAP_COLOR])
 
