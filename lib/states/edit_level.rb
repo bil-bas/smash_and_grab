@@ -95,6 +95,7 @@ class EditLevel < World
 
       tile = nil
     else
+      @hover_wall.tiles.each {|t| t.modify_occlusions -1} if @hover_wall
       @hover_wall = nil
     end
 
