@@ -5,12 +5,12 @@ class EditorAction::EraseObject < EditorAction
   end
 
   def do
-    @tile.remove @object
+    @object.tile = nil
     @tile.map.remove @object
   end
 
   def undo
     @tile.map << @object
-    @tile << @object
+    @object.tile = @tile
   end
 end

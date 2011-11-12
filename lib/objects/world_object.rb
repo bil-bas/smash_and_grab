@@ -1,5 +1,6 @@
 class WorldObject < GameObject
   include Log
+  include Fidgit::Event
   extend Forwardable
 
   DATA_CLASS = 'class'
@@ -16,6 +17,7 @@ class WorldObject < GameObject
   def id; @map.id_for_object(self); end
   def blocks_sight?; true; end
   def exerts_zoc?; false; end
+  def fills_tile_on_minimap?; false; end
 
   OUTLINE_SCALE = Image::THIN_OUTLINE_SCALE
 
@@ -32,16 +34,27 @@ class WorldObject < GameObject
     @map = map
     @map << self
 
-    if data[DATA_TILE]
-      @tile = @map.tile_at_grid(*data[DATA_TILE])
-      @tile << self
-    else
-      @tile = nil
-    end
+    self.tile = data[DATA_TILE] ? @map.tile_at_grid(*data[DATA_TILE]) : nil
 
     @z = options[:z]
 
     log.debug { "Created #{self}" }
+  end
+
+  def tile=(tile)
+    @tile.remove self if @tile
+
+    @tile = tile
+    self.x, self.y = tile.x, tile.y if @tile
+
+    @tile << self if @tile
+
+    @tile
+  end
+
+  # Iterates through all tiles this object sits on.
+  def tiles(&block)
+    yield @tile
   end
 
   def create_shadow(position)
@@ -63,7 +76,7 @@ class WorldObject < GameObject
   end
 
   def destroy
-    tile.remove self if tile
+    self.tile = nil
     map.remove self
 
     super

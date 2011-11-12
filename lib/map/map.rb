@@ -134,7 +134,7 @@ class Map
   end
 
   def id_for_object(object)
-    @world_objects.index(object) || raise(ArgumentError, "Bad id #{id.inspect}")
+    @world_objects.index(object) || raise(ArgumentError, "Bad object #{object.inspect}")
   end
 
   def start_game

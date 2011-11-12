@@ -85,8 +85,7 @@ class Entity < WorldObject
   def health=(value)
     @health = [value, 0].max
     if @health == 0 and @tile
-      @tile.remove self
-      @tile = nil
+      self.tile = nil
     end
   end
 
@@ -242,10 +241,7 @@ class Entity < WorldObject
     # Turn based on movement.
     self.factor_x = change_in_x > 0 ? 1 : -1
 
-    @tile.remove self
-
-    destination << self
-    @tile = destination
+    self.tile = destination
   end
 
   # TODO: Need to think of the best way to trigger this. It should only happen once, when you actually "first" move.

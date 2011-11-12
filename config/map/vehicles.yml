@@ -5,12 +5,15 @@
 
 cop_car:
   spritesheet_position: [0, 0]
-  minimap_color: [255, 255, 255]
+  minimap_color: [150, 150, 150]
+  shape: [2, 4]
 
 ambulance_car:
   spritesheet_position: [1, 0]
-  minimap_color: [255, 255, 255]
+  minimap_color: [150, 150, 150]
+  shape: [2, 4]
 
 tank:
   spritesheet_position: [2, 0]
-  minimap_color: [255, 255, 255]
+  minimap_color: [150, 150, 150]
+  shape: [3, 4]

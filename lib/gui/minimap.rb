@@ -74,7 +74,13 @@ class Minimap < Fidgit::Vertical
 
     # Draw the tile object.
     unless tile.empty?
-      image.rect x + 1, y, x + TILE_WIDTH - 1, y + TILE_WIDTH - 2, color: tile.object.minimap_color, fill: true
+      x, y, width, height = if tile.object.fills_tile_on_minimap?
+        [x, y, TILE_WIDTH - 1, TILE_WIDTH - 1]
+      else
+        [x + 1, y, TILE_WIDTH - 2, TILE_WIDTH - 2]
+      end
+
+      image.rect x, y, x + width, y + height, color: tile.object.minimap_color, fill: true
     end
 
     tile

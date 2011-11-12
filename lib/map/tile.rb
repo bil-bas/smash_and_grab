@@ -94,15 +94,15 @@ class Tile < GameObject
     walls.select {|w| w.allows_movement? and w.destination(self).passable?(person) }
   end
 
+  # Should only be called from the object itself.
   def add(object)
     raise "Can't add null object" if object.nil?
     raise "Tile already has an object, so can't add object #{object.inspect}" unless @object.nil?
 
     @object = object
-    object.x, object.y = [x, y]
 
     update_wall_occlusions
-    map.publish :tile_contents_changed , self
+    map.publish :tile_contents_changed, self
 
     if object.exerts_zoc?
       adjacent_tiles(object).each {|t| t.add_zoc object }
@@ -112,13 +112,14 @@ class Tile < GameObject
   end
   alias_method :<<, :add
 
+  # Should only be called from the object itself.
   def remove(object)
     raise "Can't remove object #{object.inspect}" unless object == @object
 
     @object = nil
 
     update_wall_occlusions
-    map.publish :tile_contents_changed , self
+    map.publish :tile_contents_changed, self
 
     if object.exerts_zoc?
       adjacent_tiles(object).each {|t| t.remove_zoc object }
