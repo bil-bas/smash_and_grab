@@ -98,8 +98,8 @@ class PlayLevel < World
 
     $window.translate -@camera_offset_x, -@camera_offset_y do
       $window.scale @zoom do
-        @mouse_selection.draw @camera_offset_x, @camera_offset_y, @zoom
-        @map.draw_grid @camera_offset_x, @camera_offset_y, @zoom if holding? :g
+        @mouse_selection.draw
+        @map.draw_grid if holding? :g
       end
     end
   end

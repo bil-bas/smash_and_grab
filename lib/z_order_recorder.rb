@@ -12,12 +12,12 @@ class ZOrderRecorder
       @objects << object
     end
 
-    def draw(offset_x, offset_y, zoom)
-      @recording.draw -offset_x, -offset_y, @zorder, zoom, zoom
+    def draw
+      @recording.draw 0, 0, @zorder
     end
 
     def record
-      @recording = $window.record do
+      @recording = $window.record(1, 1) do
         @objects.each(&:draw)
       end
     end
@@ -51,7 +51,7 @@ class ZOrderRecorder
     @rows << current_row
   end
 
-  def draw(offset_x, offset_y, zoom)
-    @rows.each {|row| row.draw offset_x, offset_y, zoom }
+  def draw
+    @rows.each(&:draw)
   end
 end

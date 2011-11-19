@@ -166,13 +166,10 @@ class World < Fidgit::GuiState
     # Colour the background.
     $window.pixel.draw 0, 0, -Float::INFINITY, $window.width, $window.height, BACKGROUND_COLOR
 
-    # Draw the flat tiles.
-    @map.draw_tiles @camera_offset_x, @camera_offset_y, @zoom
-
     # Draw objects, etc.
     $window.translate -@camera_offset_x, -@camera_offset_y do
       $window.scale @zoom do
-        @map.draw_objects
+        @map.draw
       end
     end
 

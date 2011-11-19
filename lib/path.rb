@@ -23,7 +23,7 @@ class Path
   def prepare_for_drawing(tiles_within_range)
     path_tiles = tiles
 
-    @record = $window.record do
+    @record = $window.record(1, 1) do
       tiles.each_with_index do |tile, i|
         sheet_x, sheet_y =
             case tile
@@ -66,8 +66,8 @@ class Path
     end
   end
 
-  def draw(offset_x, offset_y, zoom)
-    @record.draw offset_x, offset_y, ZOrder::PATH, zoom, zoom
+  def draw
+    @record.draw 0, 0, ZOrder::PATH
   end
 end
 

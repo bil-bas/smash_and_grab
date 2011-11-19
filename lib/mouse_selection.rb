@@ -1,9 +1,9 @@
 class MouseSelection < GameObject
   attr_reader :selected_tile, :hover_tile
 
-  MOVE_COLOR = Color.rgba(0, 255, 0, 90)
-  MELEE_COLOR = Color.rgba(255, 0, 0, 120)
-  NO_MOVE_COLOR = Color.rgba(255, 0, 0, 25)
+  MOVE_COLOR = Color.rgba(0, 255, 0, 60)
+  MELEE_COLOR = Color.rgba(255, 0, 0, 80)
+  NO_MOVE_COLOR = Color.rgba(255, 0, 0, 30)
   ZOC_COLOR = Color.rgba(255, 0, 0, 255)
 
   def selected; @selected_tile ? @selected_tile.object : nil; end
@@ -56,7 +56,29 @@ class MouseSelection < GameObject
     modify_occlusions @potential_moves, -1
     @potential_moves = @selected_tile.object.potential_moves
     modify_occlusions @potential_moves, +1
-    @moves_record = nil
+
+
+    @moves_record = if @potential_moves.empty?
+      nil
+    else
+      $window.record(1, 1) do
+        @potential_moves.each do |tile|
+          color = if entity = tile.object and entity.enemy?(@selected_tile.object)
+            MELEE_COLOR
+          else
+            MOVE_COLOR
+          end
+
+          # Tile background
+          Tile.blank.draw_rot tile.x, tile.y, 0, 0, 0.5, 0.5, 1, 1, color, :additive
+
+          # ZOC indicator.
+          if tile.entities_exerting_zoc(@selected_tile.object.faction).any?
+            Tile.blank.draw_rot tile.x, tile.y, 0, 0, 0.5, 0.5, 0.2, 0.2, ZOC_COLOR
+          end
+        end
+      end
+    end
   end
 
   def modify_occlusions(tiles, amount)
@@ -65,36 +87,15 @@ class MouseSelection < GameObject
     end
   end
   
-  def draw(offset_x, offset_y, zoom)
+  def draw
     # Draw a disc under the selected object.
     if @selected_tile
       selected_color = @selected_tile.object.move? ? Color::GREEN : Color::BLACK
       @selected_image.draw_rot @selected_tile.x, @selected_tile.y, ZOrder::TILE_SELECTION, 0, 0.5, 0.5, 1, 1, selected_color
 
       # Highlight all squares that character can travel to.
-      unless @potential_moves.empty?
-        @moves_record ||= $window.record do
-          @potential_moves.each do |tile|
-            color = if entity = tile.object and entity.enemy?(@selected_tile.object)
-              MELEE_COLOR
-            else
-              MOVE_COLOR
-            end
-
-            # Tile background
-            Tile.blank.draw_rot tile.x, tile.y, 0, 0, 0.5, 0.5, 1, 1, color
-
-            # ZOC indicator.
-            if tile.entities_exerting_zoc(@selected_tile.object.faction).any?
-              Tile.blank.draw_rot tile.x, tile.y, 0, 0, 0.5, 0.5, 0.2, 0.2, ZOC_COLOR
-            end
-          end
-        end
-
-        @moves_record.draw -offset_x, -offset_y, ZOrder::TILE_SELECTION, zoom, zoom
-      end
-
-      @path.draw -offset_x, -offset_y, zoom if @path
+      @moves_record.draw 0, 0, ZOrder::TILE_SELECTION if @moves_record
+      @path.draw if @path
 
     elsif @hover_tile
       color = (@hover_tile.empty? or @hover_tile.object.inactive?) ? Color::BLUE : Color::CYAN

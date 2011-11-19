@@ -154,7 +154,7 @@ class EditLevel < World
 
     $window.translate -@camera_offset_x, -@camera_offset_y do
       $window.scale @zoom do
-        @map.draw_grid @camera_offset_x, @camera_offset_y, @zoom unless holding? :g
+        @map.draw_grid unless holding? :g
 
         if @hover_wall
           tile = @hover_wall.tiles.first

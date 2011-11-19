@@ -21,7 +21,7 @@ class Map
     end
 
     def record
-      @recorded = $window.record do
+      @recorded = $window.record(1, 1) do
         @tiles.each(&:draw)
       end
     end
@@ -164,7 +164,7 @@ class Map
   end
 
   def record
-    @recorded_tiles = $window.record do
+    @recorded_tiles = $window.record(1, 1) do
       @tiles.flatten.each(&:draw)
     end
   end
@@ -186,11 +186,6 @@ class Map
     else
       nil
     end
-  end
-  
-  # Draws all tiles (only) visible in the window.
-  def draw_tiles(offset_x, offset_y, zoom)
-    @recorded_tiles.draw -offset_x, -offset_y, ZOrder::TILES, zoom, zoom
   end
 
   # Add an object to the map.
@@ -224,12 +219,15 @@ class Map
     end
   end
 
-  def draw_objects
+  def draw
+    @recorded_tiles.draw 0, 0, ZOrder::TILES
     @drawable_objects.each(&:draw)
   end
 
+
+
   def record_grid(color)
-    @grid_record = $window.record do
+    @grid_record = $window.record(1, 1) do
       # Lines top to bottom.
       @tiles.each do |row|
         tile = row.first
@@ -243,8 +241,8 @@ class Map
     end
   end
 
-  def draw_grid(camera_offset_x, camera_offset_y, zoom)
-    @grid_record.draw -camera_offset_x, -camera_offset_y, ZOrder::TILE_SELECTION, zoom, zoom
+  def draw_grid
+    @grid_record.draw 0, 0, ZOrder::TILE_SELECTION
   end
 
   def save_data
