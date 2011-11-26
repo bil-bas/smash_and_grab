@@ -1,5 +1,6 @@
 require 'set'
 require_relative "../path"
+require_relative "../abilities/ability"
 require_relative "world_object"
 
 class Entity < WorldObject
@@ -10,6 +11,7 @@ class Entity < WorldObject
   DATA_ACTION_POINTS = 'action_points'
   DATA_HEALTH = 'health'
   DATA_FACING = 'facing'
+  DATA_ABILITIES = 'abilities'
 
   SPRITE_WIDTH, SPRITE_HEIGHT = 66, 66
   PORTRAIT_WIDTH, PORTRAIT_HEIGHT = 36, 36
@@ -42,9 +44,6 @@ class Entity < WorldObject
   def self.sprites; @@sprites ||= SpriteSheet.new("entities.png", SPRITE_WIDTH, SPRITE_HEIGHT, 8); end
   def self.portraits; @@portraits ||= SpriteSheet.new("entity_portraits.png", PORTRAIT_WIDTH, PORTRAIT_HEIGHT, 8); end
 
-  def sprint?; @action_points >= @max_action_points; end
-  def sprint_bonus; @max_movement_points / 2; end
-
   def initialize(map, data)
     @type = data['type']
     config = self.class.config[data['type']]
@@ -71,15 +70,14 @@ class Entity < WorldObject
     @max_health = config['health']
     @health = data[DATA_HEALTH] || @max_health
 
+    config_abilities =  config[DATA_ABILITIES] || []
+    @abilities = config_abilities.map do |ability_data|
+      Ability.create(self, ability_data)
+    end
+
+    log.debug { @abilities }
+
     @faction << self
-  end
-
-  def sprint
-    raise unless sprint?
-
-    @movement_points += sprint_bonus
-    @action_points = 0
-    self
   end
 
   def health=(value)
@@ -248,7 +246,7 @@ class Entity < WorldObject
   def trigger_zoc_attacks
     enemies = tile.entities_exerting_zoc(self)
     enemies.each do |enemy|
-      map.actions.do :melee, enemy, self # Only get one opportunity attack per enemy entering.
+      map.actions.do :ability, :melee, enemy, self # Only get one opportunity attack per enemy entering.
     end
   end
 

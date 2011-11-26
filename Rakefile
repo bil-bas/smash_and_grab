@@ -99,4 +99,12 @@ task :readme => README_TEXTILE do
   end
 end
 
+desc "Run all tests"
+task :test do
+  begin
+    ruby File.expand_path("test/run_all.rb", File.dirname(__FILE__))
+  rescue
+    exit 1
+  end
+end
 

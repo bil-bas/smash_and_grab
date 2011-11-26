@@ -48,7 +48,7 @@ class Player::AI < Player
           # TODO: Pick the nearest attack and consider re-attacking.
           path = entity.path_to(attacks.sample)
           faction.map.actions.do :move, path.previous_path if path.requires_movement?
-          faction.map.actions.do :melee, path
+          faction.map.actions.do :ability, :melee, path
           @active_entities.shift unless entity.ap > 0
         elsif moves.any?
           # TODO: Wait with moves until everyone who can has attacked?

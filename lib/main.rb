@@ -66,4 +66,8 @@ require_folder("history", %w[editor_action_history game_action_history])
 
 Log.log.debug { "Scripts loaded in #{"%.3f" % (Time.now - t)} s" }
 
-GameWindow.new.show unless defined? Ocra
+GameWindow.new
+
+unless defined? Ocra or defined? Riot
+  $window.show
+end
