@@ -18,6 +18,7 @@ class WorldObject < GameObject
   def blocks_sight?; true; end
   def exerts_zoc?; false; end
   def fills_tile_on_minimap?; false; end
+  def casts_shadow?; true; end
 
   OUTLINE_SCALE = Image::THIN_OUTLINE_SCALE
 
@@ -26,8 +27,6 @@ class WorldObject < GameObject
         rotation_center: :bottom_center,
         z: 0,
     }.merge! options
-  
-    create_shadow(options[:position])
 
     super(options)
 
@@ -46,6 +45,7 @@ class WorldObject < GameObject
 
     @tile = tile
     self.x, self.y = tile.x, tile.y if @tile
+    @recorded_shadow = nil
 
     @tile << self if @tile
 
@@ -56,21 +56,32 @@ class WorldObject < GameObject
   def tiles(&block)
     yield @tile
   end
+ 
+  def draw
+    # Draw a shadow
+    @recorded_shadow ||= $window.record(1, 1) do
+      if casts_shadow?
+        color = Color.rgba(0, 0, 0, (alpha * 0.3).to_i)
 
-  def create_shadow(position)
-    unless defined? @@shadow
-      @@shadow = TexPlay.create_image $window, 32, 32
-      #center = img.size / 2
-      32.times do |x|
-        32.times do |y|
-          @@shadow.pixel(x, y, color: [0, 0, 0, 0.5 - distance(x, y, 15.5, 15.5) * 0.05])
+        shadow_scale = 0.5
+        shadow_height = height * shadow_scale * 0.5
+        shadow_base = z * shadow_scale
+        skew = shadow_height * shadow_scale
+
+        top_left = [@x - skew - (@z * shadow_scale) + 2, @y - shadow_height - shadow_base + 1.25, color]
+        top_right = [@x - skew - width * 0.5 - (@z * shadow_scale) + 2, @y - shadow_height - shadow_base + 1.25, color]
+        bottom_left = [@x - (width * 0.5 - @z) * shadow_scale + 2, @y - shadow_base + 1.25, color]
+        bottom_right = [@x + (width * 0.5 + @z) * shadow_scale + 2, @y - shadow_base + 1.25, color]
+
+        if factor_x < 0
+          image.draw_as_quad(*top_left, *top_right, *bottom_left, *bottom_right, ZOrder::SHADOWS)
+        else
+          image.draw_as_quad(*top_right, *top_left, *bottom_right, *bottom_left, ZOrder::SHADOWS)
         end
       end
     end
-  end
- 
-  def draw
-    @@shadow.draw_rot @x, @y, ZOrder::SHADOW, 0, 0.5, 0.5, 1, 0.5
+
+    @recorded_shadow.draw 0, 0, ZOrder::SHADOWS
 
     @image.draw_rot @x, @y + 2.5, @y, 0, 0.5, 1, OUTLINE_SCALE * @factor_x, OUTLINE_SCALE
   end
