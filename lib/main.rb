@@ -55,6 +55,8 @@ Sample.autoload_dirs.unshift File.join(media_dir, 'sounds')
 Song.autoload_dirs.unshift File.join(media_dir, 'music')
 Font.autoload_dirs.unshift File.join(media_dir, 'fonts')
 
+require_folder "std_ext", %w[hash]
+
 # Include other files.
 require_folder("", %w[log version sprite_sheet z_order z_order_recorder game_window mouse_selection])
 require_folder("gui", %w[minimap editor_selector entity_summary info_panel])

@@ -1,3 +1,5 @@
+require_relative "../../teststrap"
+
 context Tile do
   setup { Tile.new 'grass', nil, 0, 0 }
 

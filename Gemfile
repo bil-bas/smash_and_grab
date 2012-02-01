@@ -9,3 +9,10 @@ gem "fidgit", "~>0.1.9"
 #gem "fidgit", :path => "~/RubymineProjects/fidgit"
 gem "texplay", "~>0.3"
 #gem "r18n-desktop", "~> 0.4.9"
+
+group :development do
+  gem "releasy", "~> 0.2.1"
+  gem "rake", "~> 0.9.2.2"
+  gem "riot", "~> 0.12.5"
+  gem "rr", "~> 1.0.4"
+end

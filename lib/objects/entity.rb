@@ -1,6 +1,6 @@
 require 'set'
 require_relative "../path"
-require_relative "../abilities/ability"
+require_relative "../abilities"
 require_relative "world_object"
 
 class Entity < WorldObject
@@ -59,7 +59,7 @@ class Entity < WorldObject
 
     super(map, data, options)
 
-    raise @type unless @image
+    raise @type unless image
 
     @max_movement_points = config['movement_points']
     @movement_points = data[DATA_MOVEMENT_POINTS] || @max_movement_points
@@ -70,15 +70,26 @@ class Entity < WorldObject
     @max_health = config['health']
     @health = data[DATA_HEALTH] || @max_health
 
-    config_abilities =  config[DATA_ABILITIES] || []
-    @abilities = config_abilities.map do |ability_data|
-      Ability.create(self, ability_data)
+    # Load other abilities of the entity from config.
+    @abilities = {}
+
+    # Everyone who has movement_points has the ability to move, without it needing to be explicit.
+    @abilities[:move] = Abilities.ability(self, type: :move) if max_movement_points > 0
+
+    if config[DATA_ABILITIES]
+      config[DATA_ABILITIES].each do |ability_data|
+        ability_data = ability_data.symbolize
+        @abilities[ability_data[:type]] = Abilities.ability(self, ability_data)
+      end
     end
 
     log.debug { @abilities }
 
     @faction << self
   end
+
+  def has_ability?(type); @abilities.has_key? type; end
+  def ability(type); @abilities[type]; end
 
   def health=(value)
     @health = [value, 0].max
@@ -230,6 +241,8 @@ class Entity < WorldObject
   # Actually perform movement (called from GameAction::Move).
   def move(tiles, movement_cost)
     raise "Not enough movement points (#{self} tried to move #{movement_cost} with #{@movement_points} left #{tiles} )" unless movement_cost <= @movement_points
+
+    tiles = tiles.map {|pos| @map.tile_at_grid *pos } unless tiles.first.is_a? Tile
 
     destination = tiles.last
     @movement_points -= movement_cost

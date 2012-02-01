@@ -110,12 +110,13 @@ class MouseSelection < GameObject
       if @potential_moves.include? @hover_tile
         case path
           when MovePath
-            @map.actions.do :move, path
+            @map.actions.do :ability, selected.ability(:move).action_data(path)
             @selected_tile = @hover_tile
           when MeleePath
-            @map.actions.do :move, path.previous_path if path.requires_movement?
-            @map.actions.do :melee, path
-            @selected_tile = path.attacker.tile
+            attacker = selected
+            @map.actions.do :ability, attacker.ability(:move).action_data(path.previous_path) if path.requires_movement?
+            @map.actions.do :ability, attacker.ability(:melee).action_data(path.last)
+            @selected_tile = attacker.tile
         end
         calculate_path
         calculate_potential_moves

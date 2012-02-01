@@ -1,3 +1,5 @@
+require_relative "../../teststrap"
+
 def standard_faction
   denies(:active?)
   asserts(:entities).empty

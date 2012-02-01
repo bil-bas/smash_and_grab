@@ -56,10 +56,8 @@ class InfoPanel < Fidgit::Vertical
     @portrait.image = @entity.image
     @name.text = @entity.name
     @health.text = "HP: #{@entity.health} / #{@entity.max_health}"
-    @movement_points.text = "MP: #{@entity.mp} / #{@entity.max_mp}+#{entity.sprint_bonus}"
+    @movement_points.text = "MP: #{@entity.mp} / #{@entity.max_mp}"
     @action_points.text = "AP: #{@entity.ap} / #{@entity.max_ap}"
-
-    @sprint.enabled = @entity.sprint?
 
     entity
   end

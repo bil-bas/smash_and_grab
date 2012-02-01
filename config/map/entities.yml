@@ -13,6 +13,19 @@ green_goddess:
   movement_points: 10
   action_points: 3
   health: 8
+  abilities:
+    -
+      type: :melee
+      skill: 4
+    -
+      type: :ranged
+      skill: 1
+      range: 3
+      action_cost: 2
+    -
+      type: :sprint
+      skill: 4
+
 
 octobrain: # Scientist with giant brain.
   faction: baddies
@@ -20,6 +33,10 @@ octobrain: # Scientist with giant brain.
   movement_points: 6
   action_points: 1
   health: 5
+  abilities:
+    -
+      type: :melee
+      skill: 1
 
 femme_fatale: # Woman in red dress.
   faction: baddies
@@ -27,6 +44,13 @@ femme_fatale: # Woman in red dress.
   movement_points: 8
   action_points: 2
   health: 8
+  abilities:
+    -
+      type: :melee
+      skill: 2
+    -
+      type: :sprint
+      skill: 2
 
 radioactive_gorilla:
   faction: baddies
@@ -34,6 +58,13 @@ radioactive_gorilla:
   movement_points: 8
   action_points: 3
   health: 15
+  abilities:
+    -
+      type: :melee
+      skill: 5
+    -
+      type: :sprint
+      skill: 1
 
 robot:
   faction: baddies
@@ -41,6 +72,14 @@ robot:
   movement_points: 5
   action_points: 3
   health: 10
+  abilities:
+    -
+      type: :melee
+      skill: 4
+      action_cost: 1
+    -
+      type: :sprint
+      skill: 1
 
 artist:
   faction: baddies
@@ -48,6 +87,13 @@ artist:
   movement_points: 8
   action_points: 2
   health: 10
+  abilities:
+    -
+      type: :melee
+      skill: 2
+    -
+      type: :sprint
+      skill: 3
 
 invisible_man:
   faction: baddies
@@ -55,6 +101,13 @@ invisible_man:
   movement_points: 7
   action_points: 1
   health: 10
+  abilities:
+    -
+      type: :melee
+      skill: 2
+    -
+      type: :sprint
+      skill: 3
 
 professor_goggles:
   faction: baddies
@@ -62,6 +115,13 @@ professor_goggles:
   movement_points: 7
   action_points: 1
   health: 8
+  abilities:
+    -
+      type: :melee
+      skill: 2
+    -
+      type: :sprint
+      skill: 2
 
 # - Minions -
 
@@ -75,6 +135,13 @@ cop_with_gun:
   movement_points: 8
   action_points: 1
   health: 5
+  abilities:
+    -
+      type: :melee
+      skill: 1
+    -
+      type: :sprint
+      skill: 2
 
 g_man_coat_with_gun:
   faction: goodies
@@ -82,6 +149,13 @@ g_man_coat_with_gun:
   movement_points: 8
   action_points: 1
   health: 5
+  abilities:
+    -
+      type: :melee
+      skill: 2
+    -
+      type: :sprint
+      skill: 2
 
 g_man_shirt_with_gun:
   faction: goodies
@@ -89,6 +163,13 @@ g_man_shirt_with_gun:
   movement_points: 8
   action_points: 1
   health: 5
+  abilities:
+    -
+      type: :melee
+      skill: 2
+    -
+      type: :sprint
+      skill: 2
 
 soldier_with_gun:
   faction: goodies
@@ -96,6 +177,13 @@ soldier_with_gun:
   movement_points: 8
   action_points: 1
   health: 5
+  abilities:
+    -
+      type: :melee
+      skill: 1
+    -
+      type: :sprint
+      skill: 2
 
 soldier_with_bazooka:
   faction: goodies
@@ -103,6 +191,10 @@ soldier_with_bazooka:
   movement_points: 6
   action_points: 1
   health: 5
+  abilities:
+    -
+      type: :melee
+      skill: 1
 
 # - Superheroes -
 
@@ -112,6 +204,13 @@ catman:
   movement_points: 10
   action_points: 2
   health: 8
+  abilities:
+    -
+      type: :melee
+      skill: 3
+    -
+      type: :sprint
+      skill: 5
 
 femme_fatale2: # Woman in green dress.
   faction: goodies
@@ -119,6 +218,13 @@ femme_fatale2: # Woman in green dress.
   movement_points: 8
   action_points: 2
   health: 8
+  abilities:
+    -
+      type: :melee
+      skill: 2
+    -
+      type: :sprint
+      skill: 2
 
 homerun: # Baseball player
   faction: goodies
@@ -126,6 +232,13 @@ homerun: # Baseball player
   movement_points: 10
   action_points: 2
   health: 10
+  abilities:
+    -
+      type: :melee
+      skill: 4
+    -
+      type: :sprint
+      skill: 4
 
 moleman:
   faction: goodies
@@ -133,6 +246,13 @@ moleman:
   movement_points: 7
   action_points: 2
   health: 12
+  abilities:
+    -
+      type: :melee
+      skill: 2
+    -
+      type: :sprint
+      skill: 1
 
 mountie: # Canadian Mountie.
   faction: goodies
@@ -140,6 +260,13 @@ mountie: # Canadian Mountie.
   movement_points: 8
   action_points: 2
   health: 10
+  abilities:
+    -
+      type: :melee
+      skill: 3
+    -
+      type: :sprint
+      skill: 2
 
 spandexman: # Guy in red spandex.
   faction: goodies
@@ -147,6 +274,13 @@ spandexman: # Guy in red spandex.
   movement_points: 8
   action_points: 3
   health: 15
+  abilities:
+    -
+      type: :melee
+      skill: 4
+    -
+      type: :sprint
+      skill: 3
 
 stinger: # Wasp-lady
   faction: goodies
@@ -154,6 +288,13 @@ stinger: # Wasp-lady
   movement_points: 8
   action_points: 2
   health: 10
+  abilities:
+    -
+      type: :melee
+      skill: 3
+    -
+      type: :sprint
+      skill: 3
 
 knockout: # Boxer.
   faction: goodies
@@ -161,6 +302,13 @@ knockout: # Boxer.
   movement_points: 8
   action_points: 3
   health: 10
+  abilities:
+    -
+      type: :melee
+      skill: 5
+    -
+      type: :sprint
+      skill: 2
 
 # === BYSTANDERS ===
 
@@ -172,6 +320,7 @@ boy_selling_papers:
   movement_points: 7
   action_points: 0
   health: 1
+  abilities: []
 
 editor:
   faction: bystanders
@@ -179,6 +328,7 @@ editor:
   movement_points: 6
   action_points: 0
   health: 2
+  abilities: []
 
 photographer:
   faction: bystanders
@@ -186,6 +336,7 @@ photographer:
   movement_points: 8
   action_points: 0
   health: 2
+  abilities: []
 
 reporter:
   faction: bystanders
@@ -193,6 +344,7 @@ reporter:
   movement_points: 8
   action_points: 0
   health: 2
+  abilities: []
 
 # - Other innocents and children
 
@@ -202,6 +354,7 @@ assistant:
   movement_points: 8
   action_points: 0
   health: 2
+  abilities: []
 
 boy_with_slingshot:
   faction: bystanders
@@ -209,6 +362,7 @@ boy_with_slingshot:
   movement_points: 7
   action_points: 0
   health: 2
+  abilities: []
 
 girl_with_balloon:
   faction: bystanders
@@ -216,3 +370,4 @@ girl_with_balloon:
   movement_points: 7
   action_points: 0
   health: 2
+  abilities: []

@@ -10,7 +10,8 @@ class GameActionHistory < ActionHistory
 
     if data
       @actions = data.map do |action_data|
-        GameAction.const_get(action_data[GameAction::DATA_TYPE]).new map, action_data
+        action_data = action_data.symbolize
+        GameAction.const_get(Inflector.camelize(action_data[:type])).new map, action_data
       end
 
       @last_done = @actions.size - 1
@@ -21,15 +22,11 @@ end
 class GameAction < Fidgit::History::Action
   include Log
 
-  DATA_TYPE = 'type'
-  DATA_TIME = 'timestamp'
-
   def can_be_undone?; true; end
 
   def to_json(*a)
     {
-      DATA_TYPE => Inflector.demodulize(self.class.name),
-      DATA_TIME => @time,
+      type: Inflector.underscore(Inflector.demodulize(self.class.name)),
     }.merge(save_data).to_json(*a)
   end
 
@@ -39,4 +36,4 @@ class GameAction < Fidgit::History::Action
   end
 end
 
-require_folder 'history/game_actions', %w[end_turn melee move sprint]
+require_folder 'history/game_actions', %w[ability end_turn]

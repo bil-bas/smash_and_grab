@@ -1,5 +1,5 @@
 class GameAction::EndTurn < GameAction
-  def initialize(map, data = nil)
+  def initialize(map, *data)
     @map = map
     super()
   end

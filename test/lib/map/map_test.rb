@@ -1,3 +1,5 @@
+require_relative "../../teststrap"
+
 context Map do
   helper :objects_data do
     [
