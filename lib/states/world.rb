@@ -100,7 +100,7 @@ class World < Fidgit::GuiState
       gz.read
     end
 
-    data = JSON.parse(json)
+    data = JSON.parse(json).symbolize
 
     self.map = Map.new data
 

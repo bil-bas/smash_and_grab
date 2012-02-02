@@ -1,10 +1,10 @@
 require_relative "../../teststrap"
 
 context Tile do
-  setup { Tile.new 'grass', nil, 0, 0 }
+  setup { Tile.new :grass, nil, 0, 0 }
 
   context "initial state" do
-    asserts(:type).equals 'grass'
+    asserts(:type).equals :grass
     asserts(:x).equals 0
     asserts(:y).equals 0
     asserts(:grid_x).equals 0

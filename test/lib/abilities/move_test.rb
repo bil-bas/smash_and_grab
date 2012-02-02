@@ -4,7 +4,7 @@ require_relative "helpers/ability_helper"
 context Abilities::Move do
   helper :tile do |i|
     @tiles ||= Hash.new do |hash, key|
-      hash[key] = Tile.new('grass', nil, 0, key)
+      hash[key] = Tile.new(:grass, nil, 0, key)
     end
     @tiles[i]
   end

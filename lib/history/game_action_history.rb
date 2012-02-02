@@ -10,7 +10,7 @@ class GameActionHistory < ActionHistory
 
     if data
       @actions = data.map do |action_data|
-        action_data = action_data.symbolize
+        action_data = action_data
         GameAction.const_get(Inflector.camelize(action_data[:type])).new map, action_data
       end
 

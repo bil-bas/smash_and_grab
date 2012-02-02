@@ -29,16 +29,6 @@ class Map
 
   # --------------------------------------------
 
-  DATA_COMMENT = 'comment'
-  DATA_GAME_STARTED_AT = 'game_started_at'
-  DATA_LAST_SAVED_AT = 'last_saved_at'
-  DATA_VERSION = 'version'
-  DATA_SIZE = "map_size"
-  DATA_TILES = "tiles"
-  DATA_WALLS = "walls"
-  DATA_OBJECTS = "objects"
-  DATA_ACTIONS = 'actions'
-
   event :tile_contents_changed # An object moved or wall changed, etc.
   event :tile_type_changed # The actual type itself changed.
   event :wall_type_changed # The actual type itself changed.
@@ -56,8 +46,8 @@ class Map
     @drawable_objects = []
     @drawable_walls = [] # Only the visible walls are stored. Others are ignored.
 
-    @grid_width, @grid_height = data[DATA_TILES].size, data[DATA_TILES][0].size
-    @tiles = data[DATA_TILES].map.with_index do |row, y|
+    @grid_width, @grid_height = data[:tiles].size, data[:tiles][0].size
+    @tiles = data[:tiles].map.with_index do |row, y|
       row.map.with_index do |type, x|
         Tile.new type, self, x, y
       end
@@ -68,17 +58,17 @@ class Map
       row.each_with_index do |tile, x|
         # Tile below.
         if y < @grid_height - 1
-          Wall.new self, Wall::DATA_TYPE => 'none', Wall::DATA_TILES => [[x, y], [x, y + 1]]
+          Wall.new self, type: :none, tiles: [[x, y], [x, y + 1]]
         end
 
         # Tile to right.
         if x < @grid_width - 1
-          Wall.new self, Wall::DATA_TYPE => 'none', Wall::DATA_TILES => [[x, y], [x + 1, y]]
+          Wall.new self, type: :none, tiles: [[x, y], [x + 1, y]]
         end
       end
     end
 
-    data[DATA_WALLS].each do |wall_data|
+    data[:walls].each do |wall_data|
       Wall.new self, wall_data
     end
 
@@ -88,8 +78,8 @@ class Map
 
     @factions = [@baddies, @goodies, @bystanders] # And order of play.
 
-    data[DATA_OBJECTS].each do |object_data|
-      case object_data[WorldObject::DATA_CLASS]
+    data[:objects].each do |object_data|
+      case object_data[:class]
         when Entity::CLASS
           Entity.new self, object_data
         when StaticObject::CLASS
@@ -97,16 +87,16 @@ class Map
         when Vehicle::CLASS
           Vehicle.new self, object_data
         else
-          raise "Bad object class #{object_data[WorldObject::DATA_CLASS].inspect}"
+          raise "Bad object class #{object_data[:class].inspect}"
       end
     end
 
-    @actions = GameActionHistory.new self, data[DATA_ACTIONS]
+    @actions = GameActionHistory.new self, data[:actions]
 
     @turn, active_faction_index  = @actions.completed_turns.divmod @factions.size
     @active_faction = @factions[active_faction_index]
 
-    @start_time = data[DATA_GAME_STARTED_AT] || Time.now
+    @start_time = data[:game_started_at] || Time.now
 
     log.debug { "Map created in #{"%.3f" % (Time.now - t)} s" }
 
@@ -247,15 +237,15 @@ class Map
 
   def save_data
     {
-        DATA_COMMENT => "Smash and Grab save game",
-        DATA_VERSION => SmashAndGrab::VERSION,
-        DATA_GAME_STARTED_AT => @start_time,
-        DATA_LAST_SAVED_AT => Time.now,
-        DATA_SIZE => [@grid_width, @grid_height],
-        DATA_TILES => @tiles,
-        DATA_WALLS => @drawable_walls,
-        DATA_OBJECTS => @world_objects,
-        DATA_ACTIONS => @actions,
+        comment: "Smash and Grab save game",
+        version: SmashAndGrab::VERSION,
+        game_started_at: @start_time,
+        last_saved_at: Time.now,
+        map_size: [@grid_width, @grid_height],
+        tiles: @tiles,
+        walls: @drawable_walls,
+        objects: @world_objects,
+        actions: @actions,
     }
   end
 end

@@ -63,14 +63,15 @@ class Tile < GameObject
   def type=(type)
     changed = defined? @type
 
+    raise unless type.is_a? Symbol
     @type = type
 
     config = self.class.config[@type]
 
-    @minimap_color = Color.rgb(*config['minimap_color'])
-    @movement_cost = config['movement_cost']
-    @image = if config.has_key? 'spritesheet_position'
-      self.class.sprites[*config['spritesheet_position']]
+    @minimap_color = Color.rgb(*config[:minimap_color])
+    @movement_cost = config[:movement_cost]
+    @image = if config.has_key? :spritesheet_position
+      self.class.sprites[*config[:spritesheet_position]]
     else
       nil
     end

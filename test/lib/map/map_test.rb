@@ -62,17 +62,17 @@ context Map do
     }
   end
 
-  setup { Map.new map_data }
+  setup { Map.new map_data.symbolize }
 
   context "#tile_at_grid" do
     asserts("for a grid position left of grid") { topic.tile_at_grid(-1, 0) }.nil
     asserts("for a grid position right of grid") { topic.tile_at_grid(2, 0) }.nil
-    asserts("for a grid position in grid is correct tile") { topic.tile_at_grid(0, 0).type }.equals 'grass'
+    asserts("for a grid position in grid is correct tile") { topic.tile_at_grid(0, 0).type }.equals :grass
   end
 
   context "#tile_at_position" do
     asserts("for a screen position outside grid") { topic.tile_at_position(64, 0) }.nil
-    asserts("for a screen position in grid is correct tile") { topic.tile_at_position(0, 0).type }.equals 'grass'
+    asserts("for a screen position in grid is correct tile") { topic.tile_at_position(0, 0).type }.equals :grass
   end
 
   context "#objects" do
@@ -85,10 +85,10 @@ context Map do
   context "#save_data" do
     setup { topic.save_data }
 
-    asserts("version") { topic['version'] }.equals SmashAndGrab::VERSION
-    asserts("map size") { topic['map_size'] }.equals [2, 2]
-    asserts("tiles correct") { JSON.parse(topic['tiles'].to_json) == tiles_data }
-    asserts("walls correct") { JSON.parse(topic['walls'].to_json) == walls_data }
-    asserts("objects correct") { JSON.parse(topic['objects'].to_json) == objects_data }
+    asserts("version") { topic[:version] }.equals SmashAndGrab::VERSION
+    asserts("map size") { topic[:map_size] }.equals [2, 2]
+    asserts("tiles correct") { JSON.parse(topic[:tiles].to_json) == tiles_data }
+    asserts("walls correct") { JSON.parse(topic[:walls].to_json) == walls_data }
+    asserts("objects correct") { JSON.parse(topic[:objects].to_json) == objects_data }
   end
 end

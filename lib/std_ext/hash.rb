@@ -1,13 +1,18 @@
 class Hash
   def symbolize
-    inject({}) do |hash, (key, value)|
+    each_with_object({}) do |(key, value), hash|
       hash[key.to_sym] = case value
-                           when String then value.to_sym
-                           when Hash   then value.symbolize
-                           else value
+                           when String
+                             if value =~ /^[a-z0-9_]+$/
+                               value.to_sym
+                             else
+                               value
+                             end
+                           when Hash, Array
+                             value.symbolize
+                           else
+                             value
                          end
-
-      hash
     end
   end
 end

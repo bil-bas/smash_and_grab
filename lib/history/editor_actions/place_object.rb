@@ -13,9 +13,9 @@ class EditorAction::PlaceObject < EditorAction
     end
 
     @new_object = @object_class.new @tile.map,
-                                 WorldObject::DATA_TYPE => @type,
-                                 WorldObject::DATA_TILE => @tile.grid_position,
-                                 Entity::DATA_FACING => :left
+                                 type: @type,
+                                 tile: @tile.grid_position,
+                                 facing: :left
   end
 
   def undo

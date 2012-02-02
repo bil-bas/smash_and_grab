@@ -6,12 +6,7 @@ require_relative "world_object"
 class Entity < WorldObject
   extend Forwardable
 
-  CLASS = 'entity'
-  DATA_MOVEMENT_POINTS = 'movement_points'
-  DATA_ACTION_POINTS = 'action_points'
-  DATA_HEALTH = 'health'
-  DATA_FACING = 'facing'
-  DATA_ABILITIES = 'abilities'
+  CLASS = :entity
 
   SPRITE_WIDTH, SPRITE_HEIGHT = 66, 66
   PORTRAIT_WIDTH, PORTRAIT_HEIGHT = 36, 36
@@ -36,7 +31,7 @@ class Entity < WorldObject
   alias_method :ap=, :action_points=
 
   def to_s; "<#{self.class.name}/#{@type}##{id} #{tile ? grid_position : "[off-map]"}>"; end
-  def name; @type.split("_").map(&:capitalize).join(" "); end
+  def name; @type.to_s.split("_").map(&:capitalize).join(" "); end
   def alive?; @health > 0 and @tile; end
 
   def self.config; @@config ||= YAML.load_file(File.expand_path("config/map/entities.yml", EXTRACT_PATH)); end
@@ -45,30 +40,30 @@ class Entity < WorldObject
   def self.portraits; @@portraits ||= SpriteSheet.new("entity_portraits.png", PORTRAIT_WIDTH, PORTRAIT_HEIGHT, 8); end
 
   def initialize(map, data)
-    @type = data['type']
-    config = self.class.config[data['type']]
+    @type = data[:type]
+    config = self.class.config[data[:type]]
 
-    @faction = map.send(config['faction'])
+    @faction = map.send(config[:faction])
 
     options = {
-        image: self.class.sprites[*config['spritesheet_position']],
-        factor_x: data[DATA_FACING].to_sym == :right ? 1 : -1,
+        image: self.class.sprites[*config[:spritesheet_position]],
+        factor_x: data[:facing].to_sym == :right ? 1 : -1,
     }
 
-    @portrait = self.class.portraits[*config['spritesheet_position']]
+    @portrait = self.class.portraits[*config[:spritesheet_position]]
 
     super(map, data, options)
 
     raise @type unless image
 
-    @max_movement_points = config['movement_points']
-    @movement_points = data[DATA_MOVEMENT_POINTS] || @max_movement_points
+    @max_movement_points = config[:movement_points]
+    @movement_points = data[:movement_points] || @max_movement_points
 
-    @max_action_points = config['action_points']
-    @action_points = data[DATA_ACTION_POINTS] || @max_action_points
+    @max_action_points = config[:action_points]
+    @action_points = data[:action_points] || @max_action_points
 
-    @max_health = config['health']
-    @health = data[DATA_HEALTH] || @max_health
+    @max_health = config[:health]
+    @health = data[:health] || @max_health
 
     # Load other abilities of the entity from config.
     @abilities = {}
@@ -76,14 +71,12 @@ class Entity < WorldObject
     # Everyone who has movement_points has the ability to move, without it needing to be explicit.
     @abilities[:move] = Abilities.ability(self, type: :move) if max_movement_points > 0
 
-    if config[DATA_ABILITIES]
-      config[DATA_ABILITIES].each do |ability_data|
-        ability_data = ability_data.symbolize
+    if config[:abilities]
+      config[:abilities].each do |ability_data|
+        ability_data = ability_data
         @abilities[ability_data[:type]] = Abilities.ability(self, ability_data)
       end
     end
-
-    log.debug { @abilities }
 
     @faction << self
   end
@@ -332,16 +325,16 @@ class Entity < WorldObject
 
   def to_json(*a)
     data = {
-        DATA_CLASS => CLASS,
-        DATA_TYPE => @type,
-        DATA_ID => id,
-        DATA_HEALTH => @health,
-        DATA_MOVEMENT_POINTS => @movement_points,
-        DATA_ACTION_POINTS => @action_points,
-        DATA_FACING => factor_x > 0 ? :right : :left,
+        class: CLASS,
+        type: @type,
+        id: id,
+        health: @health,
+        movement_points: @movement_points,
+        action_points: @action_points,
+        facing: factor_x > 0 ? :right : :left,
     }
 
-    data[DATA_TILE] = grid_position if @tile
+    data[:tile] = grid_position if @tile
 
     data.to_json(*a)
   end

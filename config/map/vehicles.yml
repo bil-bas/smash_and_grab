@@ -3,17 +3,17 @@
 # === VEHICLES CONFIG ===
 # Vehicles are large and immobile, and cannot be controlled by the player/AI.
 
-cop_car:
-  spritesheet_position: [0, 0]
-  minimap_color: [150, 150, 150]
-  shape: [2, 4]
+:cop_car:
+  :spritesheet_position: [0, 0]
+  :minimap_color: [150, 150, 150]
+  :shape: [2, 4]
 
-ambulance_car:
-  spritesheet_position: [1, 0]
-  minimap_color: [150, 150, 150]
-  shape: [2, 4]
+:ambulance_car:
+  :spritesheet_position: [1, 0]
+  :minimap_color: [150, 150, 150]
+  :shape: [2, 4]
 
-tank:
-  spritesheet_position: [2, 0]
-  minimap_color: [150, 150, 150]
-  shape: [3, 4]
+:tank:
+  :spritesheet_position: [2, 0]
+  :minimap_color: [150, 150, 150]
+  :shape: [3, 4]

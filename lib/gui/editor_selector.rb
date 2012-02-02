@@ -85,18 +85,18 @@ class EditorSelector < Fidgit::Vertical
   def tiles_window
     buttons = group do
       vertical padding: 1 do
-        radio_button 'Erase', 'none'
+        radio_button 'Erase', :none
         grid padding: 0, num_columns: 2 do
           Tile.config.each_pair.sort.each do |type, data|
-            next if type == 'none'
-            radio_button '', type, icon: Tile.sprites[*data['spritesheet_position']],
+            next if type == :none
+            radio_button '', type, icon: Tile.sprites[*data[:spritesheet_position]],
                          tip: "Tile: #{type}", padding: 0, icon_options: { factor: 2 }
           end
         end
       end
     end
 
-    buttons.value = 'none'
+    buttons.value = :none
   end
 
   protected
@@ -106,8 +106,8 @@ class EditorSelector < Fidgit::Vertical
         radio_button 'Erase', :erase
         grid padding: 0, num_columns: 2 do
           Entity.config.each_pair.sort.each do |type, data|
-            radio_button '', type, icon: Entity.sprites[*data['spritesheet_position']],
-                         tip: "Entity: #{type} (#{data['faction']})", padding: 0
+            radio_button '', type, icon: Entity.sprites[*data[:spritesheet_position]],
+                         tip: "Entity: #{type} (#{data[:faction]})", padding: 0
           end
         end
       end
@@ -123,7 +123,7 @@ class EditorSelector < Fidgit::Vertical
         radio_button 'Erase', :erase
         grid padding: 0, num_columns: 2 do
           StaticObject.config.each_pair.sort.each do |type, data|
-            radio_button '', type, icon: StaticObject.sprites[*data['spritesheet_position']],
+            radio_button '', type, icon: StaticObject.sprites[*data[:spritesheet_position]],
                          tip: "Object: #{type}", padding: 0
           end
         end
@@ -140,7 +140,7 @@ class EditorSelector < Fidgit::Vertical
         radio_button 'Erase', :erase
         grid padding: 0, num_columns: 1 do
           Vehicle.config.each_pair.sort.each do |type, data|
-            radio_button '', type, icon: Vehicle.sprites[*data['spritesheet_position']],
+            radio_button '', type, icon: Vehicle.sprites[*data[:spritesheet_position]],
                          tip: "Vehicle: #{type}", padding: 0, icon_options: { factor: 0.5 }
           end
         end
@@ -154,17 +154,17 @@ class EditorSelector < Fidgit::Vertical
   def walls_window
     buttons = group do
       vertical padding: 1 do
-        radio_button 'Erase', 'none'
+        radio_button 'Erase', :none
         grid padding: 0, num_columns: 3 do
           Wall.config.each_pair.sort.each do |type, data|
-            next if type == 'none'
-            radio_button '', type, icon: Wall.sprites[*(data['spritesheet_positions']['vertical'])],
+            next if type == :none
+            radio_button '', type, icon: Wall.sprites[*(data[:spritesheet_positions][:vertical])],
                          tip: "Wall: #{type}", padding: 0
           end
         end
       end
     end
 
-    buttons.value = 'none'
+    buttons.value = :none
   end
 end

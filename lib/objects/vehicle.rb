@@ -2,11 +2,7 @@ require_relative "world_object"
 
 # A vehicle is a 4x2 tile object.
 class Vehicle < WorldObject
-  CLASS = 'vehicle'
-
-  CONFIG_MINIMAP_COLOR = 'minimap_color'
-  CONFIG_SPRITESHEET_POSITION = 'spritesheet_position'
-  CONFIG_SHAPE = 'shape'
+  CLASS = :vehicle
 
   # [Width of draw clip, z-order offset]
   DRAW_POSITIONS = [
@@ -32,21 +28,21 @@ class Vehicle < WorldObject
   def fills_tile_on_minimap?; true; end
 
   def initialize(map, data)
-    @type = data[DATA_TYPE]
+    @type = data[:type]
     config = self.class.config[@type]
 
     options = {
-        image: self.class.sprites[*config[CONFIG_SPRITESHEET_POSITION]],
+        image: self.class.sprites[*config[:spritesheet_position]],
     }
 
     # Add the vehicle to all other tiles it is standing on top of.
-    @shape = config[CONFIG_SHAPE]
+    @shape = config[:shape]
 
     super(map, data, options)
 
     @center_x, @center_y = 0.5, 1
 
-    @minimap_color = Color.rgb(*config[CONFIG_MINIMAP_COLOR])
+    @minimap_color = Color.rgb(*config[:minimap_color])
 
     raise @type unless @image
   end
@@ -91,10 +87,10 @@ class Vehicle < WorldObject
 
   def to_json(*a)
     {
-        DATA_CLASS => CLASS,
-        DATA_TYPE => @type,
-        DATA_ID => id,
-        DATA_TILE => grid_position,
+        class: CLASS,
+        type: @type,
+        id: id,
+        tile: grid_position,
     }.to_json(*a)
   end
 end

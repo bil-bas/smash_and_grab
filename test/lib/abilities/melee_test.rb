@@ -4,7 +4,7 @@ require_relative "helpers/ability_helper"
 context Abilities::Melee do
   helper(:entity) {@entity ||= Object.new }
   helper(:enemy) { @enemy ||= Object.new }
-  helper(:tile) { @tile ||= Tile.new('grass', nil, 1, 1) }
+  helper(:tile) { @tile ||= Tile.new(:grass, nil, 1, 1) }
 
   setup { Abilities.ability entity, type: :melee, action_cost: 1, skill: 5 }
 

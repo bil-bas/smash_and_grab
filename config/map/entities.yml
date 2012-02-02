@@ -7,121 +7,121 @@
 
 # - Supervillains -
 
-green_goddess:
-  faction: baddies
-  spritesheet_position: [5, 4]
-  movement_points: 10
-  action_points: 3
-  health: 8
-  abilities:
+:green_goddess:
+  :faction: :baddies
+  :spritesheet_position: [5, 4]
+  :movement_points: 10
+  :action_points: 3
+  :health: 8
+  :abilities:
     -
-      type: :melee
-      skill: 4
+      :type: :melee
+      :skill: 4
     -
-      type: :ranged
-      skill: 1
-      range: 3
-      action_cost: 2
+      :type: :ranged
+      :skill: 1
+      :range: 3
+      :action_cost: 2
     -
-      type: :sprint
-      skill: 4
+      :type: :sprint
+      :skill: 4
 
 
-octobrain: # Scientist with giant brain.
-  faction: baddies
-  spritesheet_position: [7, 3]
-  movement_points: 6
-  action_points: 1
-  health: 5
-  abilities:
+:octobrain: # Scientist with giant brain.
+  :faction: :baddies
+  :spritesheet_position: [7, 3]
+  :movement_points: 6
+  :action_points: 1
+  :health: 5
+  :abilities:
     -
-      type: :melee
-      skill: 1
+      :type: :melee
+      :skill: 1
 
-femme_fatale: # Woman in red dress.
-  faction: baddies
-  spritesheet_position: [7, 1]
-  movement_points: 8
-  action_points: 2
-  health: 8
-  abilities:
+:femme_fatale: # Woman in red dress.
+  :faction: :baddies
+  :spritesheet_position: [7, 1]
+  :movement_points: 8
+  :action_points: 2
+  :health: 8
+  :abilities:
     -
-      type: :melee
-      skill: 2
+      :type: :melee
+      :skill: 2
     -
-      type: :sprint
-      skill: 2
+      :type: :sprint
+      :skill: 2
 
-radioactive_gorilla:
-  faction: baddies
-  spritesheet_position: [1, 4]
-  movement_points: 8
-  action_points: 3
-  health: 15
-  abilities:
+:radioactive_gorilla:
+  :faction: :baddies
+  :spritesheet_position: [1, 4]
+  :movement_points: 8
+  :action_points: 3
+  :health: 15
+  :abilities:
     -
-      type: :melee
-      skill: 5
+      :type: :melee
+      :skill: 5
     -
-      type: :sprint
-      skill: 1
+      :type: :sprint
+      :skill: 1
 
-robot:
-  faction: baddies
-  spritesheet_position: [0, 4]
-  movement_points: 5
-  action_points: 3
-  health: 10
-  abilities:
+:robot:
+  :faction: :baddies
+  :spritesheet_position: [0, 4]
+  :movement_points: 5
+  :action_points: 3
+  :health: 10
+  :abilities:
     -
-      type: :melee
-      skill: 4
-      action_cost: 1
+      :type: :melee
+      :skill: 4
+      :action_cost: 1
     -
-      type: :sprint
-      skill: 1
+      :type: :sprint
+      :skill: 1
 
-artist:
-  faction: baddies
-  spritesheet_position: [3, 2]
-  movement_points: 8
-  action_points: 2
-  health: 10
-  abilities:
+:artist:
+  :faction: :baddies
+  :spritesheet_position: [3, 2]
+  :movement_points: 8
+  :action_points: 2
+  :health: 10
+  :abilities:
     -
-      type: :melee
-      skill: 2
+      :type: :melee
+      :skill: 2
     -
-      type: :sprint
-      skill: 3
+      :type: :sprint
+      :skill: 3
 
-invisible_man:
-  faction: baddies
-  spritesheet_position: [7, 4]
-  movement_points: 7
-  action_points: 1
-  health: 10
-  abilities:
+:invisible_man:
+  :faction: :baddies
+  :spritesheet_position: [7, 4]
+  :movement_points: 7
+  :action_points: 1
+  :health: 10
+  :abilities:
     -
-      type: :melee
-      skill: 2
+      :type: :melee
+      :skill: 2
     -
-      type: :sprint
-      skill: 3
+      :type: :sprint
+      :skill: 3
 
-professor_goggles:
-  faction: baddies
-  spritesheet_position: [2, 4]
-  movement_points: 7
-  action_points: 1
-  health: 8
-  abilities:
+:professor_goggles:
+  :faction: :baddies
+  :spritesheet_position: [2, 4]
+  :movement_points: 7
+  :action_points: 1
+  :health: 8
+  :abilities:
     -
-      type: :melee
-      skill: 2
+      :type: :melee
+      :skill: 2
     -
-      type: :sprint
-      skill: 2
+      :type: :sprint
+      :skill: 2
 
 # - Minions -
 
@@ -129,245 +129,245 @@ professor_goggles:
 
 # - Cops, G-men and Soldiers -
 
-cop_with_gun:
-  faction: goodies
-  spritesheet_position: [0, 0]
-  movement_points: 8
-  action_points: 1
-  health: 5
-  abilities:
+:cop_with_gun:
+  :faction: :goodies
+  :spritesheet_position: [0, 0]
+  :movement_points: 8
+  :action_points: 1
+  :health: 5
+  :abilities:
     -
-      type: :melee
-      skill: 1
+      :type: :melee
+      :skill: 1
     -
-      type: :sprint
-      skill: 2
+      :type: :sprint
+      :skill: 2
 
-g_man_coat_with_gun:
-  faction: goodies
-  spritesheet_position: [5, 0]
-  movement_points: 8
-  action_points: 1
-  health: 5
-  abilities:
+:g_man_coat_with_gun:
+  :faction: :goodies
+  :spritesheet_position: [5, 0]
+  :movement_points: 8
+  :action_points: 1
+  :health: 5
+  :abilities:
     -
-      type: :melee
-      skill: 2
+      :type: :melee
+      :skill: 2
     -
-      type: :sprint
-      skill: 2
+      :type: :sprint
+      :skill: 2
 
-g_man_shirt_with_gun:
-  faction: goodies
-  spritesheet_position: [6, 0]
-  movement_points: 8
-  action_points: 1
-  health: 5
-  abilities:
+:g_man_shirt_with_gun:
+  :faction: :goodies
+  :spritesheet_position: [6, 0]
+  :movement_points: 8
+  :action_points: 1
+  :health: 5
+  :abilities:
     -
-      type: :melee
-      skill: 2
+      :type: :melee
+      :skill: 2
     -
-      type: :sprint
-      skill: 2
+      :type: :sprint
+      :skill: 2
 
-soldier_with_gun:
-  faction: goodies
-  spritesheet_position: [3, 0]
-  movement_points: 8
-  action_points: 1
-  health: 5
-  abilities:
+:soldier_with_gun:
+  :faction: :goodies
+  :spritesheet_position: [3, 0]
+  :movement_points: 8
+  :action_points: 1
+  :health: 5
+  :abilities:
     -
-      type: :melee
-      skill: 1
+      :type: :melee
+      :skill: 1
     -
-      type: :sprint
-      skill: 2
+      :type: :sprint
+      :skill: 2
 
-soldier_with_bazooka:
-  faction: goodies
-  spritesheet_position: [4, 0]
-  movement_points: 6
-  action_points: 1
-  health: 5
-  abilities:
+:soldier_with_bazooka:
+  :faction: :goodies
+  :spritesheet_position: [4, 0]
+  :movement_points: 6
+  :action_points: 1
+  :health: 5
+  :abilities:
     -
-      type: :melee
-      skill: 1
+      :type: :melee
+      :skill: 1
 
 # - Superheroes -
 
-catman:
-  faction: goodies
-  spritesheet_position: [4, 1]
-  movement_points: 10
-  action_points: 2
-  health: 8
-  abilities:
+:catman:
+  :faction: :goodies
+  :spritesheet_position: [4, 1]
+  :movement_points: 10
+  :action_points: 2
+  :health: 8
+  :abilities:
     -
-      type: :melee
-      skill: 3
+      :type: :melee
+      :skill: 3
     -
-      type: :sprint
-      skill: 5
+      :type: :sprint
+      :skill: 5
 
-femme_fatale2: # Woman in green dress.
-  faction: goodies
-  spritesheet_position: [6, 1]
-  movement_points: 8
-  action_points: 2
-  health: 8
-  abilities:
+:femme_fatale2: # Woman in green dress.
+  :faction: :goodies
+  :spritesheet_position: [6, 1]
+  :movement_points: 8
+  :action_points: 2
+  :health: 8
+  :abilities:
     -
-      type: :melee
-      skill: 2
+      :type: :melee
+      :skill: 2
     -
-      type: :sprint
-      skill: 2
+      :type: :sprint
+      :skill: 2
 
-homerun: # Baseball player
-  faction: goodies
-  spritesheet_position: [2, 2]
-  movement_points: 10
-  action_points: 2
-  health: 10
-  abilities:
+:homerun: # Baseball player
+  :faction: :goodies
+  :spritesheet_position: [2, 2]
+  :movement_points: 10
+  :action_points: 2
+  :health: 10
+  :abilities:
     -
-      type: :melee
-      skill: 4
+      :type: :melee
+      :skill: 4
     -
-      type: :sprint
-      skill: 4
+      :type: :sprint
+      :skill: 4
 
-moleman:
-  faction: goodies
-  spritesheet_position: [0, 2]
-  movement_points: 7
-  action_points: 2
-  health: 12
-  abilities:
+:moleman:
+  :faction: :goodies
+  :spritesheet_position: [0, 2]
+  :movement_points: 7
+  :action_points: 2
+  :health: 12
+  :abilities:
     -
-      type: :melee
-      skill: 2
+      :type: :melee
+      :skill: 2
     -
-      type: :sprint
-      skill: 1
+      :type: :sprint
+      :skill: 1
 
-mountie: # Canadian Mountie.
-  faction: goodies
-  spritesheet_position: [0, 5]
-  movement_points: 8
-  action_points: 2
-  health: 10
-  abilities:
+:mountie: # Canadian Mountie.
+  :faction: :goodies
+  :spritesheet_position: [0, 5]
+  :movement_points: 8
+  :action_points: 2
+  :health: 10
+  :abilities:
     -
-      type: :melee
-      skill: 3
+      :type: :melee
+      :skill: 3
     -
-      type: :sprint
-      skill: 2
+      :type: :sprint
+      :skill: 2
 
-spandexman: # Guy in red spandex.
-  faction: goodies
-  spritesheet_position: [3, 1]
-  movement_points: 8
-  action_points: 3
-  health: 15
-  abilities:
+:spandexman: # Guy in red spandex.
+  :faction: :goodies
+  :spritesheet_position: [3, 1]
+  :movement_points: 8
+  :action_points: 3
+  :health: 15
+  :abilities:
     -
-      type: :melee
-      skill: 4
+      :type: :melee
+      :skill: 4
     -
-      type: :sprint
-      skill: 3
+      :type: :sprint
+      :skill: 3
 
-stinger: # Wasp-lady
-  faction: goodies
-  spritesheet_position: [1, 2]
-  movement_points: 8
-  action_points: 2
-  health: 10
-  abilities:
+:stinger: # Wasp-lady
+  :faction: :goodies
+  :spritesheet_position: [1, 2]
+  :movement_points: 8
+  :action_points: 2
+  :health: 10
+  :abilities:
     -
-      type: :melee
-      skill: 3
+      :type: :melee
+      :skill: 3
     -
-      type: :sprint
-      skill: 3
+      :type: :sprint
+      :skill: 3
 
-knockout: # Boxer.
-  faction: goodies
-  spritesheet_position: [5, 1]
-  movement_points: 8
-  action_points: 3
-  health: 10
-  abilities:
+:knockout: # Boxer.
+  :faction: :goodies
+  :spritesheet_position: [5, 1]
+  :movement_points: 8
+  :action_points: 3
+  :health: 10
+  :abilities:
     -
-      type: :melee
-      skill: 5
+      :type: :melee
+      :skill: 5
     -
-      type: :sprint
-      skill: 2
+      :type: :sprint
+      :skill: 2
 
 # === BYSTANDERS ===
 
 # - Newspaper -
 
-boy_selling_papers:
-  faction: bystanders
-  spritesheet_position: [6, 4]
-  movement_points: 7
-  action_points: 0
-  health: 1
-  abilities: []
+:boy_selling_papers:
+  :faction: :bystanders
+  :spritesheet_position: [6, 4]
+  :movement_points: 7
+  :action_points: 0
+  :health: 1
+  :abilities: []
 
-editor:
-  faction: bystanders
-  spritesheet_position: [5, 2]
-  movement_points: 6
-  action_points: 0
-  health: 2
-  abilities: []
+:editor:
+  :faction: :bystanders
+  :spritesheet_position: [5, 2]
+  :movement_points: 6
+  :action_points: 0
+  :health: 2
+  :abilities: []
 
-photographer:
-  faction: bystanders
-  spritesheet_position: [7, 0]
-  movement_points: 8
-  action_points: 0
-  health: 2
-  abilities: []
+:photographer:
+  :faction: :bystanders
+  :spritesheet_position: [7, 0]
+  :movement_points: 8
+  :action_points: 0
+  :health: 2
+  :abilities: []
 
-reporter:
-  faction: bystanders
-  spritesheet_position: [0, 1]
-  movement_points: 8
-  action_points: 0
-  health: 2
-  abilities: []
+:reporter:
+  :faction: :bystanders
+  :spritesheet_position: [0, 1]
+  :movement_points: 8
+  :action_points: 0
+  :health: 2
+  :abilities: []
 
 # - Other innocents and children
 
-assistant:
-  faction: bystanders
-  spritesheet_position: [3, 4]
-  movement_points: 8
-  action_points: 0
-  health: 2
-  abilities: []
+:assistant:
+  :faction: :bystanders
+  :spritesheet_position: [3, 4]
+  :movement_points: 8
+  :action_points: 0
+  :health: 2
+  :abilities: []
 
-boy_with_slingshot:
-  faction: bystanders
-  spritesheet_position: [1, 1]
-  movement_points: 7
-  action_points: 0
-  health: 2
-  abilities: []
+:boy_with_slingshot:
+  :faction: :bystanders
+  :spritesheet_position: [1, 1]
+  :movement_points: 7
+  :action_points: 0
+  :health: 2
+  :abilities: []
 
-girl_with_balloon:
-  faction: bystanders
-  spritesheet_position: [2, 1]
-  movement_points: 7
-  action_points: 0
-  health: 2
-  abilities: []
+:girl_with_balloon:
+  :faction: :bystanders
+  :spritesheet_position: [2, 1]
+  :movement_points: 7
+  :action_points: 0
+  :health: 2
+  :abilities: []

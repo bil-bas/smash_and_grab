@@ -1,9 +1,6 @@
 class Wall < GameObject
   SEMI_TRANSPARENT_COLOR = Color.rgba(255, 255, 255, 120)
   OPAQUE_COLOR = Color::WHITE
-
-  DATA_TYPE = 'type'
-  DATA_TILES = 'tiles'
   
   SPRITE_WIDTH, SPRITE_HEIGHT = 32, 64
 
@@ -49,7 +46,7 @@ class Wall < GameObject
 
     @map = map
 
-    @tiles = data[DATA_TILES].map {|p| map.tile_at_grid(*p) }.sort_by(&:y)
+    @tiles = data[:tiles].map {|p| map.tile_at_grid(*p) }.sort_by(&:y)
 
     @destinations = {
         @tiles.first => @tiles.last,
@@ -69,7 +66,7 @@ class Wall < GameObject
       @orientation = :horizontal
     end
 
-    self.type = data[DATA_TYPE]
+    self.type = data[:type]
   end
 
   def type=(type)
@@ -79,20 +76,20 @@ class Wall < GameObject
 
     config = self.class.config[@type]
 
-    @minimap_color = Color.rgba(*config['minimap_color'])
-    @blocks_sight = config['blocks_sight']
-    @movement_cost = config['movement_cost']
-    @tiles_high = config['tiles_high']
+    @minimap_color = Color.rgba(*config[:minimap_color])
+    @blocks_sight = config[:blocks_sight]
+    @movement_cost = config[:movement_cost]
+    @tiles_high = config[:tiles_high]
 
     #@y -= (4 - @thickness) / 2 if @thickness
-    @thickness = config['thickness']
+    @thickness = config[:thickness]
     #@y += (4 - @thickness) / 2 if @thickness
 
-    spritesheet_positions = config['spritesheet_positions']
+    spritesheet_positions = config[:spritesheet_positions]
     image = if @tiles.last.grid_y > @tiles.first.grid_y
-      spritesheet_positions ? self.class.sprites[*spritesheet_positions['vertical']] : nil
+      spritesheet_positions ? self.class.sprites[*spritesheet_positions[:vertical]] : nil
     else
-      spritesheet_positions ? self.class.sprites[*spritesheet_positions['horizontal']] : nil
+      spritesheet_positions ? self.class.sprites[*spritesheet_positions[:horizontal]] : nil
     end
 
     @map.remove self if @image
@@ -133,8 +130,8 @@ class Wall < GameObject
 
   def to_json(*a)
     {
-        DATA_TYPE => @type,
-        DATA_TILES => @tiles.map(&:grid_position),
+        type: @type,
+        tiles: @tiles.map(&:grid_position),
     }.to_json(*a)
   end
 end

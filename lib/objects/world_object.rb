@@ -3,11 +3,6 @@ class WorldObject < GameObject
   include Fidgit::Event
   extend Forwardable
 
-  DATA_CLASS = 'class'
-  DATA_TYPE = 'type'
-  DATA_ID = 'id'
-  DATA_TILE = 'tile'
-
   def_delegators :@tile, :map, :grid_position, :grid_x, :grid_y
 
   attr_reader :tile
@@ -33,7 +28,7 @@ class WorldObject < GameObject
     @map = map
     @map << self
 
-    self.tile = data[DATA_TILE] ? @map.tile_at_grid(*data[DATA_TILE]) : nil
+    self.tile = data[:tile] ? @map.tile_at_grid(*data[:tile]) : nil
 
     @z = options[:z]
 

@@ -1,11 +1,7 @@
 require_relative "world_object"
 
 class StaticObject < WorldObject
-  CLASS = 'object'
-
-  CONFIG_PASSABLE = 'passable'
-  CONFIG_MINIMAP_COLOR = 'minimap_color'
-  CONFIG_SPRITESHEET_POSITION = 'spritesheet_position'
+  CLASS = :object
 
   attr_reader :minimap_color, :type
 
@@ -21,27 +17,27 @@ class StaticObject < WorldObject
   def self.sprites; @@sprites ||= SpriteSheet.new("objects.png", 64 + 2, 64 + 2, 8); end
 
   def initialize(map, data)
-    @type = data[DATA_TYPE]
+    @type = data[:type]
     config = self.class.config[@type]
 
     options = {
-        image: self.class.sprites[*config[CONFIG_SPRITESHEET_POSITION]],
+        image: self.class.sprites[*config[:spritesheet_position]],
     }
 
     super(map, data, options)
 
-    @minimap_color = Color.rgb(*config[CONFIG_MINIMAP_COLOR])
-    @passable = config[CONFIG_PASSABLE]
+    @minimap_color = Color.rgb(*config[:minimap_color])
+    @passable = config[:passable]
 
     raise @type unless @image
   end
 
   def to_json(*a)
     {
-        DATA_CLASS => CLASS,
-        DATA_TYPE => @type,
-        DATA_ID => id,
-        DATA_TILE => grid_position,
+        class: CLASS,
+        type: @type,
+        id: id,
+        tile: grid_position,
     }.to_json(*a)
   end
 end
