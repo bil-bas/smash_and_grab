@@ -1,6 +1,6 @@
 require_relative "../../teststrap"
 
-context Map do
+describe Map do
   helper :objects_data do
     [
         {
@@ -62,33 +62,53 @@ context Map do
     }
   end
 
-  setup { Map.new map_data.symbolize }
+  subject { Map.new map_data.symbolize }
 
-  context "#tile_at_grid" do
-    asserts("for a grid position left of grid") { topic.tile_at_grid(-1, 0) }.nil
-    asserts("for a grid position right of grid") { topic.tile_at_grid(2, 0) }.nil
-    asserts("for a grid position in grid is correct tile") { topic.tile_at_grid(0, 0).type }.equals :grass
+  describe "#tile_at_grid" do
+    should "find the correct tile" do
+      subject.tile_at_grid(0, 0).type.should.equal :grass
+      subject.tile_at_grid(1, 0).type.should.equal :concrete
+    end
+    
+    should "return nil for positions outside the grid" do
+      subject.tile_at_grid(-1, 0).should.be.nil
+      subject.tile_at_grid(2, 0).should.be.nil
+    end
   end
 
-  context "#tile_at_position" do
-    asserts("for a screen position outside grid") { topic.tile_at_position(64, 0) }.nil
-    asserts("for a screen position in grid is correct tile") { topic.tile_at_position(0, 0).type }.equals :grass
+  describe "#tile_at_position" do
+    should "find the correct tile" do
+      subject.tile_at_position(0, 0).type.should.equal :grass
+      subject.tile_at_position(4, 8).type.should.equal :dirt
+    end
+
+    should "return nil outside the grid" do
+      subject.tile_at_position(-8, -8).should.be.nil
+      subject.tile_at_position(64, 0).should.be.nil
+    end
   end
 
-  context "#objects" do
-    asserts("given negative object id").raises(RuntimeError) { topic.object_by_id(-1) }
-    asserts("given object id too high").raises(RuntimeError) { topic.object_by_id(2) }
-    asserts("given id 0 gives object whose id") { topic.object_by_id(0).id }.equals 0
-    asserts("given id 1 gives object whose id") { topic.object_by_id(1).id }.equals 1
+  describe "#objects" do
+    should "give correct object" do
+      subject.object_by_id(0).id.should.equal 0
+      subject.object_by_id(1).id.should.equal 1
+    end
+
+    should "raise error with bad id" do
+      ->{ subject.object_by_id(-1) }.should.raise(RuntimeError)
+      ->{ subject.object_by_id(2) }.should.raise(RuntimeError)
+    end
   end
 
-  context "#save_data" do
-    setup { topic.save_data }
+  describe "#save_data" do
+    subject { Map.new(map_data.symbolize).save_data }
 
-    asserts("version") { topic[:version] }.equals SmashAndGrab::VERSION
-    asserts("map size") { topic[:map_size] }.equals [2, 2]
-    asserts("tiles correct") { JSON.parse(topic[:tiles].to_json) == tiles_data }
-    asserts("walls correct") { JSON.parse(topic[:walls].to_json) == walls_data }
-    asserts("objects correct") { JSON.parse(topic[:objects].to_json) == objects_data }
+    should "contain the same data as was loaded" do
+      subject[:version].should.equal SmashAndGrab::VERSION
+      subject[:map_size].should.equal [2, 2]
+      JSON.parse(subject[:tiles].to_json).should.equal tiles_data
+      JSON.parse(subject[:walls].to_json).should.equal walls_data
+      JSON.parse(subject[:objects].to_json).should.equal objects_data
+    end
   end
 end

@@ -70,6 +70,6 @@ Log.log.debug { "Scripts loaded in #{"%.3f" % (Time.now - t)} s" }
 
 GameWindow.new
 
-unless defined? Ocra or defined? Riot
+unless defined? Ocra or defined? Bacon
   $window.show
 end

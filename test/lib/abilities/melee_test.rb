@@ -1,55 +1,64 @@
 require_relative "../../teststrap"
 require_relative "helpers/ability_helper"
 
-context Abilities::Melee do
+describe Abilities::Melee do
   helper(:entity) {@entity ||= Object.new }
   helper(:enemy) { @enemy ||= Object.new }
   helper(:tile) { @tile ||= Tile.new(:grass, nil, 1, 1) }
 
-  setup { Abilities.ability entity, type: :melee, action_cost: 1, skill: 5 }
+  subject { Abilities.ability entity, type: :melee, action_cost: 1, skill: 5 }
 
-  acts_like_an_ability Abilities::Melee, :melee, no_action_cost: true
+  behaves_like Abilities::Ability
 
-  asserts(:owner).equals { entity }
-  denies(:can_be_undone?)
-  asserts(:skill).equals 5
-  asserts(:action_cost).equals 1
-  asserts(:to_json) { JSON.parse(topic.to_json).symbolize }.equals(
-      type: :melee,
-      skill: 5,
-      action_cost: 1
-  )
+  should "fail if not given the required arguments" do
+    ->{ Abilities.ability entity, type: :melee }.should.raise(ArgumentError).message.should.match /No skill value for/
+  end
 
-  asserts("action_data with tile") do
+  should "be initialized" do
+    subject.owner.should.equal entity
+    subject.can_be_undone?.should.be.false
+    subject.skill.should.equal 5
+    subject.action_cost.should.equal 1
+  end
+
+  should "serialize to json correctly" do
+    JSON.parse(subject.to_json).symbolize.should.equal(
+        type: :melee,
+        skill: 5,
+        action_cost: 1
+    )
+  end
+
+  should "generate appropriate action_data" do
     stub(entity).id.returns 12
     stub(enemy).id.returns 13
     stub(tile).object.returns enemy
-    stub(topic).random_damage.returns 5
-    topic.action_data tile
-  end.same_elements(
-      ability: :melee,
-      skill: 5,
-      action_cost: 1,
+    stub(subject).random_damage.returns 5
+    subject.action_data(tile).should.equal(
+        ability: :melee,
+        skill: 5,
+        action_cost: 1,
 
-      owner_id: 12,
-      damage: 5,
-      target_id: 13,
-      target_position: [1, 1]
-  )
+        owner_id: 12,
+        target_id: 13,
+        target_position: [1, 1],
+        damage: 5
+    )
+  end
 
-  context "#random_damage" do
+  describe "#random_damage" do
     should "never give a value greater than skill" do
-      stub(topic).rand(is_a(Integer)) {|x| x - 1 }
-      topic.random_damage == 5
+      stub(subject).rand(is_a(Integer)) {|x| x - 1 }
+      subject.random_damage == 5
     end
 
     should "never give a value less than 1" do
-      stub(topic).rand(is_a(Integer)) { 0 }
-      topic.random_damage == 1
+      stub(subject).rand(is_a(Integer)) { 0 }
+      subject.random_damage == 1
     end
   end
 
-  context "#do" do
+  describe "#do" do
     should "remove action points and health" do
       stub(enemy).health.returns 20
       mock(enemy, :health=).with 15
@@ -58,12 +67,12 @@ context Abilities::Melee do
       stub(entity).action_points.returns 1
       mock(entity, :action_points=).with 0
 
-      topic.do action_cost: 1, target_id: 13, damage: 5 #, target_position: [1, 1]
+      subject.do action_cost: 1, target_id: 13, damage: 5 #, target_position: [1, 1]
       true
     end
   end
 
-  context "#undo" do
+  describe "#undo" do
     should "give action points and health (if target alive)" do
       stub(enemy).tile.returns tile
       stub(enemy).health.returns 15
@@ -73,8 +82,7 @@ context Abilities::Melee do
       stub(entity).action_points.returns 0
       mock(entity, :action_points=).with 1
 
-      topic.undo action_cost: 1, target_id: 13, damage: 5, target_position: [1, 1]
-      true
+      subject.undo action_cost: 1, target_id: 13, damage: 5, target_position: [1, 1]
     end
 
     should "give action points, health and return to map (if target dead)" do
@@ -91,8 +99,7 @@ context Abilities::Melee do
       stub(entity).action_points.returns 0
       mock(entity, :action_points=).with 1
 
-      topic.undo action_cost: 1, target_id: 13, damage: 5, target_position: [1, 1]
-      true
+      subject.undo action_cost: 1, target_id: 13, damage: 5, target_position: [1, 1]
     end
   end
 end

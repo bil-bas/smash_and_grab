@@ -1,23 +1,21 @@
 require_relative "../../teststrap"
 
-context Hash do
-  context "symbolising keys" do
-    setup { { "x" => 12, "y" => 1 } }
-    asserts(:symbolize).equals(x: 12, y: 1)
+describe Hash do
+  should "symbolise keys" do
+    { "x" => 12, "y" => 1 }.symbolize.should.equal(x: 12, y: 1)
   end
 
-  context "symbolising values" do
-    setup { { "x" => "frog", "y" => "Frog", "z" => "cheese_pie2", "a" => "cheese pie" } }
-    asserts(:symbolize).equals(x: :frog, y: "Frog", z: :cheese_pie2, a: "cheese pie")
+  should "symbolise values" do
+    { "x" => "frog", "y" => "Frog", "z" => "cheese_pie2", "a" => "cheese pie" }.symbolize.should.equal(
+        x: :frog, y: "Frog", z: :cheese_pie2, a: "cheese pie"
+    )
   end
 
-  context "symbolising array values" do
-    setup { { "x" => ["y", { "z" => 2 }] } }
-    asserts(:symbolize).equals(x: [:y, { z: 2 }])
+  should "symbolise array values" do
+    { "x" => ["y", { "z" => 2 }] }.symbolize.should.equal(x: [:y, { z: 2 }])
   end
 
-  context "symbolising nested hashes" do
-    setup { { "x" => { "x" => 12, "y" => 1 } } }
-    asserts(:symbolize).equals(x: { x: 12, y: 1 })
+  should "symbolise nested hashes" do
+    { "x" => { "x" => 12, "y" => 1 } }.symbolize.should.equal(x: { x: 12, y: 1 })
   end
 end

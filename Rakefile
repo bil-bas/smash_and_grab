@@ -56,9 +56,9 @@ task :yard do
   system "yard doc lib"
 end
 
-Rake::TestTask.new do |t|
-  t.pattern = "test/**/*_test.rb"
-  # t.options = "--verbose" # Add --verbose to run full descriptive list.
+desc "test"
+task :test do
+  system "bacon test/**/*_test.rb --quiet"
 end
 
 task default: :test

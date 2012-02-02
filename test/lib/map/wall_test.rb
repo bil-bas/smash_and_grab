@@ -1,5 +1,5 @@
 require_relative "../../teststrap"
 
-context Wall do
+describe Wall do
 
 end

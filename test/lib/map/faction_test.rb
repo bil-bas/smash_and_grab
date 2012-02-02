@@ -1,51 +1,62 @@
 require_relative "../../teststrap"
 
-def standard_faction
-  denies(:active?)
-  asserts(:entities).empty
+shared Faction do
+  should "not be active" do
+    subject.should.not.be.active
+  end
+
+  should "have no entities" do
+    subject.entities.should.be.kind_of Array
+    subject.entities.should.be.empty
+  end
 end
 
-context Faction do
-  setup do
-    # These should be unique.
-    @baddies = Faction::Baddies.new nil
-    @goodies =  Faction::Goodies.new nil
-    @bystanders = Faction::Bystanders.new nil
+describe Faction do
+  helper(:baddies) { Faction::Baddies.new nil }
+  helper(:goodies) { Faction::Goodies.new nil }
+  helper(:bystanders) { Faction::Bystanders.new nil }
+
+  subject { described.new nil }
+
+  describe Faction::Goodies do
+    behaves_like Faction
+
+    should "dislike baddies" do
+      subject.should.be.enemy? baddies
+      subject.should.not.be.friend? baddies
+    end
+
+    should "like bystanders" do
+      subject.should.not.be.enemy? bystanders
+      subject.should.be.friend? bystanders
+    end
   end
 
-  context Faction::Goodies do
-    setup { @goodies }
+  describe Faction::Baddies do
+    behaves_like Faction
 
-    asserts("dislikes baddies") { topic.enemy? @baddies }
-    denies("likes baddies") { topic.friend? @baddies }
+    should "dislike goodies" do
+      subject.should.be.enemy? goodies
+      subject.should.not.be.friend? goodies
+    end
 
-    denies("dislikes bystanders") { topic.enemy? @bystanders }
-    asserts("likes bystanders") { topic.friend? @bystanders }
-
-    standard_faction
+    should "dislike bystanders" do
+      subject.should.be.enemy? bystanders
+      subject.should.not.be.friend? bystanders
+    end
   end
 
-  context Faction::Baddies do
-    setup { @baddies }
+  describe Faction::Bystanders do
+    behaves_like Faction
 
-    asserts("dislikes goodies") { topic.enemy? @goodies }
-    denies("likes goodies") { topic.friend? @goodies }
+    should "like goodies" do
+      subject.should.not.be.enemy? goodies
+      subject.should.be.friend? goodies
+    end
 
-    asserts("dislikes bystanders") { topic.enemy? @bystanders }
-    denies("likes bystanders") { topic.friend? @bystanders }
-
-    standard_faction
-  end
-
-  context Faction::Bystanders do
-    setup { @bystanders }
-
-    asserts("dislikes baddies") { topic.enemy? @baddies }
-    denies("likes baddies") { topic.friend? @baddies }
-
-    denies("dislikes goodies") { topic.enemy? @goodies }
-    asserts("likes goodies") { topic.friend? @goodies }
-
-    standard_faction
+    should "dislike baddies" do
+      subject.should.be.enemy? baddies
+      subject.should.not.be.friend? baddies
+    end
   end
 end

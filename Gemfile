@@ -13,6 +13,5 @@ gem "texplay", "~>0.3"
 group :development do
   gem "releasy", "~> 0.2.2"
   gem "rake", "~> 0.9.2.2"
-  gem "riot", "~> 0.12.5"
-  gem "rr", "~> 1.0.4"
+  gem "bacon-rr", "~> 0.1.0"
 end
