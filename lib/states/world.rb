@@ -147,6 +147,8 @@ class World < Fidgit::GuiState
       @camera_offset_y += 10.0
     end
 
+    @map.update
+
     super()
 
     @used_time += (Time.now - start_at).to_f

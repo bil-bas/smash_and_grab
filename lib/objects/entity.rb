@@ -2,6 +2,7 @@ require 'set'
 require_relative "../path"
 require_relative "../abilities"
 require_relative "world_object"
+require_relative "floating_text"
 
 class Entity < WorldObject
   extend Forwardable
@@ -85,7 +86,20 @@ class Entity < WorldObject
   def ability(type); @abilities[type]; end
 
   def health=(value)
+    original_health = @health
     @health = [value, 0].max
+
+    # Show damage/healing as a floating number.
+    if original_health != @health
+      text, color = if @health > original_health
+                      ["+#{@health - original_health}", Color::GREEN]
+                    else
+                      [(@health - original_health).to_s, Color::RED]
+                    end
+
+      FloatingText.new(text, color: color, x: x, y: y - height / 3, zorder: y - 0.01)
+    end
+
     if @health == 0 and @tile
       self.tile = nil
     end

@@ -1,4 +1,5 @@
 require_relative 'faction'
+require 'set'
 
 class Map
   include Fidgit::Event
@@ -38,10 +39,14 @@ class Map
     
   def to_rect; Rect.new(0, 0, @grid_width * Tile::WIDTH, @grid_height * Tile::HEIGHT); end
 
+  def add_effect(effect); @effects << effect; end
+  def remove_effect(effect); @effects.delete effect; end
+
   # tile_classes: Nested arrays of Tile class names (Tile::Grass is represented as "Grass")
   def initialize(data)
     t = Time.now
 
+    @effects = []
     @world_objects = []
     @drawable_objects = []
     @drawable_walls = [] # Only the visible walls are stored. Others are ignored.
@@ -212,9 +217,13 @@ class Map
   def draw
     @recorded_tiles.draw 0, 0, ZOrder::TILES
     @drawable_objects.each(&:draw)
+    @effects.each(&:draw)
   end
 
-
+  def update
+    @drawable_objects.each(&:update)
+    @effects.each(&:update)
+  end
 
   def record_grid(color)
     @grid_record = $window.record(1, 1) do
