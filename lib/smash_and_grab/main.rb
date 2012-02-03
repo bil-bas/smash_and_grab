@@ -10,12 +10,16 @@ def require_folder(path, files)
   end
 end
 
+require_relative "log"
+SmashAndGrab::Log.log.info { "Smash and Grab loading; please wait.." }
+
 t = Time.now
 
 begin
   require 'rubygems' unless defined? OSX_EXECUTABLE
 rescue LoadError
 end
+
 
 begin
   require 'bundler/setup' unless defined?(OSX_EXECUTABLE) or ENV['OCRA_EXECUTABLE']
@@ -48,6 +52,9 @@ Font.factor_stored = 1
 Font.factor_rendered = 1.0 / Font.factor_stored
 include Chingu
 
+SmashAndGrab::Log.log.debug { "Gems loaded in #{"%.3f" % (Time.now - t)} s" }
+t = Time.now
+
 # Setup Chingu's autoloading media directories.
 media_dir = File.expand_path('media', EXTRACT_PATH)
 Image.autoload_dirs.unshift File.join(media_dir, 'images')
@@ -58,7 +65,7 @@ Font.autoload_dirs.unshift File.join(media_dir, 'fonts')
 require_folder "std_ext", %w[array hash]
 
 # Include other files.
-require_folder("", %w[log version sprite_sheet z_order z_order_recorder game_window mouse_selection])
+require_folder("", %w[version sprite_sheet z_order z_order_recorder game_window mouse_selection])
 require_folder("gui", %w[minimap editor_selector entity_summary info_panel])
 require_folder("map", %w[tile wall map])
 require_folder("objects", %w[static entity vehicle])
@@ -68,7 +75,9 @@ require_folder("history", %w[editor_action_history game_action_history])
 
 SmashAndGrab::Log.log.debug { "Scripts loaded in #{"%.3f" % (Time.now - t)} s" }
 
+t = Time.now
 SmashAndGrab::GameWindow.new
+SmashAndGrab::Log.log.debug { "Window created in #{"%.3f" % (Time.now - t)} s" }
 
 unless defined? Ocra or defined? Bacon
   $window.show

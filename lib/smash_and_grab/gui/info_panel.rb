@@ -78,14 +78,14 @@ class InfoPanel < Fidgit::Vertical
         melee = @entity.ability(:melee)
         @ability_buttons[:melee].tip = "Melee[#{melee.skill}] - attack in hand-to-hand combat"
       else
-        @ability_buttons[:melee].tip = "Melee[n/a)"
+        @ability_buttons[:melee].tip = "Melee[n/a]"
       end
 
       if @entity.has_ability? :ranged
         ranged = @entity.ability(:ranged)
         @ability_buttons[:ranged].tip = "Ranged[#{ranged.skill}] - attack in ranged combat"
       else
-        @ability_buttons[:ranged].tip = "Ranged[n/a)"
+        @ability_buttons[:ranged].tip = "Ranged[n/a]"
       end
 
       if @entity.has_ability? :sprint

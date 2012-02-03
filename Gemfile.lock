@@ -1,5 +1,14 @@
+PATH
+  remote: .
+  specs:
+    smash_and_grab (0.0.1alpha)
+      chingu (~> 0.9rc7)
+      fidgit (~> 0.1.10)
+      gosu (~> 0.7.41)
+      texplay (~> 0.3)
+
 GEM
-  remote: http://gemcutter.org/
+  remote: http://rubygems.org/
   specs:
     bacon (1.1.0)
     bacon-rr (0.1.0)
@@ -12,14 +21,12 @@ GEM
     cri (2.1.0)
     faster_xml_simple (0.5.0)
       libxml-ruby (>= 0.3.8.4)
-    ffi (1.0.9)
     ffi (1.0.9-x86-mingw32)
-    fidgit (0.1.9)
-      chingu (~> 0.9rc5)
+    fidgit (0.1.10)
+      chingu (~> 0.9rc7)
       clipboard (~> 0.9.9)
       ffi (= 1.0.9)
       gosu (~> 0.7.33)
-    gosu (0.7.41)
     gosu (0.7.41-x86-mingw32)
     httpclient (2.2.4)
     json (1.6.5)
@@ -41,8 +48,6 @@ GEM
     rr (1.0.4)
     texplay (0.3.5-x86-mingw32)
       gosu (>= 0.7.25)
-    texplay (0.4.2)
-      gosu (>= 0.7.25)
     thor (0.14.6)
 
 PLATFORMS
@@ -51,9 +56,6 @@ PLATFORMS
 
 DEPENDENCIES
   bacon-rr (~> 0.1.0)
-  chingu (~> 0.9rc7)
-  fidgit (~> 0.1.9)
-  gosu (~> 0.7.41)
   rake (~> 0.9.2.2)
   releasy (~> 0.2.2)
-  texplay (~> 0.3)
+  smash_and_grab!

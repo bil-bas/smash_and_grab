@@ -5,7 +5,7 @@ require 'rake/clean'
 require 'rake/testtask'
 require 'releasy'
 
-require_relative "lib/version"
+require_relative "lib/smash_and_grab/version"
 
 CLEAN.include("*.log")
 CLOBBER.include("doc/**/*")
@@ -49,6 +49,10 @@ Releasy::Project.new do
   add_deploy :local do
     path "C:/users/spooner/dropbox/Public/games/smash_and_grab"
   end
+end
+
+namespace :gem do
+  Bundler::GemHelper.install_tasks
 end
 
 desc "Generate Yard docs."
