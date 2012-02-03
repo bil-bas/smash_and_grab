@@ -14,22 +14,22 @@ Requirements
 
 ### Windows
 
-If running <tt>smash_and_grab.exe</tt>, there are no other requirements.
+If running `smash_and_grab.exe`, there are no other requirements.
 
 ### OS X
 
-If running OS X, use the executable (<tt>SmashAndGrab.app</tt>), which has no dependencies.
+If running OS X, use the executable (`SmashAndGrab.app`), which has no dependencies.
 
 ### Source for Linux (or Windows/OS X if not using the executable)
 
-If running from source, users must install the Ruby interpreter and some rubygems. Linux users must also install some "extra dependencies](https://github.com/jlnr/gosu/wiki/Getting-Started-on-Linux for Gosu.
+If running from source, users must install the Ruby interpreter and some rubygems. Linux users must also install some [extra dependencies](https://github.com/jlnr/gosu/wiki/Getting-Started-on-Linux) for Gosu.
 
 #### Dependencies
 
 * Ruby 1.9.2 (Install via package manager or rvm). Ruby 1.9.3 recommended though, since loading is significantly faster.
-** Gosu gem 0.7.32 (Dependencies: "Linux only](https://github.com/jlnr/gosu/wiki/Getting-Started-on-Linux)
-** A number of other rubygems, which can be installed automatically using Bundler (see below).
-** Linux Only: <tt>xsel</tt> or <tt>xcopy</tt> command to allow access to the system clipboard:
+* Gosu gem 0.7.32 - Dependencies: [Linux only](https://github.com/jlnr/gosu/wiki/Getting-Started-on-Linux)
+* A number of other rubygems, which can be installed automatically using Bundler (see below).
+* Linux Only: <tt>xsel</tt> or <tt>xcopy</tt> command to allow access to the system clipboard:
 <pre>    sudo apt-get install xsel</pre>
 
 #### Using Bundler to install gems
