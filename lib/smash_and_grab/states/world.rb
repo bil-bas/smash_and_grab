@@ -15,9 +15,8 @@ class World < Fidgit::GuiState
   BACKGROUND_COLOR = Color.rgba(35, 20, 20, 255)
   GRID_COLOR = Color.rgba(150, 150, 150, 150)
 
-  SAVE_FOLDER = File.expand_path("saves", ROOT_PATH)
-  QUICKSAVE_FILE = File.expand_path("quicksave.sgs", SAVE_FOLDER)
-  AUTOSAVE_FILE = File.expand_path("autosave.sgs", SAVE_FOLDER)
+  QUICKSAVE_FILE = File.expand_path("quicksave.sgs", SAVE_PATH)
+  AUTOSAVE_FILE = File.expand_path("autosave.sgs", SAVE_PATH)
 
   def map=(map)
     @map = map

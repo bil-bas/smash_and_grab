@@ -70,6 +70,16 @@ Move your supervillains around until you win!
 * Saving/loading (F5/F6) of state in Editor & Game.
 * Undo/Redo (Ctrl-Z/Ctrl-Shift-Z)support in both Editor and Game (can't take back attacks though, since they are non-deterministic).
 
+### Saved data
+
+Save games and configuration are saved into (Windows):
+
+    C:\Users\<your-username>\AppData\Roaming\Smash And Grab\
+
+or (OS X / Linux):
+
+    /home/<your-username>/.smash_and_grab/
+
 Credits
 -------
 

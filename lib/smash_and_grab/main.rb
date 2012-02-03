@@ -10,6 +10,16 @@ def require_folder(path, files)
   end
 end
 
+module SmashAndGrab
+  USER_PATH = if ENV['APPDATA']
+                File.join(ENV['APPDATA'].gsub("\\", "/"), "Smash And Grab")
+              else
+                File.expand_path("~/.smash_and_grab")
+              end
+
+  SAVE_PATH = File.join(USER_PATH, "saves")
+end
+
 require_relative "log"
 SmashAndGrab::Log.log.info { "Smash and Grab loading; please wait.." }
 
