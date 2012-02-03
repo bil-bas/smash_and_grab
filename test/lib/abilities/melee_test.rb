@@ -1,17 +1,17 @@
 require_relative "../../teststrap"
 require_relative "helpers/ability_helper"
 
-describe Abilities::Melee do
+describe SmashAndGrab::Abilities::Melee do
   helper(:entity) {@entity ||= Object.new }
   helper(:enemy) { @enemy ||= Object.new }
-  helper(:tile) { @tile ||= Tile.new(:grass, nil, 1, 1) }
+  helper(:tile) { @tile ||= SmashAndGrab::Tile.new(:grass, nil, 1, 1) }
 
-  subject { Abilities.ability entity, type: :melee, action_cost: 1, skill: 5 }
+  subject { SmashAndGrab::Abilities.ability entity, type: :melee, action_cost: 1, skill: 5 }
 
-  behaves_like Abilities::Ability
+  behaves_like SmashAndGrab::Abilities::Ability
 
   should "fail if not given the required arguments" do
-    ->{ Abilities.ability entity, type: :melee }.should.raise(ArgumentError).message.should.match /No skill value for/
+    ->{ SmashAndGrab::Abilities.ability entity, type: :melee }.should.raise(ArgumentError).message.should.match /No skill value for/
   end
 
   should "be initialized" do

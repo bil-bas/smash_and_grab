@@ -27,7 +27,7 @@ class InfoPanel < Fidgit::Vertical
             button "Me", button_options.merge(tip: "Melee")
             button "Ra", button_options.merge(tip: "Ranged")
             @sprint = button "Sp", button_options.merge(tip: "Sprint - gain (maximum MP / 2) movement points") do
-              @entity.map.actions.do :sprint, @entity if @entity.sprint?
+              @entity.map.actions.do :ability, @entity.ability(:sprint).action_data if @entity.has_ability? :sprint
             end
 
             button "??", button_options.merge(tip: "???")

@@ -1,10 +1,10 @@
 require_relative "../../teststrap"
 require_relative "helpers/ability_helper"
 
-describe Abilities::Move do
+describe SmashAndGrab::Abilities::Move do
   helper :tile do |i|
     @tiles ||= Hash.new do |hash, key|
-      hash[key] = Tile.new(:grass, nil, 0, key)
+      hash[key] = SmashAndGrab::Tile.new(:grass, nil, 0, key)
     end
     @tiles[i]
   end
@@ -13,9 +13,9 @@ describe Abilities::Move do
   helper(:tiles) { [tile(0), tile(1), tile(2)] }
   helper(:tile_positions) { tiles.map {|t| t.grid_position } }
 
-  subject { Abilities.ability entity, type: :move }
+  subject { SmashAndGrab::Abilities.ability entity, type: :move }
 
-  behaves_like Abilities::Ability
+  behaves_like SmashAndGrab::Abilities::Ability
 
   should "be initialized" do
     subject.owner.should.equal entity 

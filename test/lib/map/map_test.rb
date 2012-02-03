@@ -1,6 +1,6 @@
 require_relative "../../teststrap"
 
-describe Map do
+describe SmashAndGrab::Map do
   helper :objects_data do
     [
         {
@@ -62,7 +62,7 @@ describe Map do
     }
   end
 
-  subject { Map.new map_data.symbolize }
+  subject { SmashAndGrab::Map.new map_data.symbolize }
 
   describe "#tile_at_grid" do
     should "find the correct tile" do
@@ -101,7 +101,7 @@ describe Map do
   end
 
   describe "#save_data" do
-    subject { Map.new(map_data.symbolize).save_data }
+    subject { SmashAndGrab::Map.new(map_data.symbolize).save_data }
 
     should "contain the same data as was loaded" do
       subject[:version].should.equal SmashAndGrab::VERSION

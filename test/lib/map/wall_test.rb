@@ -1,5 +1,5 @@
 require_relative "../../teststrap"
 
-describe Wall do
+describe SmashAndGrab::Wall do
 
 end

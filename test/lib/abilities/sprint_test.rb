@@ -1,15 +1,15 @@
 require_relative "../../teststrap"
 require_relative "helpers/ability_helper"
 
-describe Abilities::Sprint do
+describe SmashAndGrab::Abilities::Sprint do
   helper(:entity) { @entity ||= Object.new }
 
-  subject { Abilities.ability entity, type: :sprint, skill: 3 }
+  subject { SmashAndGrab::Abilities.ability entity, type: :sprint, skill: 3 }
 
-  behaves_like Abilities::Ability
+  behaves_like SmashAndGrab::Abilities::Ability
 
   should "fail if not given the required arguments" do
-    ->{ Abilities.ability entity, type: :sprint }.should.raise(ArgumentError).message.should.match /No skill value for/
+    ->{ SmashAndGrab::Abilities.ability entity, type: :sprint }.should.raise(ArgumentError).message.should.match /No skill value for/
   end
 
   should "be initialized" do
@@ -32,10 +32,11 @@ describe Abilities::Sprint do
   should "generate appropriate action_data" do
     mock(entity).id.returns 12
     mock(entity).max_movement_points.returns 11
+    mock(entity).max_action_points.returns 2
     subject.action_data.should.equal(
       ability: :sprint,
       skill: 3,
-      action_cost: :all,
+      action_cost: 2,
 
       owner_id: 12,
       movement_bonus: 5

@@ -31,7 +31,7 @@ module SmashAndGrab::Abilities
       {
           ability: type,
           skill: skill,
-          action_cost: @action_cost,
+          action_cost: action_cost,
           owner_id: owner.id
       }
     end

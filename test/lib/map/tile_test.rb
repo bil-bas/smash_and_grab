@@ -1,6 +1,6 @@
 require_relative "../../teststrap"
 
-describe Tile do
+describe SmashAndGrab::Tile do
   subject { described.new :grass, nil, 0, 0 }
 
   should "have correct initial state" do

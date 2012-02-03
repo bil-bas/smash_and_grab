@@ -1,6 +1,6 @@
 require_relative "../../teststrap"
 
-shared Factions::Faction do
+shared SmashAndGrab::Factions::Faction do
   should "not be active" do
     subject.should.not.be.active
   end
@@ -11,15 +11,15 @@ shared Factions::Faction do
   end
 end
 
-describe Factions::Faction do
-  helper(:baddies) { Factions::Baddies.new nil }
-  helper(:goodies) { Factions::Goodies.new nil }
-  helper(:bystanders) { Factions::Bystanders.new nil }
+describe SmashAndGrab::Factions::Faction do
+  helper(:baddies) { SmashAndGrab::Factions::Baddies.new nil }
+  helper(:goodies) { SmashAndGrab::Factions::Goodies.new nil }
+  helper(:bystanders) { SmashAndGrab::Factions::Bystanders.new nil }
 
   subject { described.new nil }
 
-  describe Factions::Goodies do
-    behaves_like Factions::Faction
+  describe SmashAndGrab::Factions::Goodies do
+    behaves_like SmashAndGrab::Factions::Faction
 
     should "dislike baddies" do
       subject.should.be.enemy? baddies
@@ -32,8 +32,8 @@ describe Factions::Faction do
     end
   end
 
-  describe Factions::Baddies do
-    behaves_like Factions::Faction
+  describe SmashAndGrab::Factions::Baddies do
+    behaves_like SmashAndGrab::Factions::Faction
 
     should "dislike goodies" do
       subject.should.be.enemy? goodies
@@ -46,8 +46,8 @@ describe Factions::Faction do
     end
   end
 
-  describe Factions::Bystanders do
-    behaves_like Factions::Faction
+  describe SmashAndGrab::Factions::Bystanders do
+    behaves_like SmashAndGrab::Factions::Faction
 
     should "like goodies" do
       subject.should.not.be.enemy? goodies

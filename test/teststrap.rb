@@ -6,7 +6,7 @@ ROOT_PATH = EXTRACT_PATH = File.expand_path("../../", __FILE__)
 
 require_relative '../lib/main'
 
-Log.level = :WARNING # Don't print out junk.
+SmashAndGrab::Log.level = :WARNING # Don't print out junk.
 
 module Bacon
   class Context
