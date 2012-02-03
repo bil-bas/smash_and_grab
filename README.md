@@ -7,7 +7,7 @@ Smash and Grab
 Description
 -----------
 
-_Smash and Grab!_ is a retro isometric supervillainous turn-based hiest game.
+_Smash and Grab!_ is a retro isometric, super-villainous, turn-based heist game.
 
 Requirements
 ------------
@@ -91,12 +91,12 @@ Many thanks to:
 Third party tools and assets used
 ---------------------------------
 
-* Original music by [Maverick (Brian Peppers)](http://polyhedricpeppers.weebly.com/). [![http://i.creativecommons.org/l/by-sa/3.0/88x31.png](CC BY-SA)](http://creativecommons.org/licenses/by-sa/3.0/)
+* Original music by [Maverick (Brian Peppers)](http://polyhedricpeppers.weebly.com/). [![CC BY-SA](http://i.creativecommons.org/l/by-sa/3.0/88x31.png)](http://creativecommons.org/licenses/by-sa/3.0/)
 * Original sprites created with [GIMP](http://www.gimp.org/) and Graphics Gale [Free Edition]
-* Sound effects created using [bfxr](http://www.bfxr.net/) and converted using [Audacity](http://audacity.sourceforge.net/
+* Sound effects created using [bfxr](http://www.bfxr.net/) and converted using [Audacity](http://audacity.sourceforge.net/)
 * [Unmasked font](http://www.blambot.com/font_unmasked.shtml) by "Nate Piekos" [Free for personal use]
 * [Gosu](http://libgosu.org/) game development library
 * [Chingu](http://ippa.se/chingu) game library (extending Gosu)
 * [Fidgit](https://github.com/Spooner/fidgit) gui library (extending Chingu)
-* [Texplay](http://banisterfiend.wordpress.com/2008/08/23/texplay-an-image-manipulation-tool-for-ruby-and-gosu/ image manipulation library for Gosu.
+* [Texplay](http://banisterfiend.wordpress.com/2008/08/23/texplay-an-image-manipulation-tool-for-ruby-and-gosu/) image manipulation library for Gosu.
 * [R18n](http://r18n.rubyforge.org/) i18n library
