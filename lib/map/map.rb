@@ -72,9 +72,9 @@ class Map
       Wall.new self, wall_data
     end
 
-    @goodies = Faction::Goodies.new self
-    @baddies = Faction::Baddies.new self
-    @bystanders = Faction::Bystanders.new self
+    @goodies = Factions::Goodies.new self
+    @baddies = Factions::Baddies.new self
+    @bystanders = Factions::Bystanders.new self
 
     @factions = [@baddies, @goodies, @bystanders] # And order of play.
 

@@ -1,6 +1,6 @@
 require_relative "../../teststrap"
 
-shared Faction do
+shared Factions::Faction do
   should "not be active" do
     subject.should.not.be.active
   end
@@ -11,15 +11,15 @@ shared Faction do
   end
 end
 
-describe Faction do
-  helper(:baddies) { Faction::Baddies.new nil }
-  helper(:goodies) { Faction::Goodies.new nil }
-  helper(:bystanders) { Faction::Bystanders.new nil }
+describe Factions::Faction do
+  helper(:baddies) { Factions::Baddies.new nil }
+  helper(:goodies) { Factions::Goodies.new nil }
+  helper(:bystanders) { Factions::Bystanders.new nil }
 
   subject { described.new nil }
 
-  describe Faction::Goodies do
-    behaves_like Faction
+  describe Factions::Goodies do
+    behaves_like Factions::Faction
 
     should "dislike baddies" do
       subject.should.be.enemy? baddies
@@ -32,8 +32,8 @@ describe Faction do
     end
   end
 
-  describe Faction::Baddies do
-    behaves_like Faction
+  describe Factions::Baddies do
+    behaves_like Factions::Faction
 
     should "dislike goodies" do
       subject.should.be.enemy? goodies
@@ -46,8 +46,8 @@ describe Faction do
     end
   end
 
-  describe Faction::Bystanders do
-    behaves_like Faction
+  describe Factions::Bystanders do
+    behaves_like Factions::Faction
 
     should "like goodies" do
       subject.should.not.be.enemy? goodies
