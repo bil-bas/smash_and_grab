@@ -1,3 +1,5 @@
+module SmashAndGrab
+module Gui
 class Minimap < Fidgit::Vertical
   TILE_WIDTH = 3
   BACKGROUND_COLOR = Color::BLACK
@@ -85,4 +87,6 @@ class Minimap < Fidgit::Vertical
 
     tile
   end
+end
+end
 end

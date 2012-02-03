@@ -1,5 +1,7 @@
+module SmashAndGrab
+module States
 class MainMenu < Fidgit::GuiState
-  PRELOAD_CLASSES = [Entity, StaticObject, Tile, Vehicle, Wall]
+  PRELOAD_CLASSES = [Objects::Entity, Objects::Static, Tile, Objects::Vehicle, Wall]
 
   LOAD_FOLDER = File.expand_path("config/levels", EXTRACT_PATH)
   GAME_FILE = File.expand_path("01_bank.sgl", LOAD_FOLDER)
@@ -11,7 +13,7 @@ class MainMenu < Fidgit::GuiState
 
     vertical align: :center do
       horizontal align: :center do
-        image_frame StaticObject.sprites[1, 0], factor: 3
+        image_frame Objects::Static.sprites[1, 0], factor: 3
 
         vertical align: :center do
           label "Smash", font_height: 100, align: :center, color: Color::RED
@@ -19,20 +21,20 @@ class MainMenu < Fidgit::GuiState
           label "Grab", font_height: 100, align: :center, padding_top: -45, color: Color::RED
         end
 
-        image_frame StaticObject.sprites[1, 0], factor: 3
+        image_frame Objects::Static.sprites[1, 0], factor: 3
       end
 
       horizontal align: :center do
-        image_frame Entity.sprites[3, 1], factor: 4
+        image_frame Objects::Entity.sprites[3, 1], factor: 4
 
         vertical align: :center do
           options = { width: 120, justify: :center }
           button "Play", options do
-            push_game_state PlayLevel.new(GAME_FILE)
+            push_game_state States::PlayLevel.new(GAME_FILE)
           end
 
           button "Edit", options do
-            push_game_state EditLevel.new(GAME_FILE)
+            push_game_state States::EditLevel.new(GAME_FILE)
           end
 
           button "Quit", options do
@@ -40,7 +42,7 @@ class MainMenu < Fidgit::GuiState
           end
         end
 
-        image_frame Entity.sprites[7, 3], factor: 4
+        image_frame Objects::Entity.sprites[7, 3], factor: 4
       end
     end
   end
@@ -64,4 +66,6 @@ class MainMenu < Fidgit::GuiState
     super
     @container.clear
   end
+end
+end
 end

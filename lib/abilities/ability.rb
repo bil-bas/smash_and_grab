@@ -1,4 +1,4 @@
-module Abilities
+module SmashAndGrab::Abilities
   # @abstract
   class Ability
     attr_reader :skill, :owner

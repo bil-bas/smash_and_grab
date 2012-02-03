@@ -61,14 +61,14 @@ require_folder "std_ext", %w[array hash]
 require_folder("", %w[log version sprite_sheet z_order z_order_recorder game_window mouse_selection])
 require_folder("gui", %w[minimap editor_selector entity_summary info_panel])
 require_folder("map", %w[tile wall map])
-require_folder("objects", %w[static_object entity vehicle])
+require_folder("objects", %w[static entity vehicle])
 require_folder("states", %w[edit_level play_level main_menu])
 require_folder("players", %w[player])
 require_folder("history", %w[editor_action_history game_action_history])
 
-Log.log.debug { "Scripts loaded in #{"%.3f" % (Time.now - t)} s" }
+SmashAndGrab::Log.log.debug { "Scripts loaded in #{"%.3f" % (Time.now - t)} s" }
 
-GameWindow.new
+SmashAndGrab::GameWindow.new
 
 unless defined? Ocra or defined? Bacon
   $window.show

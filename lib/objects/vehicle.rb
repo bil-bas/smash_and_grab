@@ -1,5 +1,7 @@
 require_relative "world_object"
 
+module SmashAndGrab
+module Objects
 # A vehicle is a 4x2 tile object.
 class Vehicle < WorldObject
   CLASS = :vehicle
@@ -93,4 +95,6 @@ class Vehicle < WorldObject
         tile: grid_position,
     }.to_json(*a)
   end
+end
+end
 end

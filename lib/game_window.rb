@@ -1,3 +1,4 @@
+module SmashAndGrab
 class GameWindow < Chingu::Window
   attr_reader :pixel
 
@@ -11,7 +12,7 @@ class GameWindow < Chingu::Window
     # Ensure these are loaded into a single texture before we load anything else at all!
     # Reason is so we can safely use record{} with them.
     Tile.sprites
-    Path.sprites
+    Paths::Path.sprites
 
     @pixel = Image.create 1, 1
     @pixel.clear color: :white
@@ -20,6 +21,7 @@ class GameWindow < Chingu::Window
 
     self.cursor = false
 
-    push_game_state MainMenu
+    push_game_state States::MainMenu
   end
+end
 end

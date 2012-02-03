@@ -1,3 +1,5 @@
+module SmashAndGrab
+module Gui
 class InfoPanel < Fidgit::Vertical
   def initialize(options = {})
     options = {
@@ -7,7 +9,7 @@ class InfoPanel < Fidgit::Vertical
     super options
 
     horizontal padding: 4, spacing: 8, background_color: Color.rgb(0, 0, 150), width: 440, height: 112 do
-      @portrait = image_frame Entity.sprites[0, 0], padding: 0, background_color: Color::GRAY
+      @portrait = image_frame Objects::Entity.sprites[0, 0], padding: 0, background_color: Color::GRAY
 
       vertical padding: 0, spacing: 4 do
         @name = label " "
@@ -61,4 +63,6 @@ class InfoPanel < Fidgit::Vertical
 
     entity
   end
+end
+end
 end

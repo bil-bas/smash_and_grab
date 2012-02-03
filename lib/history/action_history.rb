@@ -1,3 +1,4 @@
+module SmashAndGrab
 class ActionHistory < Fidgit::History
   extend Forwardable
 
@@ -55,4 +56,5 @@ class ActionHistory < Fidgit::History
       [].to_json(*a)
     end
   end
+end
 end

@@ -1,11 +1,11 @@
 require_relative "ability"
 
 # Melee skill is required to even move (it is plain "move" if you have no actions) :)
-module Abilities
+module SmashAndGrab::Abilities
   class Melee < TouchAbility
     def can_be_undone?; false; end
 
-    def target_valid?(tile); tile.object.is_a?(Entity) and tile.object.enemy?(owner); end
+    def target_valid?(tile); tile.object.is_a?(Objects::Entity) and tile.object.enemy?(owner); end
 
     def initialize(owner, data)
       super(owner, data.merge(action_cost: 1))

@@ -1,6 +1,8 @@
 require_relative "world_object"
 
-class StaticObject < WorldObject
+module SmashAndGrab
+module Objects
+class Static < WorldObject
   CLASS = :object
 
   attr_reader :minimap_color, :type
@@ -40,4 +42,6 @@ class StaticObject < WorldObject
         tile: grid_position,
     }.to_json(*a)
   end
+end
+end
 end

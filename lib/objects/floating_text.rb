@@ -1,3 +1,5 @@
+module SmashAndGrab
+module Objects
 class FloatingText < GameObject
   FONT_NAME = File.expand_path("media/fonts/UnmaskedBB.ttf", EXTRACT_PATH)
   FONT_SIZE = 16
@@ -20,4 +22,6 @@ class FloatingText < GameObject
   def draw
     @font.draw_rel @text, x, y, zorder, 0.5, 0.5, 1, 1, color
   end
+end
+end
 end

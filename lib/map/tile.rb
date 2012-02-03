@@ -1,3 +1,4 @@
+module SmashAndGrab
 class Tile < GameObject
   include Fidgit::Event
 
@@ -176,4 +177,5 @@ class Tile < GameObject
   def to_json(*a)
     @type.to_json(*a)
   end
+end
 end

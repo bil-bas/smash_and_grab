@@ -1,5 +1,6 @@
 require 'logger'
 
+module SmashAndGrab
 module Log
   LOG_LEVEL_NAMES = [:DEBUG, :INFO, :WARNING, :ERROR, :FATAL, :UNKNOWN]
   TIME_FORMAT = "%Y-%m-%d %H:%M:%S.%L %z"
@@ -21,6 +22,7 @@ module Log
     time_str = time.strftime TIME_FORMAT
     $stderr.puts "[#{time_str} #{type.rjust(5)}] #{progname ? "#{progname}: ": ''}#{message}"
   end
+end
 end
 
 

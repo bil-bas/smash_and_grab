@@ -1,7 +1,8 @@
 require_relative 'action_history'
 
+module SmashAndGrab
 class GameActionHistory < ActionHistory
-  def create_action(type, *args); GameAction.const_get(Inflector.camelize(type)).new @map, *args; end
+  def create_action(type, *args); GameActions.const_get(Inflector.camelize(type)).new @map, *args; end
 
   def initialize(map, data)
     @map = map
@@ -11,7 +12,7 @@ class GameActionHistory < ActionHistory
     if data
       @actions = data.map do |action_data|
         action_data = action_data
-        GameAction.const_get(Inflector.camelize(action_data[:type])).new map, action_data
+        GameActions.const_get(Inflector.camelize(action_data[:type])).new map, action_data
       end
 
       @last_done = @actions.size - 1
@@ -19,6 +20,7 @@ class GameActionHistory < ActionHistory
   end
 end
 
+module GameActions
 class GameAction < Fidgit::History::Action
   include Log
 
@@ -34,6 +36,8 @@ class GameAction < Fidgit::History::Action
     {
     }
   end
+end
+end
 end
 
 require_folder 'history/game_actions', %w[ability end_turn]

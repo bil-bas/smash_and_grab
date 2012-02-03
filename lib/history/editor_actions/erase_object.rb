@@ -1,4 +1,6 @@
-class EditorAction::EraseObject < EditorAction
+module SmashAndGrab
+module EditorActions
+class EraseObject < EditorAction
   def initialize(tile)
     @tile = tile
     @object = @tile.object
@@ -13,4 +15,6 @@ class EditorAction::EraseObject < EditorAction
     @tile.map << @object
     @object.tile = @tile
   end
+end
+end
 end

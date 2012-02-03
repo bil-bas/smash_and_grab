@@ -1,3 +1,4 @@
+module SmashAndGrab
 class SpriteSheet
   extend Forwardable
 
@@ -11,4 +12,5 @@ class SpriteSheet
   def [](x, y = 0)
     @sprites[y * @tiles_wide + x]
   end
+end
 end

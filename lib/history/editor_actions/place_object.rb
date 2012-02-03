@@ -1,4 +1,6 @@
-class EditorAction::PlaceObject < EditorAction
+module SmashAndGrab
+module EditorActions
+class PlaceObject < EditorAction
   def initialize(tile, new_object_class, type)
     @tile, @object_class, @type = tile, new_object_class, type
     @old_object = @tile.object
@@ -27,4 +29,6 @@ class EditorAction::PlaceObject < EditorAction
       @old_object.tile = @old_object_tile
     end
   end
+end
+end
 end

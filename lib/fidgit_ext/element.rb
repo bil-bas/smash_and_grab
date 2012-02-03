@@ -2,7 +2,7 @@
 class Fidgit::Element
   alias_method :old_initialize, :initialize
   def initialize(options = {}, &block)
-    options[:z] = ZOrder::GUI
+    options[:z] = SmashAndGrab::ZOrder::GUI
     old_initialize options, &block
   end
 end

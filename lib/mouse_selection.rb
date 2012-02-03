@@ -1,3 +1,4 @@
+module SmashAndGrab
 class MouseSelection < GameObject
   attr_reader :selected_tile, :hover_tile
 
@@ -109,10 +110,10 @@ class MouseSelection < GameObject
       # Move the character.
       if @potential_moves.include? @hover_tile
         case path
-          when MovePath
+          when Paths::Move
             @map.actions.do :ability, selected.ability(:move).action_data(path)
             @selected_tile = @hover_tile
-          when MeleePath
+          when Paths::Melee
             attacker = selected
             @map.actions.do :ability, attacker.ability(:move).action_data(path.previous_path) if path.requires_movement?
             @map.actions.do :ability, attacker.ability(:melee).action_data(path.last)
@@ -121,7 +122,7 @@ class MouseSelection < GameObject
         calculate_path
         calculate_potential_moves
       end
-    elsif @hover_tile and @hover_tile.object.is_a? Entity and @hover_tile.object.active?
+    elsif @hover_tile and @hover_tile.object.is_a? Objects::Entity and @hover_tile.object.active?
       # Select a character to move.
       select(@hover_tile.object)
     end
@@ -149,4 +150,5 @@ class MouseSelection < GameObject
       select nil
     end
   end
+end
 end

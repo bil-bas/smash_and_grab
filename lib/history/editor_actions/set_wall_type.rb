@@ -1,4 +1,6 @@
-class EditorAction::SetWallType < EditorAction
+module SmashAndGrab
+module EditorActions
+class SetWallType < EditorAction
   def initialize(wall, new_type)
     @wall, @new_type = wall, new_type
     @old_type = @wall.type
@@ -11,4 +13,6 @@ class EditorAction::SetWallType < EditorAction
   def undo
     @wall.type = @old_type
   end
+end
+end
 end

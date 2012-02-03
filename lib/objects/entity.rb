@@ -4,6 +4,8 @@ require_relative "../abilities"
 require_relative "world_object"
 require_relative "floating_text"
 
+module SmashAndGrab
+module Objects
 class Entity < WorldObject
   extend Forwardable
 
@@ -147,7 +149,7 @@ class Entity < WorldObject
     # Tiles we've looked at and that are in-range.
     valid_tiles = Set.new
     # Paths to check { tile => path_to_tile }.
-    open_paths = { destination_tile => PathStart.new(destination_tile, destination_tile) }
+    open_paths = { destination_tile => Paths::Start.new(destination_tile, destination_tile) }
 
     while open_paths.any?
       path = open_paths.each_value.min_by(&:cost)
@@ -161,14 +163,14 @@ class Entity < WorldObject
         testing_tile = wall.destination(current_tile)
         object = testing_tile.object
 
-        if object and object.is_a?(Entity) and enemy?(object)
+        if object and object.is_a?(Objects::Entity) and enemy?(object)
           # Ensure that the current tile is somewhere we could launch an attack from and we could actually perform it.
           if (current_tile.empty? or current_tile == tile) and ap >= MELEE_COST
             valid_tiles << testing_tile
           end
 
         elsif testing_tile.passable?(self) and (object.nil? or object.passable?(self))
-          new_path = MovePath.new(path, testing_tile, wall.movement_cost)
+          new_path = Paths::Move.new(path, testing_tile, wall.movement_cost)
 
           # If the path is shorter than one we've already calculated, then replace it. Otherwise just store it.
           if new_path.move_distance <= movement_points
@@ -190,11 +192,11 @@ class Entity < WorldObject
 
   # A* path-finding.
   def path_to(destination_tile)
-    return NoPath.new if destination_tile == tile
-    return InaccessiblePath.new(destination_tile) unless destination_tile.passable?(self)
+    return Paths::None.new if destination_tile == tile
+    return Paths::Inaccessible.new(destination_tile) unless destination_tile.passable?(self)
 
     closed_tiles = Set.new # Tiles we've already dealt with.
-    open_paths = { tile => PathStart.new(tile, destination_tile) } # Paths to check { tile => path_to_tile }.
+    open_paths = { tile => Paths::Start.new(tile, destination_tile) } # Paths to check { tile => path_to_tile }.
 
     while open_paths.any?
       # Check the (expected) shortest path and move it to closed, since we have considered it.
@@ -206,7 +208,7 @@ class Entity < WorldObject
       open_paths.delete current_tile
       closed_tiles << current_tile
 
-      next if path.is_a? MeleePath
+      next if path.is_a? Paths::Melee
 
       # Check adjacent tiles.
       exits = current_tile.exits(self).reject {|wall| closed_tiles.include? wall.destination(current_tile) }
@@ -216,16 +218,16 @@ class Entity < WorldObject
         new_path = nil
 
         object = testing_tile.object
-        if object and object.is_a?(Entity) and enemy?(object)
+        if object and object.is_a?(Objects::Entity) and enemy?(object)
           # Ensure that the current tile is somewhere we could launch an attack from and we could actually perform it.
           if (current_tile.empty? or current_tile == tile) and ap >= MELEE_COST
-            new_path = MeleePath.new(path, testing_tile)
+            new_path = Paths::Melee.new(path, testing_tile)
           else
             next
           end
         elsif testing_tile.passable?(self)
           if (object.nil? or object.passable?(self))
-            new_path = MovePath.new(path, testing_tile, wall.movement_cost)
+            new_path = Paths::Move.new(path, testing_tile, wall.movement_cost)
           else
             next
           end
@@ -242,7 +244,7 @@ class Entity < WorldObject
       end
     end
 
-    InaccessiblePath.new(destination_tile) # Failed to connect at all.
+    Paths::Inaccessible.new(destination_tile) # Failed to connect at all.
   end
 
   # Actually perform movement (called from GameAction::Move).
@@ -352,4 +354,6 @@ class Entity < WorldObject
 
     data.to_json(*a)
   end
+end
+end
 end

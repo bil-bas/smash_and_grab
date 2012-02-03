@@ -1,4 +1,5 @@
-class GameAction::EndTurn < GameAction
+module SmashAndGrab::GameActions
+class EndTurn < GameAction
   def initialize(map, *data)
     @map = map
     super()
@@ -12,5 +13,6 @@ class GameAction::EndTurn < GameAction
   def undo
     # TODO: Need to be able to undo this when accessing history.
   end
+end
 end
 

@@ -1,5 +1,7 @@
 require_relative 'world'
 
+module SmashAndGrab
+module States
 class EditLevel < World
   def initialize(file)
     super()
@@ -18,9 +20,9 @@ class EditLevel < World
 
   def create_gui
     @container = Fidgit::Container.new do |container|
-      @minimap = Minimap.new parent: container
+      @minimap = Gui::Minimap.new parent: container
 
-      @selector = EditorSelector.new parent: container
+      @selector = Gui::EditorSelector.new parent: container
 
       @button_box = vertical parent: container, padding: 4, spacing: 8, background_color: Color::BLACK do
         horizontal padding: 0 do
@@ -116,9 +118,9 @@ class EditLevel < World
 
         when :entities, :objects, :vehicles
           klass = case @selector.tab
-                    when :entities then Entity
-                    when :objects then StaticObject
-                    when :vehicles then Vehicle
+                    when :entities then Objects::Entity
+                    when :objects then Objects::Static
+                    when :vehicles then Objects::Vehicle
                   end
 
           if @hover_tile
@@ -173,4 +175,6 @@ class EditLevel < World
       end
     end
   end
+end
+end
 end

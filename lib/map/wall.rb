@@ -1,3 +1,4 @@
+module SmashAndGrab
 class Wall < GameObject
   SEMI_TRANSPARENT_COLOR = Color.rgba(255, 255, 255, 120)
   OPAQUE_COLOR = Color::WHITE
@@ -134,4 +135,5 @@ class Wall < GameObject
         tiles: @tiles.map(&:grid_position),
     }.to_json(*a)
   end
+end
 end

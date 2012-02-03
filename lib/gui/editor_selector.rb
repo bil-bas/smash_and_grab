@@ -1,3 +1,5 @@
+module SmashAndGrab
+module Gui
 class EditorSelector < Fidgit::Vertical
   OBJECT_TABS = [:tiles, :walls, :objects, :entities, :vehicles]
 
@@ -62,9 +64,9 @@ class EditorSelector < Fidgit::Vertical
           object = tile.object
           if object
             self.tab = case object
-                         when Entity then :entities
-                         when StaticObject then :objects
-                         when Vehicle then :vehicles
+                         when Objects::Entity then :entities
+                         when Objects::Static then :objects
+                         when Objects::Vehicle then :vehicles
                        end
 
             @selector_group.value = object.type
@@ -105,8 +107,8 @@ class EditorSelector < Fidgit::Vertical
       vertical padding: 1 do
         radio_button 'Erase', :erase
         grid padding: 0, num_columns: 2 do
-          Entity.config.each_pair.sort.each do |type, data|
-            radio_button '', type, icon: Entity.sprites[*data[:spritesheet_position]],
+          Objects::Entity.config.each_pair.sort.each do |type, data|
+            radio_button '', type, icon: Objects::Entity.sprites[*data[:spritesheet_position]],
                          tip: "Entity: #{type} (#{data[:faction]})", padding: 0
           end
         end
@@ -122,8 +124,8 @@ class EditorSelector < Fidgit::Vertical
       vertical padding: 1 do
         radio_button 'Erase', :erase
         grid padding: 0, num_columns: 2 do
-          StaticObject.config.each_pair.sort.each do |type, data|
-            radio_button '', type, icon: StaticObject.sprites[*data[:spritesheet_position]],
+          Objects::Static.config.each_pair.sort.each do |type, data|
+            radio_button '', type, icon: Objects::Static.sprites[*data[:spritesheet_position]],
                          tip: "Object: #{type}", padding: 0
           end
         end
@@ -139,8 +141,8 @@ class EditorSelector < Fidgit::Vertical
       vertical padding: 1 do
         radio_button 'Erase', :erase
         grid padding: 0, num_columns: 1 do
-          Vehicle.config.each_pair.sort.each do |type, data|
-            radio_button '', type, icon: Vehicle.sprites[*data[:spritesheet_position]],
+          Objects::Vehicle.config.each_pair.sort.each do |type, data|
+            radio_button '', type, icon: Objects::Vehicle.sprites[*data[:spritesheet_position]],
                          tip: "Vehicle: #{type}", padding: 0, icon_options: { factor: 0.5 }
           end
         end
@@ -167,4 +169,6 @@ class EditorSelector < Fidgit::Vertical
 
     buttons.value = :none
   end
+end
+end
 end

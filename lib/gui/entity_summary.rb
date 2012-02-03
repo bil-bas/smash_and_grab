@@ -1,4 +1,6 @@
-class Fidgit::EntitySummary < Fidgit::Vertical
+module SmashAndGrab
+module Gui
+class EntitySummary < Fidgit::Vertical
   BACKGROUND_COLOR = Color.rgb(0, 0, 150)
 
   def initialize(entity, options = {})
@@ -50,4 +52,6 @@ class Fidgit::EntitySummary < Fidgit::Vertical
 
     entity
   end
+end
+end
 end

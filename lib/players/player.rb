@@ -1,3 +1,5 @@
+module SmashAndGrab
+module Players
 class Player
   attr_reader :faction
 
@@ -18,23 +20,20 @@ class Player
       @active_entities = nil
     end
   end
+
+  def update; end
 end
 
-class Player::Human < Player
-  def update
-    # TODO: Auto-end turn if that option is enabled.
-  end
+# Local human player.
+class Human < Player
 end
 
-class Player::LocalPlayer < Player::Human
-
+# Remote human or AI.
+class Remote < Player
 end
 
-class Player::RemotePlayer < Player::Human
-
-end
-
-class Player::AI < Player
+# Local AI.
+class AI < Player
   def update
     if @active_entities.empty?
       faction.end_turn
@@ -67,4 +66,6 @@ class Player::AI < Player
       end
     end
   end
+end
+end
 end

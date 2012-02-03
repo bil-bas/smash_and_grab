@@ -1,4 +1,6 @@
-class EditorAction::SetTileType < EditorAction
+module SmashAndGrab
+module EditorActions
+class SetTileType < EditorAction
   def initialize(tile, new_type)
     @tile, @new_type = tile, new_type
     @old_type = @tile.type
@@ -11,4 +13,6 @@ class EditorAction::SetTileType < EditorAction
   def undo
     @tile.type = @old_type
   end
+end
+end
 end

@@ -1,6 +1,7 @@
 require_relative 'faction'
 require 'set'
 
+module SmashAndGrab
 class Map
   include Fidgit::Event
   include Log
@@ -85,12 +86,12 @@ class Map
 
     data[:objects].each do |object_data|
       case object_data[:class]
-        when Entity::CLASS
-          Entity.new self, object_data
-        when StaticObject::CLASS
-          StaticObject.new self, object_data
-        when Vehicle::CLASS
-          Vehicle.new self, object_data
+        when Objects::Entity::CLASS
+          Objects::Entity.new self, object_data
+        when Objects::Static::CLASS
+          Objects::Static.new self, object_data
+        when Objects::Vehicle::CLASS
+          Objects::Vehicle.new self, object_data
         else
           raise "Bad object class #{object_data[:class].inspect}"
       end
@@ -188,7 +189,7 @@ class Map
     raise "can't add null object" if object.nil?
 
     case object
-      when Entity, StaticObject, Vehicle
+      when Objects::Entity, Objects::Static, Objects::Vehicle
         @world_objects << object
       when Wall
         @drawable_walls << object
@@ -205,7 +206,7 @@ class Map
     @drawable_objects.delete object
 
     case object
-      when Entity, StaticObject, Vehicle
+      when Objects::Entity, Objects::Static, Objects::Vehicle
         @world_objects.delete object
       when Wall
         @drawable_walls.delete object
@@ -257,4 +258,5 @@ class Map
         actions: @actions,
     }
   end
+end
 end

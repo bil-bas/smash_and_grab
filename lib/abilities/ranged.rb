@@ -1,10 +1,10 @@
 require_relative "ability"
 
-module Abilities
+module SmashAndGrab::Abilities
   class Ranged < TargetedAbility
     def can_undo?; false; end
 
-    def target_valid?(tile); !!(tile.object.is_a?(Entity) and tile.object.enemy?(owner)); end
+    def target_valid?(tile); !!(tile.object.is_a?(Objects::Entity) and tile.object.enemy?(owner)); end
 
     def action_data(target_tile)
       super(target_tile).merge!(

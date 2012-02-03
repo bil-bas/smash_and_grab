@@ -1,3 +1,5 @@
+module SmashAndGrab
+module Paths
 # Abstract path class.
 class Path
   extend Forwardable
@@ -72,7 +74,7 @@ class Path
 end
 
 # A path consisting just of movement.
-class MovePath < Path
+class Move < Path
   def mover; first.object; end
   def initialize(previous_path, last, extra_move_distance)
     super(previous_path, last, last.movement_cost + extra_move_distance)
@@ -80,13 +82,13 @@ class MovePath < Path
 end
 
 # A path consisting of melee, possibly with some movement beforehand.
-class MeleePath < Path
+class Melee < Path
   COLOR_IN_RANGE = Color::WHITE
   COLOR_OUT_OF_RANGE = Color.rgb(100, 100, 100)
 
   def attacker; previous_path.last.object; end
   def defender; last.object; end
-  def requires_movement?; previous_path.is_a? MovePath; end
+  def requires_movement?; previous_path.is_a? Paths::Move; end
   def initialize(previous_path, last)
     super(previous_path, last, 0)
   end
@@ -99,14 +101,14 @@ class MeleePath < Path
   def draw(*args)
     super(*args)
 
-    if last.object.is_a? Entity
+    if last.object.is_a? Objects::Entity
       sprites[3, 1].draw_rot last.x, last.y, ZOrder::PATH, 0, 0.5, 0.5, 1, 1, @draw_color
     end
   end
 end
 
 # First path in chain, others will be MovePath or MeleePath
-class PathStart < Path
+class Start < Path
   def tiles; [@last]; end
   def cost; 0; end
   def move_distance; 0; end
@@ -118,7 +120,7 @@ class PathStart < Path
 end
 
 # Path where the destination is unreachable.
-class InaccessiblePath < Path
+class Inaccessible < Path
   def accessible?; false; end
   def tiles; [@last]; end
 
@@ -134,10 +136,12 @@ class InaccessiblePath < Path
 end
 
 # Path going to the same location as it started.
-class NoPath < Path
+class None < Path
   def accessible?; false; end
   def tiles; []; end
   def initialize; end
   def prepare_for_drawing(tiles_within_range); end
   def draw(*args); end
+end
+end
 end

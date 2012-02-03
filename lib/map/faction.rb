@@ -1,3 +1,4 @@
+module SmashAndGrab
 module Factions
   class Faction
     include Fidgit::Event
@@ -79,4 +80,5 @@ module Factions
 
     def friend?(faction); (faction.is_a? Goodies) or super; end
   end
+end
 end

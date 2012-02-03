@@ -1,3 +1,5 @@
+module SmashAndGrab
+module Objects
 class WorldObject < GameObject
   include Log
   include Fidgit::Event
@@ -87,4 +89,6 @@ class WorldObject < GameObject
 
     super
   end
+end
+end
 end

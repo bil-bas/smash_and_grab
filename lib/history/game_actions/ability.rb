@@ -1,4 +1,5 @@
-class GameAction::Ability < GameAction
+module SmashAndGrab::GameActions
+class Ability < GameAction
   def can_be_undone?; ability.can_be_undone?; end
   def ability; @actor.ability @data[:ability]; end
   def do; ability.do @data; end
@@ -21,4 +22,5 @@ class GameAction::Ability < GameAction
         raise data.to_s
     end
   end
+end
 end

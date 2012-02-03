@@ -1,6 +1,6 @@
 require_relative "ability"
 
-module Abilities
+module SmashAndGrab::Abilities
   class Area < TargetedAbility
     def can_undo?; false; end
 

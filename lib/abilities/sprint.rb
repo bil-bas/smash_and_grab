@@ -1,6 +1,6 @@
 require_relative "ability"
 
-module Abilities
+module SmashAndGrab::Abilities
   class Sprint < SelfAbility
     def initialize(owner, data)
       super(owner, data.merge(action_cost: :all))

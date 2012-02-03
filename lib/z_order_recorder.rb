@@ -1,3 +1,4 @@
+module SmashAndGrab
 class ZOrderRecorder
   class Row
     attr_reader :zorder
@@ -54,4 +55,5 @@ class ZOrderRecorder
   def draw
     @rows.each(&:draw)
   end
+end
 end

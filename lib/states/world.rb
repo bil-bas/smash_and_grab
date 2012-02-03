@@ -2,6 +2,8 @@ require 'zlib'
 require 'json'
 require 'fileutils'
 
+module SmashAndGrab
+module States
 class World < Fidgit::GuiState
   include Log
 
@@ -209,4 +211,6 @@ class World < Fidgit::GuiState
       @used_time = 0
     end
   end
+end
+end
 end

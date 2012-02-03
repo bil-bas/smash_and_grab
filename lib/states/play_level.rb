@@ -1,12 +1,14 @@
 require_relative 'world'
 
+module SmashAndGrab
+module States
 class PlayLevel < World
   def initialize(file)
     super()
 
     add_inputs(space: :end_turn)
 
-    @players = [Player::Human.new, Player::AI.new, Player::AI.new]
+    @players = [Players::Human.new, Players::AI.new, Players::AI.new]
 
     @quicksaved = false
 
@@ -24,13 +26,13 @@ class PlayLevel < World
 
   def create_gui
     @container = Fidgit::Container.new do |container|
-      @minimap = Minimap.new parent: container
+      @minimap = Gui::Minimap.new parent: container
 
       # Unit roster.
       @summary_bar = vertical parent: container, padding: 4, spacing: 4, background_color: Color::BLACK do |packer|
         [@map.baddies.size, 8].min.times do |i|
           baddy = @map.baddies[i]
-          summary = Fidgit::EntitySummary.new baddy, parent: packer
+          summary = Gui::EntitySummary.new baddy, parent: packer
           summary.subscribe :left_mouse_button do
             @mouse_selection.select baddy if baddy.alive?
             @info_panel.entity = baddy
@@ -39,7 +41,7 @@ class PlayLevel < World
       end
 
       # Info panel.
-      @info_panel = InfoPanel.new parent: container
+      @info_panel = Gui::InfoPanel.new parent: container
       @info_panel.entity = @map.baddies[0]
 
       # Button box.
@@ -137,4 +139,6 @@ class PlayLevel < World
     save_game_as QUICKSAVE_FILE
     @quicksaved = true
   end
+end
+end
 end

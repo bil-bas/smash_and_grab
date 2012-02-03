@@ -1,3 +1,4 @@
+module SmashAndGrab
 class ZOrder
   BACKGROUND = -Float::INFINITY
   TILES = -99999
@@ -7,4 +8,5 @@ class ZOrder
   # Objects -1000 .. +1000
 
   GUI = Float::INFINITY
+end
 end
