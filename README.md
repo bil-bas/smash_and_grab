@@ -18,9 +18,7 @@ If running <tt>smash_and_grab.exe</tt>, there are no other requirements.
 
 ### OS X
 
-If running OS X 10.6, use the executable (<tt>SmashAndGrab.app</tt>), which has no dependencies. If not, the only option is running from source (details below).
-
-NOTE: OS X app is NOT made yet.
+If running OS X, use the executable (<tt>SmashAndGrab.app</tt>), which has no dependencies.
 
 ### Source for Linux (or Windows/OS X if not using the executable)
 
@@ -50,7 +48,7 @@ In the game's main directory (with <tt>Gemfile</tt> in it), use Bundler to autom
 
 #### Running the game
 
-May need to use <tt>ruby19</tt> rather than <tt>ruby</tt>. Depends how you installed Ruby 1.9.2!
+May need to use <tt>ruby19</tt> rather than <tt>ruby</tt>. Depends how you installed Ruby!
 
 <pre>
     ruby bin/smash_and_grab.rbw
@@ -59,7 +57,18 @@ May need to use <tt>ruby19</tt> rather than <tt>ruby</tt>. Depends how you insta
 How to Play
 -----------
 
-Move your supervillains around until you win.
+Move your supervillains around until you win!
+
+### Implemented game features
+
+* Scroll map with keyboard arrows; zoom with mouse wheel.
+* Your Villains can move around.
+* Your Villains can melee with enemies (Goodies or Bystanders).
+* You can activate _Sprint_ ability to give a Villain extra movement (sacrificing all actions for that turn).
+* Goodies and Bystanders will take a turn (very trivial AI) when you end yours.
+* Editor works, but some bugs with placing Vehicles over other objects.
+* Saving/loading (F5/F6) of state in Editor & Game.
+* Undo/Redo (Ctrl-Z/Ctrl-Shift-Z)support in both Editor and Game (can't take back attacks though, since they are non-deterministic).
 
 Credits
 -------
@@ -67,9 +76,10 @@ Credits
 Many thanks to:
 
 * Kaiserbill and SiliconEidolon for epic brainstorming sessions.
-* Kaiserbill and SiliconEidolon and for play-testing and feedback.
+* Kaiserbill, SiliconEidolon and Tomislav Uzelac and for play-testing and feedback.
 
-h2. Third party tools and assets used
+Third party tools and assets used
+---------------------------------
 
 * Original music by [Maverick (Brian Peppers)](http://polyhedricpeppers.weebly.com/). [![http://i.creativecommons.org/l/by-sa/3.0/88x31.png](CC BY-SA)](http://creativecommons.org/licenses/by-sa/3.0/)
 * Original sprites created with [GIMP](http://www.gimp.org/) and Graphics Gale [Free Edition]
