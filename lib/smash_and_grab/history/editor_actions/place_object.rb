@@ -17,7 +17,7 @@ class PlaceObject < EditorAction
     @new_object = @object_class.new @tile.map,
                                  type: @type,
                                  tile: @tile.grid_position,
-                                 facing: :left
+                                 facing: :right
   end
 
   def undo

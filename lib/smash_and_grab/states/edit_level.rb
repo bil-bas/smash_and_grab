@@ -3,6 +3,8 @@ require_relative 'world'
 module SmashAndGrab
 module States
 class EditLevel < World
+  PLACEMENT_COLOR = Color.rgba(255, 255, 255, 190)
+
   def initialize(file)
     super()
 
@@ -169,8 +171,23 @@ class EditLevel < World
           factor_x = (@hover_wall.orientation == :vertical) ? -1 : 1
           @mouse_hover_wall_image.draw_rot tile.x + offset_x, tile.y + offset_y, ZOrder::TILE_SELECTION, 0, 0.5, 0.5, factor_x
 
+          image = @selector.icon_for @selector.selected
+          if image
+            image.draw_rot tile.x, tile.y + 8, tile.y + 8, 0, 0.5, 1, -factor_x, 1, PLACEMENT_COLOR
+          end
+
         elsif @hover_tile
           @mouse_hover_tile_image.draw_rot @hover_tile.x, @hover_tile.y, ZOrder::TILE_SELECTION, 0, 0.5, 0.5
+
+          image = @selector.icon_for @selector.selected
+          if image
+            offset_y, scale, rel_x = if @selector.tab == :tiles
+                                       [0, 1, 0.5]
+                                     else
+                                       [2.5, 0.5, 1]
+                                     end
+            image.draw_rot @hover_tile.x, @hover_tile.y + offset_y, @hover_tile.y, 0, 0.5, rel_x, scale, scale, PLACEMENT_COLOR
+          end
         end
       end
     end

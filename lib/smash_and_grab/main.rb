@@ -76,9 +76,9 @@ require_folder "std_ext", %w[array hash]
 
 # Include other files.
 require_folder("", %w[version sprite_sheet z_order z_order_recorder game_window mouse_selection])
-require_folder("gui", %w[minimap editor_selector entity_summary info_panel])
 require_folder("map", %w[tile wall map])
 require_folder("objects", %w[static entity vehicle])
+require_folder("gui", %w[minimap editor_selector entity_summary info_panel])
 require_folder("states", %w[edit_level play_level main_menu])
 require_folder("players", %w[player])
 require_folder("history", %w[editor_action_history game_action_history])

@@ -1,7 +1,35 @@
 module SmashAndGrab
 module Gui
 class EditorSelector < Fidgit::Vertical
-  OBJECT_TABS = [:tiles, :walls, :objects, :entities, :vehicles]
+  OBJECT_TYPES = {
+      tiles: {
+          type: Tile,
+          num_columns: 2,
+          factor: 2,
+      },
+      walls: {
+          type: Wall,
+          num_columns: 3,
+          factor: 1,
+      },
+      objects: {
+          type: Objects::Static,
+          num_columns: 2,
+          factor: 1,
+      },
+      entities: {
+          type: Objects::Entity,
+          num_columns: 2,
+          factor: 1,
+      },
+      vehicles: {
+          type: Objects::Vehicle,
+          num_columns: 1,
+          factor: 0.5,
+      },
+  }
+
+  OBJECT_TABS = OBJECT_TYPES.keys
 
   def tab; @tabs_group.value; end
   def tab=(tab); @tabs_group.value = tab; end
@@ -33,7 +61,7 @@ class EditorSelector < Fidgit::Vertical
           scroll_options = { width: 200, height: 540 }
 
           @tab_windows[value] ||= Fidgit::ScrollWindow.new scroll_options do
-            send("#{value}_window")
+            list_window value
           end
 
           @selector_window = @tab_windows[value]
@@ -83,91 +111,44 @@ class EditorSelector < Fidgit::Vertical
     end
   end
 
-  protected
-  def tiles_window
-    buttons = group do
-      vertical padding: 1 do
-        radio_button 'Erase', :none
-        grid padding: 0, num_columns: 2 do
-          Tile.config.each_pair.sort.each do |type, data|
-            next if type == :none
-            radio_button '', type, icon: Tile.sprites[*data[:spritesheet_position]],
-                         tip: "Tile: #{type}", padding: 0, icon_options: { factor: 2 }
-          end
-        end
-      end
-    end
+  public
+  def icon_for(type, list_type = tab)
+    if type == :erase or type == :none
+      nil
+    else
+      klass = OBJECT_TYPES[list_type][:type]
+      spritesheet_position = if list_type == :walls
+                               klass.config[type][:spritesheet_positions][:vertical]
+                             else
+                               klass.config[type][:spritesheet_position]
+                             end
 
-    buttons.value = :none
+      klass.sprites[*spritesheet_position]
+    end
   end
 
   protected
-  def entities_window
+  def list_window(list_type)
+    erase_name = (list_type == :walls) ? :none : :erase
+
     buttons = group do
       vertical padding: 1 do
-        radio_button 'Erase', :erase
-        grid padding: 0, num_columns: 2 do
-          Objects::Entity.config.each_pair.sort.each do |type, data|
-            radio_button '', type, icon: Objects::Entity.sprites[*data[:spritesheet_position]],
-                         tip: "Entity: #{type} (#{data[:faction]})", padding: 0
+        radio_button 'Erase', erase_name
+
+        grid padding: 0, num_columns: OBJECT_TYPES[list_type][:num_columns] do
+          OBJECT_TYPES[list_type][:type].config.each_pair.sort.each do |type, config|
+            icon = icon_for(type, list_type)
+            next unless icon
+
+            radio_button '', type, icon: icon, padding: 0,
+                         icon_options: { factor: OBJECT_TYPES[list_type][:factor]  },
+                         tip: "#{list_type.capitalize}: #{type} #{list_type == :entities ? "(#{config[:faction]})" : ''}"
           end
         end
       end
     end
 
-    buttons.value = :erase
-  end
-
-  protected
-  def objects_window
-    buttons = group do
-      vertical padding: 1 do
-        radio_button 'Erase', :erase
-        grid padding: 0, num_columns: 2 do
-          Objects::Static.config.each_pair.sort.each do |type, data|
-            radio_button '', type, icon: Objects::Static.sprites[*data[:spritesheet_position]],
-                         tip: "Object: #{type}", padding: 0
-          end
-        end
-      end
-    end
-
-    buttons.value = :erase
-  end
-
-  protected
-  def vehicles_window
-    buttons = group do
-      vertical padding: 1 do
-        radio_button 'Erase', :erase
-        grid padding: 0, num_columns: 1 do
-          Objects::Vehicle.config.each_pair.sort.each do |type, data|
-            radio_button '', type, icon: Objects::Vehicle.sprites[*data[:spritesheet_position]],
-                         tip: "Vehicle: #{type}", padding: 0, icon_options: { factor: 0.5 }
-          end
-        end
-      end
-    end
-
-    buttons.value = :erase
-  end
-
-  protected
-  def walls_window
-    buttons = group do
-      vertical padding: 1 do
-        radio_button 'Erase', :none
-        grid padding: 0, num_columns: 3 do
-          Wall.config.each_pair.sort.each do |type, data|
-            next if type == :none
-            radio_button '', type, icon: Wall.sprites[*(data[:spritesheet_positions][:vertical])],
-                         tip: "Wall: #{type}", padding: 0
-          end
-        end
-      end
-    end
-
-    buttons.value = :none
+    buttons.value = erase_name
   end
 end
 end
