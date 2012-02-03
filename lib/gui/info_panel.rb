@@ -24,18 +24,19 @@ class InfoPanel < Fidgit::Vertical
           grid num_columns: 4, spacing: 4, padding: 0 do
             button_options = { font_height: 20, width: 28, height: 28, padding: 0, padding_left: 8 }
 
-            button "Me", button_options.merge(tip: "Melee")
-            button "Ra", button_options.merge(tip: "Ranged")
-            @sprint = button "Sp", button_options.merge(tip: "Sprint - gain (maximum MP / 2) movement points") do
-              @entity.map.actions.do :ability, @entity.ability(:sprint).action_data if @entity.has_ability? :sprint
+            @ability_buttons = {}
+            @ability_buttons[:melee] = button "Me", button_options
+            @ability_buttons[:ranged] = button "Ra", button_options
+            @ability_buttons[:sprint] = button "Sp", button_options do
+              @entity.map.actions.do :ability, @entity.ability(:sprint).action_data
             end
 
-            button "??", button_options.merge(tip: "???")
+            @ability_buttons[:a] = button "??", button_options.merge(tip: "???")
 
-            button "P1", button_options.merge(tip: "power1")
-            button "P2", button_options.merge(tip: "power2")
-            button "P3", button_options.merge(tip: "power3")
-            button "P4", button_options.merge(tip: "power4")
+            @ability_buttons[:b] = button "P1", button_options.merge(tip: "power1")
+            @ability_buttons[:c] = button "P2", button_options.merge(tip: "power2")
+            @ability_buttons[:d] = button "P3", button_options.merge(tip: "power3")
+            @ability_buttons[:e] = button "P4", button_options.merge(tip: "power4")
           end
         end
       end
@@ -48,7 +49,19 @@ class InfoPanel < Fidgit::Vertical
 
   public
   def update
-    self.entity = @entity if @entity
+    return unless @entity
+
+    @health.text = "HP: #{@entity.health} / #{@entity.max_health}"
+    @movement_points.text = "MP: #{@entity.mp} / #{@entity.max_mp}"
+    @action_points.text = "AP: #{@entity.ap} / #{@entity.max_ap}"
+
+    if @entity.has_ability? :sprint
+      @movement_points.text += " +#{@entity.ability(:sprint).movement_bonus}"
+    end
+
+    @ability_buttons.each do |ability, button|
+      button.enabled = (@entity.has_ability?(ability) and @entity.action_points >= @entity.ability(ability).action_cost)
+    end
   end
 
   public
@@ -57,9 +70,27 @@ class InfoPanel < Fidgit::Vertical
 
     @portrait.image = @entity.image
     @name.text = @entity.name
-    @health.text = "HP: #{@entity.health} / #{@entity.max_health}"
-    @movement_points.text = "MP: #{@entity.mp} / #{@entity.max_mp}"
-    @action_points.text = "AP: #{@entity.ap} / #{@entity.max_ap}"
+
+    if @entity.has_ability? :melee
+      melee = @entity.ability(:melee)
+      @ability_buttons[:melee].tip = "Melee[#{melee.skill}] - attack in hand-to-hand combat"
+    else
+      @ability_buttons[:melee].tip = "Melee[n/a)"
+    end
+
+    if @entity.has_ability? :ranged
+      ranged = @entity.ability(:ranged)
+      @ability_buttons[:ranged].tip = "Ranged[#{ranged.skill}] - attack in ranged combat"
+    else
+      @ability_buttons[:ranged].tip = "Ranged[n/a)"
+    end
+
+    if @entity.has_ability? :sprint
+      sprint = @entity.ability(:sprint)
+      @ability_buttons[:sprint].tip = "Sprint[#{sprint.skill}] - gain #{sprint.movement_bonus} movement points"
+    else
+      @ability_buttons[:sprint].tip = "Sprint[n/a]"
+    end
 
     entity
   end
