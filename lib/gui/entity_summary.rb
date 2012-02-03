@@ -32,7 +32,9 @@ class EntitySummary < Fidgit::Vertical
 
   public
   def update
-    self.entity = @entity if @entity
+    @health.text = "HP: #{@entity.health}"
+    @movement_points.text = "MP: #{@entity.mp}"
+    @action_points.text = "AP: #{@entity.ap}"
   end
 
   public
@@ -45,10 +47,9 @@ class EntitySummary < Fidgit::Vertical
     @entity = entity
 
     @name.text = " " + entity.name[0...13]
-    @health.text = "HP: #{@entity.health}"
-    @movement_points.text = "MP: #{@entity.mp}"
-    @action_points.text = "AP: #{@entity.ap}"
     @portrait.image = entity.portrait
+
+    update
 
     entity
   end

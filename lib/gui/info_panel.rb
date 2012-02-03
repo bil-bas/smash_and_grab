@@ -8,7 +8,7 @@ class InfoPanel < Fidgit::Vertical
     }.merge! options
     super options
 
-    horizontal padding: 4, spacing: 8, background_color: Color.rgb(0, 0, 150), width: 440, height: 112 do
+    @frame = horizontal padding: 4, spacing: 8, background_color: Color.rgb(0, 0, 150), width: 440, height: 112 do
       @portrait = image_frame Objects::Entity.sprites[0, 0], padding: 0, background_color: Color::GRAY
 
       vertical padding: 0, spacing: 4 do
@@ -68,28 +68,34 @@ class InfoPanel < Fidgit::Vertical
   def entity=(entity)
     @entity = entity
 
-    @portrait.image = @entity.image
-    @name.text = @entity.name
+    @frame.shown = (not entity.nil?)
 
-    if @entity.has_ability? :melee
-      melee = @entity.ability(:melee)
-      @ability_buttons[:melee].tip = "Melee[#{melee.skill}] - attack in hand-to-hand combat"
-    else
-      @ability_buttons[:melee].tip = "Melee[n/a)"
-    end
+    if entity
+      @portrait.image = @entity.image
+      @name.text = @entity.name
 
-    if @entity.has_ability? :ranged
-      ranged = @entity.ability(:ranged)
-      @ability_buttons[:ranged].tip = "Ranged[#{ranged.skill}] - attack in ranged combat"
-    else
-      @ability_buttons[:ranged].tip = "Ranged[n/a)"
-    end
+      if @entity.has_ability? :melee
+        melee = @entity.ability(:melee)
+        @ability_buttons[:melee].tip = "Melee[#{melee.skill}] - attack in hand-to-hand combat"
+      else
+        @ability_buttons[:melee].tip = "Melee[n/a)"
+      end
 
-    if @entity.has_ability? :sprint
-      sprint = @entity.ability(:sprint)
-      @ability_buttons[:sprint].tip = "Sprint[#{sprint.skill}] - gain #{sprint.movement_bonus} movement points"
-    else
-      @ability_buttons[:sprint].tip = "Sprint[n/a]"
+      if @entity.has_ability? :ranged
+        ranged = @entity.ability(:ranged)
+        @ability_buttons[:ranged].tip = "Ranged[#{ranged.skill}] - attack in ranged combat"
+      else
+        @ability_buttons[:ranged].tip = "Ranged[n/a)"
+      end
+
+      if @entity.has_ability? :sprint
+        sprint = @entity.ability(:sprint)
+        @ability_buttons[:sprint].tip = "Sprint[#{sprint.skill}] - gain #{sprint.movement_bonus} movement points"
+      else
+        @ability_buttons[:sprint].tip = "Sprint[n/a]"
+      end
+
+      update
     end
 
     entity

@@ -3,6 +3,8 @@ require_relative 'world'
 module SmashAndGrab
 module States
 class PlayLevel < World
+  attr_reader :info_panel
+
   def initialize(file)
     super()
 
@@ -118,6 +120,8 @@ class PlayLevel < World
     else
       nil
     end
+
+    @info_panel.entity = @mouse_selection.selected
 
     @mouse_selection.update
 
