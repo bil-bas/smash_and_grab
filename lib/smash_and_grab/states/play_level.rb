@@ -37,14 +37,14 @@ class PlayLevel < World
           summary = Gui::EntitySummary.new baddy, parent: packer
           summary.subscribe :left_mouse_button do
             @mouse_selection.select baddy if baddy.alive?
-            @info_panel.entity = baddy
+            @info_panel.object = baddy
           end
         end
       end
 
       # Info panel.
       @info_panel = Gui::InfoPanel.new parent: container
-      @info_panel.entity = @map.baddies[0]
+      @info_panel.object = @map.baddies[0]
 
       # Button box.
       @button_box = vertical parent: container, padding: 4, spacing: 8, width: 150, background_color: Color::BLACK do
@@ -121,7 +121,7 @@ class PlayLevel < World
       nil
     end
 
-    @info_panel.entity = @mouse_selection.selected
+    @info_panel.object = @mouse_selection.selected
 
     @mouse_selection.update
 

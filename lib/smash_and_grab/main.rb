@@ -11,13 +11,7 @@ def require_folder(path, files)
 end
 
 module SmashAndGrab
-  USER_PATH = if ENV['APPDATA']
-                File.join(ENV['APPDATA'].gsub("\\", "/"), "Smash And Grab")
-              else
-                File.expand_path("~/.smash_and_grab")
-              end
-
-  SAVE_PATH = File.join(USER_PATH, "saves")
+  SAVE_PATH = File.join(USER_DATA_PATH, "saves")
 end
 
 require_relative "log"
@@ -26,13 +20,10 @@ SmashAndGrab::Log.log.info { "Smash and Grab loading; please wait.." }
 t = Time.now
 
 begin
-  require 'rubygems' unless defined? OSX_EXECUTABLE
-rescue LoadError
-end
-
-
-begin
-  require 'bundler/setup' unless defined?(OSX_EXECUTABLE) or ENV['OCRA_EXECUTABLE']
+  unless RUNNING_FROM_EXECUTABLE
+    require 'bundler'
+    Bundler.setup :default
+  end
 
 rescue LoadError
   $stderr.puts "Bundler gem not installed. To install:\n  gem install bundler"
