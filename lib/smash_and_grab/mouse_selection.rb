@@ -74,7 +74,7 @@ class MouseSelection < GameObject
           Tile.blank.draw_rot tile.x, tile.y, 0, 0, 0.5, 0.5, 1, 1, color, :additive
 
           # ZOC indicator.
-          if tile.entities_exerting_zoc(@selected_tile.object.faction).any?
+          if tile.entities_exerting_zoc(@selected_tile.object.faction).any? and tile.empty?
             Tile.blank.draw_rot tile.x, tile.y, 0, 0, 0.5, 0.5, 0.2, 0.2, ZOC_COLOR
           end
         end
