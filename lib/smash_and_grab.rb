@@ -1,22 +1,26 @@
 require 'optparse'
+require 'fileutils'
 
 begin
-  EXTRACT_PATH = File.dirname(File.dirname(File.expand_path(__FILE__)))
+  # Path script running from.
+  EXTRACT_PATH = File.expand_path("../..", __FILE__)
 
-  ROOT_PATH = if ENV['OCRA_EXECUTABLE']
-                File.dirname(File.expand_path(ENV['OCRA_EXECUTABLE']))
-              elsif defined? OSX_EXECUTABLE_FOLDER
-                File.dirname(OSX_EXECUTABLE_FOLDER)
-              else
-                EXTRACT_PATH
-              end
-
+  # Name of app, such as my_application
   APP_NAME = File.basename(__FILE__).chomp(File.extname(__FILE__))
 
-  RUNNING_FROM_EXECUTABLE = (ENV['OCRA_EXECUTABLE'] or defined?(OSX_EXECUTABLE))
+  RUNNING_FROM_EXECUTABLE = (ENV['OCRA_EXECUTABLE'] or ENV['RELEASY_OSX_APP'])
 
-  DEFAULT_LOG_FILE = "#{APP_NAME}.log"
-  DEFAULT_LOG_FILE_PATH = File.join(ROOT_PATH, DEFAULT_LOG_FILE)
+  # Path to logs, save games, user config, etc.
+  USER_DATA_PATH = if ENV['APPDATA']
+                     File.join(ENV['APPDATA'].gsub("\\", "/"), APP_NAME.split("_").map(&:capitalize).join(" ").gsub(" And ", " and "))
+                   else
+                     File.expand_path("~/.#{APP_NAME}")
+                   end
+
+  FileUtils.mkdir_p USER_DATA_PATH
+
+  DEFAULT_LOG_FILE = "log.txt"
+  DEFAULT_LOG_FILE_PATH = File.join(USER_DATA_PATH, DEFAULT_LOG_FILE)
 
   def parse_options
     options = {}
@@ -25,7 +29,7 @@ begin
       parser.banner =<<TEXT
 Usage: #{File.basename(__FILE__)} [options]
 
-  Defaults to using --#{RUNNING_FROM_EXECUTABLE ? 'log' : 'console'}
+  Defaults to using --#{RUNNING_FROM_EXECUTABLE ? "log '#{DEFAULT_LOG_FILE}'" : 'console'}
 
 TEXT
 
@@ -93,7 +97,7 @@ TEXT
     $stdout.sync = true
   end
 
-  require_relative "smash_and_grab/main"
+  require_relative "#{APP_NAME}/main"
 
   exit_message = ""
 

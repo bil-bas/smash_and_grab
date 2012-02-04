@@ -2,7 +2,7 @@ require 'bacon'
 require 'bacon/rr'
 
 DEVELOPMENT_MODE = true
-ROOT_PATH = EXTRACT_PATH = File.expand_path("../../", __FILE__)
+EXTRACT_PATH = File.expand_path("../../", __FILE__)
 
 require_relative '../lib/smash_and_grab'
 
