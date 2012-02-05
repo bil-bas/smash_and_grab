@@ -17,6 +17,13 @@ class Entity < WorldObject
   MELEE_COST = 1
   MELEE_DAMAGE = 5
 
+  class << self
+    def config; @config ||= YAML.load_file(File.expand_path("config/map/entities.yml", EXTRACT_PATH)); end
+    def types; config.keys; end
+    def sprites; @sprites ||= SpriteSheet.new("entities.png", SPRITE_WIDTH, SPRITE_HEIGHT, 8); end
+    def portraits; @portraits ||= SpriteSheet.new("entity_portraits.png", PORTRAIT_WIDTH, PORTRAIT_HEIGHT, 8); end
+  end
+
   def_delegators :@faction, :minimap_color, :active?, :inactive?
 
   attr_reader :faction, :movement_points, :action_points, :health, :type, :portrait,
@@ -36,11 +43,6 @@ class Entity < WorldObject
   def to_s; "<#{self.class.name}/#{@type}##{id} #{tile ? grid_position : "[off-map]"}>"; end
   def name; @type.to_s.split("_").map(&:capitalize).join(" "); end
   def alive?; @health > 0 and @tile; end
-
-  def self.config; @@config ||= YAML.load_file(File.expand_path("config/map/entities.yml", EXTRACT_PATH)); end
-  def self.types; config.keys; end
-  def self.sprites; @@sprites ||= SpriteSheet.new("entities.png", SPRITE_WIDTH, SPRITE_HEIGHT, 8); end
-  def self.portraits; @@portraits ||= SpriteSheet.new("entity_portraits.png", PORTRAIT_WIDTH, PORTRAIT_HEIGHT, 8); end
 
   def initialize(map, data)
     @type = data[:type]

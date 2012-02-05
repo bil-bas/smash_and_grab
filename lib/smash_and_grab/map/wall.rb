@@ -32,8 +32,10 @@ class Wall < GameObject
 
   def blocks_sight?; @blocks_sight; end
 
-  def self.config; @@config ||= YAML.load_file(File.expand_path("config/map/walls.yml", EXTRACT_PATH)); end
-  def self.sprites; @@sprites ||= SpriteSheet.new("walls.png", SPRITE_WIDTH, SPRITE_HEIGHT, 8); end
+  class << self
+    def config; @config ||= YAML.load_file(File.expand_path("config/map/walls.yml", EXTRACT_PATH)); end
+    def sprites; @sprites ||= SpriteSheet.new("walls.png", SPRITE_WIDTH, SPRITE_HEIGHT, 8); end
+  end
 
   def initialize(map, data)
     options = {

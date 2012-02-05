@@ -27,9 +27,11 @@ class Tile < GameObject
   def blocks_sight?; @type == 'none' or (@object and @object.blocks_sight?); end
 
   # Blank white tile, useful for colourising tiles.
-  def self.blank; @@sprites[0]; end
-  def self.config; @@config ||= YAML.load_file(File.expand_path("config/map/tiles.yml", EXTRACT_PATH)); end
-  def self.sprites; @@sprites ||= SpriteSheet.new("floor_tiles.png", WIDTH, HEIGHT, 4); end
+  class << self
+    def blank; @sprites[0]; end
+    def config; @config ||= YAML.load_file(File.expand_path("config/map/tiles.yml", EXTRACT_PATH)); end
+    def sprites; @sprites ||= SpriteSheet.new("floor_tiles.png", WIDTH, HEIGHT, 4); end
+  end
 
   attr_reader :entities_exerting_zoc
 

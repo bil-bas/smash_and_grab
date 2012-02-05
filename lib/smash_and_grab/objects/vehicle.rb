@@ -23,9 +23,11 @@ class Vehicle < WorldObject
   def to_s; "<#{self.class.name}/#{@type}##{id} #{tile ? grid_position : "[off-map]"}>"; end
   def name; @type.to_s.split("_").map(&:capitalize).join(" "); end
 
-  def self.config; @@config ||= YAML.load_file(File.expand_path("config/map/vehicles.yml", EXTRACT_PATH)); end
-  def self.types; config.keys; end
-  def self.sprites; @@sprites ||= SpriteSheet.new("vehicles.png", (128 * 2) + 2, (128 * 2) + 2, 3); end
+  class << self
+    def config; @config ||= YAML.load_file(File.expand_path("config/map/vehicles.yml", EXTRACT_PATH)); end
+    def types; config.keys; end
+    def sprites; @sprites ||= SpriteSheet.new("vehicles.png", (128 * 2) + 2, (128 * 2) + 2, 3); end
+  end
 
   def fills_tile_on_minimap?; true; end
 

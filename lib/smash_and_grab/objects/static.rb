@@ -14,9 +14,11 @@ class Static < WorldObject
   def to_s; "<#{self.class.name}/#{@type}##{id} #{tile ? grid_position : "[off-map]"}>"; end
   def name; @type.to_s.split("_").map(&:capitalize).join(" "); end
 
-  def self.config; @@config ||= YAML.load_file(File.expand_path("config/map/objects.yml", EXTRACT_PATH)); end
-  def self.types; config.keys; end
-  def self.sprites; @@sprites ||= SpriteSheet.new("objects.png", 64 + 2, 64 + 2, 8); end
+  class << self
+    def config; @config ||= YAML.load_file(File.expand_path("config/map/objects.yml", EXTRACT_PATH)); end
+    def types; config.keys; end
+    def sprites; @sprites ||= SpriteSheet.new("objects.png", 64 + 2, 64 + 2, 8); end
+  end
 
   def initialize(map, data)
     @type = data[:type]
