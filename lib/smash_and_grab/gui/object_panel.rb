@@ -14,7 +14,11 @@ module SmashAndGrab
         vertical padding: 0 do
           # TODO: Clicking on portrait should center.
           @portrait = image_frame @object.image, padding: 0, background_color: Color::GRAY,
-                                  factor: (object.is_a?(Objects::Vehicle) ? 0.25 : 1)
+                                  factor: (@object.is_a?(Objects::Vehicle) ? 0.25 : 1)
+
+          @object.subscribe :changed do
+            @portrait.image = @object.image
+          end
         end
 
         vertical padding: 0, spacing: 4 do

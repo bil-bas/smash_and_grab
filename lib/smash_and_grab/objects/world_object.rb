@@ -48,7 +48,7 @@ class WorldObject < GameObject
 
     @tile << self if @tile
 
-    publish :changed
+    publish :changed if tile != @tile
 
     @tile
   end

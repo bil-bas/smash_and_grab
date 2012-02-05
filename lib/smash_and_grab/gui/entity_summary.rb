@@ -31,10 +31,11 @@ class EntitySummary < Fidgit::Vertical
   end
 
   public
-  def update
-    @health.text = "HP: #{@entity.health}"
-    @movement_points.text = "MP: #{@entity.mp}"
-    @action_points.text = "AP: #{@entity.ap}"
+  def update_details(entity)
+    @health.text = "HP: #{entity.health}"
+    @movement_points.text = "MP: #{entity.mp}"
+    @action_points.text = "AP: #{entity.ap}"
+    @portrait.image = entity.portrait
   end
 
   public
@@ -46,10 +47,10 @@ class EntitySummary < Fidgit::Vertical
   def entity=(entity)
     @entity = entity
 
-    @name.text = " " + entity.name[0...13]
-    @portrait.image = entity.portrait
+    @name.text = " " + @entity.name[0...13]
+    @entity.subscribe :changed, &method(:update_details)
 
-    update
+    update_details @entity
 
     entity
   end

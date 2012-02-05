@@ -33,6 +33,10 @@ module SmashAndGrab
         create_details_sub_panel
         create_info_sub_panel
         switch_sub_panel
+
+        update_details @entity
+
+        @entity.subscribe :changed, method(:update_details)
       end
 
       def switch_sub_panel
@@ -84,20 +88,20 @@ module SmashAndGrab
         end
       end
 
-      def update
-        @health.text = "HP: #{@entity.health} / #{@entity.max_health}"
-        @movement_points.text = "MP: #{@entity.mp} / #{@entity.max_mp}"
-        @action_points.text = "AP: #{@entity.ap} / #{@entity.max_ap}"
+      def update_details(entity)
+        @health.text = "HP: #{entity.health} / #{entity.max_health}"
+        @movement_points.text = "MP: #{entity.mp} / #{entity.max_mp}"
+        @action_points.text = "AP: #{entity.ap} / #{entity.max_ap}"
 
-        if @entity.has_ability? :sprint
-          @movement_points.text += " +#{@entity.ability(:sprint).movement_bonus}"
+        if entity.has_ability? :sprint
+          @movement_points.text += " +#{entity.ability(:sprint).movement_bonus}"
         end
 
         @ability_buttons.each do |ability, button|
-          button.enabled = (@entity.active? and (@entity.has_ability?(ability) and @entity.action_points >= @entity.ability(ability).action_cost))
+          button.enabled = (entity.active? and (entity.has_ability?(ability) and entity.action_points >= entity.ability(ability).action_cost))
         end
 
-        super
+        @portrait.image = entity.image
       end
     end
   end
