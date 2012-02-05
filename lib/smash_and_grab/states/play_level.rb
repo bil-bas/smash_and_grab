@@ -27,7 +27,7 @@ class PlayLevel < World
   end
 
   def object_altered(object)
-    @mouse_selection.reset if @mouse_selection.selected == object
+    @mouse_selection.reset if @mouse_selection and @mouse_selection.selected == object
   end
 
   def create_gui

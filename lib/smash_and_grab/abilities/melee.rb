@@ -21,6 +21,8 @@ module SmashAndGrab::Abilities
       )
     end
 
+    def target(data); owner.map.object_by_id(data[:target_id]); end
+
     def random_damage
       # 1..skill as damage in a bell-ish curve.
       (skill - 1).times.find_all { rand(2) == 1 }.size + 1
@@ -29,13 +31,13 @@ module SmashAndGrab::Abilities
     def do(data)
       super(data)
 
-      owner.map.object_by_id(data[:target_id]).health -= data[:damage]
+      owner.melee(target(data), data[:damage])
     end
 
     def undo(data)
-      target = owner.map.object_by_id(data[:target_id])
-      target.health += data[:damage]
+      target = target(data)
       target.tile = owner.map.tile_at_grid(data[:target_position]) unless target.tile
+      owner.melee(target(data), -data[:damage])
 
       super(data)
     end

@@ -38,8 +38,7 @@ class AI < Player
     if @active_entities.empty?
       faction.end_turn
     else
-      @pause_until ||= Time.new 0
-      return unless Time.now >= @pause_until
+      return if faction.map.factions.any? {|f| f.entities.any?(&:busy?) }
 
       # Attempt to attack, else move, else stand around like a loon.
       entity = @active_entities.first
@@ -52,12 +51,10 @@ class AI < Player
           faction.map.actions.do :ability, entity.ability(:move).action_data(path.previous_path) if path.requires_movement?
           faction.map.actions.do :ability, entity.ability(:melee).action_data(path.last)
           @active_entities.shift unless entity.ap > 0
-          @pause_until = Time.now + 0.5 unless @active_entities.empty?
         elsif moves.any?
           # TODO: Wait with moves until everyone who can has attacked?
           faction.map.actions.do :ability, entity.ability(:move).action_data(entity.path_to(moves.sample))
           @active_entities.shift
-          @pause_until = Time.now + 0.5 unless @active_entities.empty?
         else
           # Can't do anything at all :(
           # TODO: Maybe wait until other people have tried to move?

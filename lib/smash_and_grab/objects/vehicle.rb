@@ -91,7 +91,7 @@ class Vehicle < WorldObject
 
   def to_json(*a)
     {
-        class: CLASS,
+        :class => CLASS,
         type: @type,
         id: id,
         tile: grid_position,

@@ -81,5 +81,8 @@ SmashAndGrab::GameWindow.new
 SmashAndGrab::Log.log.debug { "Window created in #{"%.3f" % (Time.now - t)} s" }
 
 unless defined? Ocra or defined? Bacon
+  SmashAndGrab::Log.log.info { "Game window opened" }
   $window.show
+
+  SmashAndGrab::Log.log.info { "Game window closed" }
 end

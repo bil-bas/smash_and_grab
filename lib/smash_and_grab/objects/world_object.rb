@@ -5,6 +5,8 @@ class WorldObject < GameObject
   include Fidgit::Event
   extend Forwardable
 
+  event :changed
+
   def_delegators :@tile, :map, :grid_position, :grid_x, :grid_y
 
   attr_reader :tile
@@ -34,6 +36,11 @@ class WorldObject < GameObject
 
     @z = options[:z]
 
+    # Todo: Parent should probably handle this directly.
+    subscribe :changed do
+      parent.object_altered self if parent.respond_to? :object_altered
+    end
+
     log.debug { "Created #{self}" }
   end
 
@@ -45,6 +52,8 @@ class WorldObject < GameObject
     @recorded_shadow = nil
 
     @tile << self if @tile
+
+    publish :changed
 
     @tile
   end
@@ -80,12 +89,17 @@ class WorldObject < GameObject
 
     @recorded_shadow.draw 0, 0, ZOrder::SHADOWS
 
-    @image.draw_rot @x, @y + 2.5, @y, 0, 0.5, 1, OUTLINE_SCALE * @factor_x, OUTLINE_SCALE
+    @image.draw_rot @x, @y + 2.5 - @z, @y, 0, 0.5, 1, OUTLINE_SCALE * @factor_x, OUTLINE_SCALE, color
   end
+
+  def busy?; false; end
+  def active?; false; end
 
   def destroy
     self.tile = nil
     map.remove self
+
+    publish :changed
 
     super
   end

@@ -2,11 +2,11 @@ require 'bacon'
 require 'bacon/rr'
 
 DEVELOPMENT_MODE = true
-EXTRACT_PATH = File.expand_path("../../", __FILE__)
+
+require_relative '../lib/smash_and_grab/log'
+SmashAndGrab::Log.level = :ERROR # Don't print out junk.
 
 require_relative '../lib/smash_and_grab'
-
-SmashAndGrab::Log.level = :WARNING # Don't print out junk.
 
 module Bacon
   class Context

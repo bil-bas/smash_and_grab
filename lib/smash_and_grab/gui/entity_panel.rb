@@ -67,8 +67,11 @@ module SmashAndGrab
             [:melee, :ranged, :sprint].each do |ability_name|
               if @entity.has_ability? ability_name
                 ability = @entity.ability ability_name
-                @ability_buttons[ability_name] = button "#{ability_name.to_s[0].upcase}#{ability.skill}",
-                                                        button_options.merge(tip: ability.tip)
+                @ability_buttons[ability_name] = button("#{ability_name.to_s[0].upcase}#{ability.skill}",
+                                                        button_options.merge(tip: ability.tip)) do
+
+                  @entity.use_ability :sprint if ability_name == :sprint
+                end
               else
                 label "", label_options
               end

@@ -40,7 +40,8 @@ class MouseSelection < GameObject
   end
 
   def selected_can_be_controlled?
-    selected.is_a?(Objects::Entity) and selected.active? and selected.faction.player.is_a?(Players::Human)
+    selected and selected.active? and selected.faction.player.is_a?(Players::Human) and
+        @map.factions.all? {|f| f.entities.none?(&:busy?) }
   end
   
   def tile=(tile)

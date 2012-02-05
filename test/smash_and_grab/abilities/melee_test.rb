@@ -2,20 +2,23 @@ require_relative "../../teststrap"
 require_relative "helpers/ability_helper"
 
 describe SmashAndGrab::Abilities::Melee do
-  helper(:entity) {@entity ||= Object.new }
-  helper(:enemy) { @enemy ||= Object.new }
-  helper(:tile) { @tile ||= SmashAndGrab::Tile.new(:grass, nil, 1, 1) }
+  before do
+    @entity = Object.new
+    @enemy = Object.new
+    @map = Object.new
+    @tile = SmashAndGrab::Tile.new(:grass, nil, 1, 2)
+  end
 
-  subject { SmashAndGrab::Abilities.ability entity, type: :melee, action_cost: 1, skill: 5 }
+  subject { SmashAndGrab::Abilities.ability @entity, type: :melee, action_cost: 1, skill: 5 }
 
   behaves_like SmashAndGrab::Abilities::Ability
 
   should "fail if not given the required arguments" do
-    ->{ SmashAndGrab::Abilities.ability entity, type: :melee }.should.raise(ArgumentError).message.should.match /No skill value for/
+    ->{ SmashAndGrab::Abilities.ability @entity, type: :melee }.should.raise(ArgumentError).message.should.match /No skill value for/
   end
 
   should "be initialized" do
-    subject.owner.should.equal entity
+    subject.owner.should.equal @entity
     subject.can_be_undone?.should.be.false
     subject.skill.should.equal 5
     subject.action_cost.should.equal 1
@@ -30,18 +33,18 @@ describe SmashAndGrab::Abilities::Melee do
   end
 
   should "generate appropriate action_data" do
-    stub(entity).id.returns 12
-    stub(enemy).id.returns 13
-    stub(tile).object.returns enemy
+    stub(@entity).id.returns 12
+    stub(@enemy).id.returns 13
+    stub(@tile).object.returns @enemy
     stub(subject).random_damage.returns 5
-    subject.action_data(tile).should.equal(
+    subject.action_data(@tile).should.equal(
         ability: :melee,
         skill: 5,
         action_cost: 1,
 
         owner_id: 12,
         target_id: 13,
-        target_position: [1, 1],
+        target_position: [1, 2],
         damage: 5
     )
   end
@@ -60,46 +63,40 @@ describe SmashAndGrab::Abilities::Melee do
 
   describe "#do" do
     should "remove action points and health" do
-      stub(enemy).health.returns 20
-      mock(enemy, :health=).with 15
+      stub(@entity).map.stub!.object_by_id(13).returns @enemy
+      stub(@entity).action_points.returns 1
+      mock(@entity).action_points = 0
+      mock(@entity).melee(@enemy, 5)
 
-      stub(entity).map.stub!.object_by_id(13).returns enemy
-      stub(entity).action_points.returns 1
-      mock(entity, :action_points=).with 0
-
-      subject.do action_cost: 1, target_id: 13, damage: 5 #, target_position: [1, 1]
-      true
+      subject.do action_cost: 1, target_id: 13, damage: 5 #, target_position: [1, 2]
     end
   end
 
   describe "#undo" do
     should "give action points and health (if target alive)" do
-      stub(enemy).tile.returns tile
-      stub(enemy).health.returns 15
-      mock(enemy, :health=).with 20
+      stub(@enemy).tile.returns @tile
+      stub(@entity).map.stub!.object_by_id(13).returns @enemy
+      stub(@entity).action_points.returns 0
+      mock(@entity).action_points = 1
+      mock(@entity).melee(@enemy, -5)
 
-      stub(entity).map.stub!.object_by_id(13).returns enemy
-      stub(entity).action_points.returns 0
-      mock(entity, :action_points=).with 1
-
-      subject.undo action_cost: 1, target_id: 13, damage: 5, target_position: [1, 1]
+      subject.undo action_cost: 1, target_id: 13, damage: 5, target_position: [1, 2]
     end
 
     should "give action points, health and return to map (if target dead)" do
-      stub(enemy).tile.returns nil
-      stub(enemy).health.returns 0
-      mock(enemy, :tile=).with tile
-      mock(enemy, :health=).with 5
+      stub(@enemy).tile.returns nil
+      mock(@enemy).tile = @tile
+      mock(@entity).melee(@enemy, -5)
 
-      stub(entity).map do
-        map = Object.new
-        stub(map).object_by_id(13).returns enemy
-        stub(map).tile_at_grid([1, 1]).returns tile
+      stub(@entity).map do
+        stub(@map).object_by_id(13).returns @enemy
+        stub(@map).tile_at_grid([1, 2]).returns @tile
+        @map
       end
-      stub(entity).action_points.returns 0
-      mock(entity, :action_points=).with 1
+      stub(@entity).action_points.returns 0
+      mock(@entity).action_points = 1
 
-      subject.undo action_cost: 1, target_id: 13, damage: 5, target_position: [1, 1]
+      subject.undo action_cost: 1, target_id: 13, damage: 5, target_position: [1, 2]
     end
   end
 end

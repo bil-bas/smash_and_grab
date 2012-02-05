@@ -1,4 +1,6 @@
 require 'set'
+require 'fiber'
+
 require_relative "../path"
 require_relative "../abilities"
 require_relative "world_object"
@@ -83,6 +85,8 @@ class Entity < WorldObject
       end
     end
 
+    @queued_actions = []
+
     @faction << self
   end
 
@@ -102,6 +106,7 @@ class Entity < WorldObject
                     end
 
       FloatingText.new(text, color: color, x: x, y: y - height / 3, zorder: y - 0.01)
+      publish :changed
     end
 
     if @health == 0 and @tile
@@ -109,14 +114,37 @@ class Entity < WorldObject
     end
   end
 
-  def melee(other)
-    other.health -= MELEE_DAMAGE
-    @action_points -= MELEE_COST
+  # Called from GameAction::Ability
+  # Also used to un-melee :)
+  def melee(target, damage)
+    enqueue_action do
+      if damage > 0 # do => wound
+        face target
+        self.z += 10
+        delay 0.1
+        self.z -= 10
+
+        target.health -= damage
+        target.color = Color.rgb(255, 100, 100)
+        delay 0.1
+        target.color = Color::WHITE
+      else # undo => heal
+        target.color = Color.rgb(255, 100, 100)
+        delay 0.1
+        target.health -= damage
+        target.color = Color::WHITE
+
+        self.z += 10
+        delay 0.1
+        self.z -= 10
+      end
+    end
   end
 
   def start_turn
     @movement_points = @max_movement_points
     @action_points = @max_action_points
+    publish :changed
   end
 
   def end_turn
@@ -176,7 +204,8 @@ class Entity < WorldObject
 
           # If the path is shorter than one we've already calculated, then replace it. Otherwise just store it.
           if new_path.move_distance <= movement_points
-            if old_path = open_paths[testing_tile]
+            old_path = open_paths[testing_tile]
+            if old_path
               if new_path.move_distance < old_path.move_distance
                 open_paths[testing_tile] = new_path
               end
@@ -228,7 +257,7 @@ class Entity < WorldObject
             next
           end
         elsif testing_tile.passable?(self)
-          if (object.nil? or object.passable?(self))
+          if object.nil? or object.passable?(self)
             new_path = Paths::Move.new(path, testing_tile, wall.movement_cost)
           else
             next
@@ -236,7 +265,8 @@ class Entity < WorldObject
         end
 
         # If the path is shorter than one we've already calculated, then replace it. Otherwise just store it.
-        if old_path = open_paths[testing_tile]
+        old_path = open_paths[testing_tile]
+        if old_path
           if new_path.move_distance < old_path.move_distance
             open_paths[testing_tile] = new_path
           end
@@ -249,28 +279,73 @@ class Entity < WorldObject
     Paths::Inaccessible.new(destination_tile) # Failed to connect at all.
   end
 
-  # Actually perform movement (called from GameAction::Move).
+  def update
+    super
+
+    unless @queued_actions.empty?
+      @queued_actions.first.resume
+      unless @queued_actions.first.alive?
+        @queued_actions.shift
+        publish :changed if @queued_actions.empty?
+      end
+    end
+  end
+
+  def enqueue_action(&action)
+    @queued_actions << Fiber.new(&action)
+    publish :changed if @queued_actions.size == 1 # Means busy? changed from false to true.
+  end
+
+  def busy?
+    @queued_actions.any?
+  end
+
+  # Called from an action ONLY!
+  def delay(duration)
+    finish = Time.now + duration
+    Fiber.yield until Time.now >= finish
+  end
+
+  # @param target [Tile, Objects::WorldObject]
+  def face(target, options = {})
+    from = options[:from] || self
+    change_in_x = target.x - from.x
+    self.factor_x = change_in_x > 0 ? 1 : -1
+  end
+
+  # Actually perform movement (called from GameAction::Ability).
   def move(tiles, movement_cost)
     raise "Not enough movement points (#{self} tried to move #{movement_cost} with #{@movement_points} left #{tiles} )" unless movement_cost <= @movement_points
 
     tiles = tiles.map {|pos| @map.tile_at_grid *pos } unless tiles.first.is_a? Tile
 
-    destination = tiles.last
     @movement_points -= movement_cost
 
-    change_in_x = destination.x - tiles[-2].x
+    enqueue_action do
+      tiles.each_cons(2) do |from, to|
+        face to, from: from
 
-    # Turn based on movement.
-    self.factor_x = change_in_x > 0 ? 1 : -1
+        delay 0.1
 
-    self.tile = destination
+        # Skip through a tile if we are moving through something else!
+        if to.object
+          self.z = 20
+          self.x, self.y = to.x, to.y
+        else
+          self.tile = to
+          self.z = 0
+        end
+      end
+    end
+
+    nil
   end
 
   # TODO: Need to think of the best way to trigger this. It should only happen once, when you actually "first" move.
   def trigger_zoc_attacks
     enemies = tile.entities_exerting_zoc(self)
     enemies.each do |enemy|
-      map.actions.do :ability, :melee, enemy, self # Only get one opportunity attack per enemy entering.
+      enemy.use_ability :melee, self, reactive: true # Only get one opportunity attack per enemy entering.
     end
   end
 
@@ -342,14 +417,14 @@ class Entity < WorldObject
   end
 
   def use_ability(name, *args)
-    raise unless has_ability? name
+    raise "#{self} does not have ability: #{name.inspect}" unless has_ability? name
     map.actions.do :ability, ability(name).action_data(*args)
-    parent.object_altered self # Todo: reset via an event?
+    publish :changed
   end
 
   def to_json(*a)
     data = {
-        class: CLASS,
+        :class => CLASS,
         type: @type,
         id: id,
         health: @health,
