@@ -46,10 +46,12 @@ module SmashAndGrab
 
       def create_info_sub_panel
         @info_sub_panel = Fidgit::Vertical.new padding: 0, spacing: 0 do
-          scroll_window width: 350, height: 72 do
-            text_area text: "#{@entity.name} once ate a pomegranate, but it took all day and all night... " * 5,
-                      background_color: Color::NONE, width: 330, font_height: 14
+          text = nil
+          scroll = scroll_window width: 350, height: 72 do
+            text = text_area text: "#{@entity.name} once ate a pomegranate, but it took all day and all night... " * 5,
+                                  width: 330, font_height: 14, enabled: false
           end
+          scroll.background_color = text.background_color
         end
       end
 

@@ -35,12 +35,12 @@ end
 # Local AI.
 class AI < Player
   def update
+    return if faction.map.busy?
+
     if @active_entities.empty?
       faction.end_turn
     else
-      return if faction.map.factions.any? {|f| f.entities.any?(&:busy?) }
-
-      # Attempt to attack, else move, else stand around like a loon.
+       # Attempt to attack, else move, else stand around like a loon.
       entity = @active_entities.first
       if entity.alive?
         moves, attacks = entity.potential_moves.partition {|t| t.empty? }
@@ -48,12 +48,20 @@ class AI < Player
         if attacks.any?
           # TODO: Pick the nearest attack and consider re-attacking.
           path = entity.path_to(attacks.sample)
-          faction.map.actions.do :ability, entity.ability(:move).action_data(path.previous_path) if path.requires_movement?
-          faction.map.actions.do :ability, entity.ability(:melee).action_data(path.last.object)
-          @active_entities.shift unless entity.ap > 0
+          entity.use_ability :move, path.previous_path if path.requires_movement?
+          # Only perform melee if you weren't killed by attacks of opportunity.
+          target = path.last.object
+          entity.add_activity do
+            entity.use_ability :melee, target if entity.alive?
+          end
+
+          entity.add_activity do
+            @active_entities.shift unless entity.use_ability?(:melee)
+          end
+
         elsif moves.any?
           # TODO: Wait with moves until everyone who can has attacked?
-          faction.map.actions.do :ability, entity.ability(:move).action_data(entity.path_to(moves.sample))
+          entity.use_ability :move, entity.path_to(moves.sample)
           @active_entities.shift
         else
           # Can't do anything at all :(

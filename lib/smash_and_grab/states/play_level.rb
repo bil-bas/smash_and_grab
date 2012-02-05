@@ -3,7 +3,12 @@ require_relative 'world'
 module SmashAndGrab
 module States
 class PlayLevel < World
+  include Fidgit::Event
+
   attr_reader :info_panel
+
+  event :game_info
+  event :game_heading
 
   def initialize(file)
     super()
@@ -19,6 +24,12 @@ class PlayLevel < World
     @players.each.with_index do |player, i|
       map.factions[i].player = player
       player.faction = map.factions[i]
+      player.faction.subscribe :turn_started do
+        publish :game_heading, "=== Turn #{map.turn + 1} ===" if player == @players.first
+        publish :game_info, ""
+        publish :game_heading, "#{player.faction}' turn (#{Inflector.demodulize player.class})"
+        publish :game_info, ""
+      end
     end
 
     save_game_as AUTOSAVE_FILE
@@ -43,7 +54,7 @@ class PlayLevel < World
       end
 
       # Info panel.
-      @info_panel = Gui::InfoPanel.new parent: container
+      @info_panel = Gui::InfoPanel.new self, parent: container
       @info_panel.object = @map.baddies[0]
 
       # Button box.

@@ -42,6 +42,7 @@ class Map
 
   def add_effect(effect); @effects << effect; end
   def remove_effect(effect); @effects.delete effect; end
+  def busy?; factions.any? {|f| f.entities.any?(&:busy?) }; end
 
   # tile_classes: Nested arrays of Tile class names (Tile::Grass is represented as "Grass")
   def initialize(data)

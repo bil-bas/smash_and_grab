@@ -8,7 +8,7 @@ module SmashAndGrab
     class InfoPanel < Fidgit::Vertical
       attr_reader :object
 
-      def initialize(options = {})
+      def initialize(state, options = {})
         options = {
             padding: 4,
             background_color: Color::BLACK,
@@ -17,7 +17,7 @@ module SmashAndGrab
 
         @object = nil
         @show_info = false
-        @scenario_panel = ScenarioPanel.new
+        @scenario_panel = ScenarioPanel.new state
         @frame = vertical padding: 4, background_color: Color.rgb(0, 0, 150), width: 440, height: 112
 
         self.x, self.y = ($window.width - width) / 2, $window.height - height

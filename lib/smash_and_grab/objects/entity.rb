@@ -107,6 +107,7 @@ class Entity < WorldObject
     end
 
     if @health == 0 and @tile
+      parent.publish :game_info, "#{name} was vanquished!"
       self.tile = nil
       @queued_activities.empty?
     end
@@ -122,10 +123,17 @@ class Entity < WorldObject
         delay 0.1
         self.z -= 10
 
-        target.health -= damage
-        target.color = Color.rgb(255, 100, 100)
-        delay 0.1
-        target.color = Color::WHITE
+        # Can be dead at this point if there were 2-3 attackers of opportunity!
+        if target.alive?
+          parent.publish :game_info, "#{name} smashed #{target.name} for {#{damage}}"
+          target.health -= damage
+
+          target.color = Color.rgb(255, 100, 100)
+          delay 0.1
+          target.color = Color::WHITE
+        else
+          parent.publish :game_info, "#{name} kicked #{target.name} while they were down"
+        end
       else # undo => heal
         target.color = Color.rgb(255, 100, 100)
         delay 0.1
@@ -179,7 +187,7 @@ class Entity < WorldObject
     # Paths to check { tile => path_to_tile }.
     open_paths = { destination_tile => Paths::Start.new(destination_tile, destination_tile) }
 
-    melee_cost = ability(:melee).action_cost
+    melee_cost = has_ability?(:melee) ? ability(:melee).action_cost : Float::INFINITY
 
     while open_paths.any?
       path = open_paths.each_value.min_by(&:cost)
@@ -231,7 +239,8 @@ class Entity < WorldObject
 
     destination_object =  destination_tile.object
     destination_is_enemy = (destination_object and destination_object.is_a? Entity and destination_object.enemy?(self))
-    melee_cost = ability(:melee).action_cost
+
+    melee_cost = has_ability?(:melee) ? ability(:melee).action_cost : Float::INFINITY
 
     while open_paths.any?
       # Check the (expected) shortest path and move it to closed, since we have considered it.
@@ -382,8 +391,12 @@ class Entity < WorldObject
     entities = tile.entities_exerting_zoc(self)
     enemies = entities.find_all {|e| e.enemy?(self) and e.has_ability?(:melee) and e.use_ability?(:melee) }
     enemies.each do |enemy|
-      break unless alive?
-      enemy.use_ability :melee, self 
+      break unless alive? and enemy.alive?
+
+      parent.publish :game_info, "#{enemy.name} got an attack of opportunity!"
+
+      enemy.use_ability :melee, self
+
       prepend_activity do
         delay while enemy.busy?
       end
@@ -464,7 +477,7 @@ class Entity < WorldObject
   end
 
   def use_ability?(name)
-    has_ability?(name) and ap >= ability(name).action_cost
+    alive? and has_ability?(name) and ap >= ability(name).action_cost
   end
 
   def to_json(*a)

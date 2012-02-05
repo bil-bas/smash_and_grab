@@ -41,8 +41,7 @@ class MouseSelection < GameObject
   end
 
   def selected_can_be_controlled?
-    selected and selected.active? and selected.faction.player.is_a?(Players::Human) and
-        @map.factions.all? {|f| f.entities.none?(&:busy?) }
+    selected and selected.active? and selected.faction.player.is_a?(Players::Human) and not @map.busy?
   end
   
   def tile=(tile)
@@ -141,7 +140,12 @@ class MouseSelection < GameObject
           selected.use_ability :move, path
         when Paths::Melee
           selected.use_ability :move, path.previous_path if path.requires_movement?
-          selected.use_ability :melee, path.last.object
+
+          # Only perform melee if you weren't killed by attacks of opportunity.
+          attacker, target = selected, path.last.object
+          attacker.add_activity do
+            attacker.use_ability :melee, target if attacker.alive?
+          end
       end
 
       calculate_path
