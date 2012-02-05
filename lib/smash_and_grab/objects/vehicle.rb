@@ -21,7 +21,7 @@ class Vehicle < WorldObject
   def inactive?; true; end
 
   def to_s; "<#{self.class.name}/#{@type}##{id} #{tile ? grid_position : "[off-map]"}>"; end
-  def name; @type.split("_").map(&:capitalize).join(" "); end
+  def name; @type.to_s.split("_").map(&:capitalize).join(" "); end
 
   def self.config; @@config ||= YAML.load_file(File.expand_path("config/map/vehicles.yml", EXTRACT_PATH)); end
   def self.types; config.keys; end

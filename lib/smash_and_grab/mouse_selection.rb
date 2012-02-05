@@ -1,13 +1,11 @@
 module SmashAndGrab
 class MouseSelection < GameObject
-  attr_reader :selected_tile, :hover_tile
+  attr_reader :selected, :hover_tile
 
   MOVE_COLOR = Color.rgba(0, 255, 0, 60)
   MELEE_COLOR = Color.rgba(255, 0, 0, 80)
   NO_MOVE_COLOR = Color.rgba(255, 0, 0, 30)
   ZOC_COLOR = Color.rgba(255, 0, 0, 255)
-
-  def selected; @selected_tile ? @selected_tile.object : nil; end
   
   def initialize(map, options = {})
     @map = map
@@ -17,7 +15,7 @@ class MouseSelection < GameObject
     @selected_image = Image["tile_selection.png"]
     @mouse_hover_image = Image["mouse_hover.png"]
 
-    @selected_tile = @hover_tile = nil
+    @selected = @hover_tile = nil
     @path = nil
     @moves_record = nil
 
@@ -25,6 +23,24 @@ class MouseSelection < GameObject
 
     add_inputs(released_left_mouse_button: :left_click,
                released_right_mouse_button: :right_click)
+
+    @map.factions.each do |faction|
+      faction.subscribe :turn_ended do
+        reset
+      end
+      faction.subscribe :turn_started do
+        reset
+      end
+    end
+  end
+
+  def update
+    select nil if selected and selected.tile.nil?
+    super
+  end
+
+  def selected_can_be_controlled?
+    selected.is_a?(Objects::Entity) and selected.active? and selected.faction.player.is_a?(Players::Human)
   end
   
   def tile=(tile)
@@ -37,12 +53,12 @@ class MouseSelection < GameObject
   end
 
   def calculate_path
-    if @selected_tile
+    if selected_can_be_controlled?
       modify_occlusions @path.tiles, -1 if @path
 
       if @hover_tile
-        @path = @selected_tile.object.path_to(@hover_tile)
-        @path.prepare_for_drawing(@potential_moves)
+        @path = selected.path_to @hover_tile
+        @path.prepare_for_drawing @potential_moves
         modify_occlusions @path.tiles, +1
       else
         @path = nil
@@ -55,16 +71,16 @@ class MouseSelection < GameObject
 
   def calculate_potential_moves
     modify_occlusions @potential_moves, -1
-    @potential_moves = @selected_tile.object.potential_moves
+    @potential_moves = selected.potential_moves
     modify_occlusions @potential_moves, +1
-
 
     @moves_record = if @potential_moves.empty?
       nil
     else
       $window.record(1, 1) do
         @potential_moves.each do |tile|
-          color = if entity = tile.object and entity.enemy?(@selected_tile.object)
+          entity = tile.object
+          color = if entity and entity.enemy?(selected)
             MELEE_COLOR
           else
             MOVE_COLOR
@@ -74,7 +90,7 @@ class MouseSelection < GameObject
           Tile.blank.draw_rot tile.x, tile.y, 0, 0, 0.5, 0.5, 1, 1, color, :additive
 
           # ZOC indicator.
-          if tile.entities_exerting_zoc(@selected_tile.object.faction).any? and tile.empty?
+          if tile.entities_exerting_zoc(selected.tile.object.faction).any? and tile.empty?
             Tile.blank.draw_rot tile.x, tile.y, 0, 0, 0.5, 0.5, 0.2, 0.2, ZOC_COLOR
           end
         end
@@ -90,9 +106,18 @@ class MouseSelection < GameObject
   
   def draw
     # Draw a disc under the selected object.
-    if @selected_tile
-      selected_color = @selected_tile.object.move? ? Color::GREEN : Color::BLACK
-      @selected_image.draw_rot @selected_tile.x, @selected_tile.y, ZOrder::TILE_SELECTION, 0, 0.5, 0.5, 1, 1, selected_color
+    if selected and selected.tile
+      selected_color = if selected.is_a? Objects::Entity
+                         if selected_can_be_controlled? and selected.move?
+                           Color::GREEN
+                         else
+                           Color::BLACK
+                         end
+                        else
+                          Color::BLUE
+                        end
+
+      @selected_image.draw_rot selected.tile.x, selected.tile.y, ZOrder::TILE_SELECTION, 0, 0.5, 0.5, 1, 1, selected_color
 
       # Highlight all squares that character can travel to.
       @moves_record.draw 0, 0, ZOrder::TILE_SELECTION if @moves_record
@@ -105,33 +130,32 @@ class MouseSelection < GameObject
   end
 
   def left_click
-    if @selected_tile
-      path = @path
-      # Move the character.
-      if @potential_moves.include? @hover_tile
-        case path
-          when Paths::Move
-            @map.actions.do :ability, selected.ability(:move).action_data(path)
-            @selected_tile = @hover_tile
-          when Paths::Melee
-            attacker = selected
-            @map.actions.do :ability, attacker.ability(:move).action_data(path.previous_path) if path.requires_movement?
-            @map.actions.do :ability, attacker.ability(:melee).action_data(path.last)
-            @selected_tile = attacker.tile
-        end
-        calculate_path
-        calculate_potential_moves
+    if @potential_moves.include? @hover_tile
+      path = @path # @path will change as we move.
+
+      # Move the character, perhaps with melee at the end.
+      case path
+        when Paths::Move
+          selected.use_ability :move, path
+        when Paths::Melee
+          selected.use_ability :move, path.previous_path if path.requires_movement?
+          selected.use_ability :melee, path.last
       end
-    elsif @hover_tile and @hover_tile.object.is_a? Objects::Entity and @hover_tile.object.active?
+
+      calculate_path
+      calculate_potential_moves
+    elsif @hover_tile and @hover_tile.object
       # Select a character to move.
-      select(@hover_tile.object)
+      select @hover_tile.object
     end
   end
 
-  def select(entity)
-    if entity
-      @selected_tile = entity.tile
-      @moves_record = nil
+  def select(object)
+    @selected = object
+    @moves_record = nil
+
+    if selected and selected_can_be_controlled?
+      calculate_path
       calculate_potential_moves
     else
       modify_occlusions @potential_moves, -1
@@ -139,16 +163,19 @@ class MouseSelection < GameObject
 
       modify_occlusions @path.tiles, -1 if @path
       @path = nil
+    end
+  end
 
-      @selected_tile = nil
+  def reset
+    if selected
+      sel = selected
+      select nil
+      select sel
     end
   end
 
   def right_click
-    # Deselect the currently selected character.
-    if @selected_tile
-      select nil
-    end
+    select nil if selected
   end
 end
 end

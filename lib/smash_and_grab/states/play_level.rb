@@ -26,6 +26,10 @@ class PlayLevel < World
     @mouse_selection = MouseSelection.new @map
   end
 
+  def object_altered(object)
+    @mouse_selection.reset if @mouse_selection.selected == object
+  end
+
   def create_gui
     @container = Fidgit::Container.new do |container|
       @minimap = Gui::Minimap.new parent: container
@@ -70,7 +74,6 @@ class PlayLevel < World
   end
 
   def end_turn
-    @mouse_selection.select nil
     @map.active_faction.end_turn
     save_game_as AUTOSAVE_FILE
   end

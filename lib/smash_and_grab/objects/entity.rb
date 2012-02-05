@@ -339,6 +339,12 @@ class Entity < WorldObject
     nil # Didn't hit anything.
   end
 
+  def use_ability(name, *args)
+    raise unless has_ability? name
+    map.actions.do :ability, ability(name).action_data(*args)
+    parent.object_altered self # Todo: reset via an event?
+  end
+
   def to_json(*a)
     data = {
         class: CLASS,

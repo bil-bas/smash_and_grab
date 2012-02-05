@@ -1,4 +1,5 @@
 require_relative "entity_panel"
+require_relative "object_panel"
 require_relative "scenario_panel"
 
 module SmashAndGrab
@@ -33,6 +34,8 @@ module SmashAndGrab
             panel.subscribe :info_toggled do |_, shown|
               @show_info = shown
             end
+          when Objects::Static, Objects::Vehicle
+            ObjectPanel.new(object, parent: @frame)
           when nil
             @frame.add @scenario_panel
           else

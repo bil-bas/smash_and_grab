@@ -87,7 +87,7 @@ module SmashAndGrab
                     "Sprint [n/a]"
                   end
             @ability_buttons[:sprint] = button "Sp", button_options.merge(tip: tip) do
-              @entity.map.actions.do :ability, sprint.action_data
+              @entity.use_ability :sprint
             end
 
             @ability_buttons[:a] = button "??", button_options.merge(tip: "???")
@@ -110,7 +110,7 @@ module SmashAndGrab
         end
 
         @ability_buttons.each do |ability, button|
-          button.enabled = (@entity.has_ability?(ability) and @entity.action_points >= @entity.ability(ability).action_cost)
+          button.enabled = (@entity.active? and (@entity.has_ability?(ability) and @entity.action_points >= @entity.ability(ability).action_cost))
         end
 
         super
