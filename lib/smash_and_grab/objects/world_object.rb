@@ -11,7 +11,8 @@ class WorldObject < GameObject
 
   attr_reader :tile
 
-  attr_accessor :z
+  attr_reader :z
+  def z=(z); @z = z; @recorded_shadow = nil; z; end
 
   def id; @map.id_for_object(self); end
   def blocks_sight?; true; end
@@ -82,7 +83,7 @@ class WorldObject < GameObject
       end
     end
 
-    @recorded_shadow.draw 0, 0, ZOrder::SHADOWS
+    @recorded_shadow.draw 0, 0, ZOrder::SHADOWS if casts_shadow?
 
     @image.draw_rot @x, @y + 2.5 - @z, @y, 0, 0.5, 1, OUTLINE_SCALE * @factor_x, OUTLINE_SCALE, color
   end
