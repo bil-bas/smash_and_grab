@@ -53,7 +53,7 @@ module Fidgit
 
       case args.size
         when 1
-          case handler
+          case args.first
             when Subscription
               # Delete specific event handler.
               subscription = args.first
@@ -64,7 +64,7 @@ module Fidgit
               handler = args.first
               !!@_event_handlers.find {|_, handlers| handlers.delete handler }
             else
-              raise TypeError, "handler must be a #{Subscription}, Block or Method: #{handler}"
+              raise TypeError, "handler must be a #{Subscription}, Block or Method: #{args.first}"
           end
         when 2
           event, handler = args

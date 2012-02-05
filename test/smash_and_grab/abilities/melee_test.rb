@@ -35,9 +35,10 @@ describe SmashAndGrab::Abilities::Melee do
   should "generate appropriate action_data" do
     stub(@entity).id.returns 12
     stub(@enemy).id.returns 13
+    stub(@enemy).tile.returns @tile
     stub(@tile).object.returns @enemy
     stub(subject).random_damage.returns 5
-    subject.action_data(@tile).should.equal(
+    subject.action_data(@enemy).should.equal(
         ability: :melee,
         skill: 5,
         action_cost: 1,

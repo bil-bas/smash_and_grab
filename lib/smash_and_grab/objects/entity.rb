@@ -85,7 +85,7 @@ class Entity < WorldObject
       end
     end
 
-    @queued_actions = []
+    @queued_activities = []
 
     @faction << self
   end
@@ -111,13 +111,14 @@ class Entity < WorldObject
 
     if @health == 0 and @tile
       self.tile = nil
+      @queued_activities.empty?
     end
   end
 
   # Called from GameAction::Ability
   # Also used to un-melee :)
   def melee(target, damage)
-    enqueue_action do
+    add_activity do
       if damage > 0 # do => wound
         face target
         self.z += 10
@@ -282,34 +283,55 @@ class Entity < WorldObject
   def update
     super
 
-    unless @queued_actions.empty?
-      @queued_actions.first.resume
-      unless @queued_actions.first.alive?
-        @queued_actions.shift
-        publish :changed if @queued_actions.empty?
+    unless @queued_activities.empty?
+      @queued_activities.first.resume if @queued_activities.first.alive?
+      unless @queued_activities.first.alive?
+        @queued_activities.shift
+        publish :changed if @queued_activities.empty?
       end
     end
   end
 
-  def enqueue_action(&action)
-    @queued_actions << Fiber.new(&action)
-    publish :changed if @queued_actions.size == 1 # Means busy? changed from false to true.
+  def add_activity(&action)
+    @queued_activities << Fiber.new(&action)
+    publish :changed if @queued_activities.size == 1 # Means busy? changed from false to true.
+  end
+
+  def prepend_activity(&action)
+    @queued_activities.unshift Fiber.new(&action)
+    publish :changed if @queued_activities.size == 1 # Means busy? changed from false to true.
+  end
+
+  def clear_activities
+    has_activities = @queued_activities.any?
+    @queued_activities.clear
+    publish :changed if has_activities # Means busy? changed from true to false.
   end
 
   def busy?
-    @queued_actions.any?
+    @queued_activities.any?
   end
 
-  # Called from an action ONLY!
-  def delay(duration)
-    finish = Time.now + duration
-    Fiber.yield until Time.now >= finish
+  # @overload delay(duration)
+  #   Wait for duration (Called from an activity ONLY!)
+  #   @param duration [Number]
+  #
+  # @overload delay
+  #   Wait until next frame (Called from an activity ONLY!)
+  def delay(duration = 0)
+    raise if duration < 0
+
+    if duration == 0
+      Fiber.yield
+    else
+      finish = Time.now + duration
+      Fiber.yield until Time.now >= finish
+    end
   end
 
   # @param target [Tile, Objects::WorldObject]
-  def face(target, options = {})
-    from = options[:from] || self
-    change_in_x = target.x - from.x
+  def face(target)
+    change_in_x = target.x - x
     self.factor_x = change_in_x > 0 ? 1 : -1
   end
 
@@ -321,11 +343,15 @@ class Entity < WorldObject
 
     @movement_points -= movement_cost
 
-    enqueue_action do
+    add_activity do
       tiles.each_cons(2) do |from, to|
-        face to, from: from
+        face to
 
         delay 0.1
+
+        # TODO: this will be triggered _every_ time you move, even when redoing is done!
+        trigger_zoc_melee from
+        break unless alive?
 
         # Skip through a tile if we are moving through something else!
         if to.object
@@ -335,6 +361,10 @@ class Entity < WorldObject
           self.tile = to
           self.z = 0
         end
+
+        # TODO: this will be triggered _every_ time you move, even when redoing is done!
+        trigger_zoc_melee to
+        break unless alive?
       end
     end
 
@@ -342,10 +372,15 @@ class Entity < WorldObject
   end
 
   # TODO: Need to think of the best way to trigger this. It should only happen once, when you actually "first" move.
-  def trigger_zoc_attacks
-    enemies = tile.entities_exerting_zoc(self)
+  def trigger_zoc_melee(tile)
+    entities = tile.entities_exerting_zoc(self)
+    enemies = entities.find_all {|e| e.enemy?(self) and e.has_ability?(:melee) and e.use_ability?(:melee) }
     enemies.each do |enemy|
-      enemy.use_ability :melee, self, reactive: true # Only get one opportunity attack per enemy entering.
+      break unless alive?
+      enemy.use_ability :melee, self 
+      prepend_activity do
+        delay while enemy.busy?
+      end
     end
   end
 
@@ -420,6 +455,10 @@ class Entity < WorldObject
     raise "#{self} does not have ability: #{name.inspect}" unless has_ability? name
     map.actions.do :ability, ability(name).action_data(*args)
     publish :changed
+  end
+
+  def use_ability?(name)
+    has_ability?(name) and ap >= ability(name).action_cost
   end
 
   def to_json(*a)

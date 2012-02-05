@@ -26,10 +26,6 @@ class PlayLevel < World
     @mouse_selection = MouseSelection.new @map
   end
 
-  def object_altered(object)
-    @mouse_selection.reset if @mouse_selection and @mouse_selection.selected == object
-  end
-
   def create_gui
     @container = Fidgit::Container.new do |container|
       @minimap = Gui::Minimap.new parent: container
@@ -40,7 +36,7 @@ class PlayLevel < World
           baddy = @map.baddies[i]
           summary = Gui::EntitySummary.new baddy, parent: packer
           summary.subscribe :left_mouse_button do
-            @mouse_selection.select baddy if baddy.alive?
+            @mouse_selection.selected = baddy if baddy.alive?
             @info_panel.object = baddy
           end
         end
@@ -80,16 +76,16 @@ class PlayLevel < World
 
   def undo_action
     selection = @mouse_selection.selected
-    @mouse_selection.select nil
+    @mouse_selection.selected = nil
     @map.actions.undo if @map.actions.can_undo?
-    @mouse_selection.select selection if selection
+    @mouse_selection.selected = selection if selection
   end
 
   def redo_action
     selection = @mouse_selection.selected
-    @mouse_selection.select nil
+    @mouse_selection.selected = nil
     @map.actions.redo if @map.actions.can_redo?
-    @mouse_selection.select selection if selection
+    @mouse_selection.selected =sd selection if selection
   end
 
   def map=(map)

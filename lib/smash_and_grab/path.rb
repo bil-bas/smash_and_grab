@@ -25,14 +25,17 @@ class Path
     @cost = @move_distance + @destination_distance
   end
 
-  def prepare_for_drawing(tiles_within_range)
+  # @option from [Tile] Tile to start drawing the path from.
+  def prepare_for_drawing(tiles_within_range, options = {})
     path_tiles = tiles
+    from = options[:from] || path_tiles.first
+    start_index = path_tiles.index from
 
     @record = $window.record(1, 1) do
-      tiles.each_with_index do |tile, i|
+      path_tiles[start_index..-1].each.with_index(start_index) do |tile, i|
         sheet_x, sheet_y =
             case tile
-              when @first
+              when from
                 case tile.direction_to(path_tiles[i + 1])
                   when :up then [3, 0]
                   when :down then [0, 0]
@@ -96,7 +99,7 @@ class Melee < Path
     super(previous_path, last, 0)
   end
 
-  def prepare_for_drawing(tiles_within_range)
+  def prepare_for_drawing(tiles_within_range, options = {})
     super(tiles_within_range)
     @draw_color = tiles_within_range.include?(last) ? COLOR_IN_RANGE : COLOR_OUT_OF_RANGE
   end
@@ -135,7 +138,7 @@ class Inaccessible < Path
     sprites[2, 1].draw_rot last.x, last.y, ZOrder::PATH, 0, 0.5, 0.5
   end
 
-  def prepare_for_drawing(tiles_within_range); end
+  def prepare_for_drawing(tiles_within_range, options = {}); end
 end
 
 # Path going to the same location as it started.
@@ -143,7 +146,7 @@ class None < Path
   def accessible?; false; end
   def tiles; []; end
   def initialize; end
-  def prepare_for_drawing(tiles_within_range); end
+  def prepare_for_drawing(tiles_within_range, options = {}); end
   def draw(*args); end
 end
 end

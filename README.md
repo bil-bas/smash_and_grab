@@ -61,14 +61,29 @@ Move your supervillains around until you win!
 
 ### Implemented game features
 
+* Your Villains can:
+    - move around.
+    - melee with enemies (Goodies or Bystanders).
+    - sprint to get extra movement (sacrificing all actions for that turn).
+    - get reactive melee attacks from ZoC.
+
+* Zones of Control:
+    - Enemies project a ZoC into adjacent tiles IF they have enough actions left to melee.
+    - Entering or leaving a ZoC triggers a melee attack, which will occur before the mover can attack!
+
+* Goodies will:
+    - attack if they can or wander aimlessly in their turn.
+    - Get reactive melee attacks from ZoC.
+
+* Bystanders will wander aimlessly in their turn.
+
 * Scroll map with keyboard arrows; zoom with mouse wheel.
-* Your Villains can move around.
-* Your Villains can melee with enemies (Goodies or Bystanders).
-* You can activate _Sprint_ ability to give a Villain extra movement (sacrificing all actions for that turn).
-* Goodies and Bystanders will take a turn (very trivial AI) when you end yours.
-* Editor works, but some bugs with placing Vehicles over other objects.
 * Saving/loading (F5/F6) of state in Editor & Game.
 * Undo/Redo (Ctrl-Z/Ctrl-Shift-Z)support in both Editor and Game (can't take back attacks though, since they are non-deterministic).
+
+### Implemented editor features
+
+* Editor works, but some bugs with placing Vehicles where there are existing objects.
 
 ### Saved data
 

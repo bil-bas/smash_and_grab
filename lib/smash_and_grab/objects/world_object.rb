@@ -36,11 +36,6 @@ class WorldObject < GameObject
 
     @z = options[:z]
 
-    # Todo: Parent should probably handle this directly.
-    subscribe :changed do
-      parent.object_altered self if parent.respond_to? :object_altered
-    end
-
     log.debug { "Created #{self}" }
   end
 

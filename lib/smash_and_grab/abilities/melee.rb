@@ -15,8 +15,8 @@ module SmashAndGrab::Abilities
       super(owner, data.merge(action_cost: 1))
     end
 
-    def action_data(target_tile)
-      super(target_tile).merge(
+    def action_data(target)
+      super(target.tile).merge(
           damage: random_damage
       )
     end

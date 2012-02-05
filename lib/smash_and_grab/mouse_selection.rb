@@ -5,7 +5,7 @@ class MouseSelection < GameObject
   MOVE_COLOR = Color.rgba(0, 255, 0, 60)
   MELEE_COLOR = Color.rgba(255, 0, 0, 80)
   NO_MOVE_COLOR = Color.rgba(255, 0, 0, 30)
-  ZOC_COLOR = Color.rgba(255, 0, 0, 255)
+  ZOC_COLOR = Color.rgba(255, 0, 0, 100)
   
   def initialize(map, options = {})
     @map = map
@@ -18,6 +18,7 @@ class MouseSelection < GameObject
     @selected = @hover_tile = nil
     @path = nil
     @moves_record = nil
+    @selected_changed_handler = nil
 
     super(options)
 
@@ -26,16 +27,16 @@ class MouseSelection < GameObject
 
     @map.factions.each do |faction|
       faction.subscribe :turn_ended do
-        reset
+        recalculate
       end
       faction.subscribe :turn_started do
-        reset
+        recalculate
       end
     end
   end
 
   def update
-    select nil if selected and selected.tile.nil?
+    self.selected = nil if selected and selected.tile.nil?
     super
   end
 
@@ -46,9 +47,9 @@ class MouseSelection < GameObject
   
   def tile=(tile)
     if tile != @hover_tile
-      modify_occlusions [@hover_tile], -1 if @hover_tile
+      modify_occlusions @hover_tile, -1 if @hover_tile
       @hover_tile = tile
-      modify_occlusions [@hover_tile], +1 if @hover_tile
+      modify_occlusions @hover_tile, +1 if @hover_tile
       calculate_path
     end
   end
@@ -92,7 +93,7 @@ class MouseSelection < GameObject
 
           # ZOC indicator.
           if tile.entities_exerting_zoc(selected.tile.object.faction).any? and tile.empty?
-            Tile.blank.draw_rot tile.x, tile.y, 0, 0, 0.5, 0.5, 0.2, 0.2, ZOC_COLOR
+            Tile.blank.draw_rot tile.x, tile.y, 0, 0, 0.5, 0.5, 0.7, 0.7, ZOC_COLOR
           end
         end
       end
@@ -100,7 +101,7 @@ class MouseSelection < GameObject
   end
 
   def modify_occlusions(tiles, amount)
-    tiles.each do |tile|
+    Array(tiles).each do |tile|
       tile.modify_occlusions amount
     end
   end
@@ -140,19 +141,18 @@ class MouseSelection < GameObject
           selected.use_ability :move, path
         when Paths::Melee
           selected.use_ability :move, path.previous_path if path.requires_movement?
-          selected.use_ability :melee, path.last
+          selected.use_ability :melee, path.last.object
       end
 
       calculate_path
       calculate_potential_moves
     elsif @hover_tile and @hover_tile.object
       # Select a character to move.
-      select @hover_tile.object
+      self.selected = @hover_tile.object
     end
   end
 
-  def select(object)
-    @selected = object
+  def recalculate
     @moves_record = nil
 
     if selected and selected_can_be_controlled?
@@ -167,16 +167,35 @@ class MouseSelection < GameObject
     end
   end
 
-  def reset
+  def selected=(object)
+    # Make sure we learn of any changes made to the selected object so we can move.
     if selected
-      sel = selected
-      select nil
-      select sel
+      @selected_changed_handler.unsubscribe
+      @selected_changed_handler = nil
+    end
+
+    @selected = object
+    recalculate
+
+    if selected
+      tile, path, potential_moves = selected.tile, @path, @potential_moves.dup
+
+      @selected_changed_handler = selected.subscribe :changed do |entity|
+        recalculate
+
+        # Create a partial path while we move.
+        if path and entity.tile != tile
+          tile = entity.tile
+          path.prepare_for_drawing potential_moves, from: entity.tile
+          modify_occlusions path.tiles, +1
+          @path = path
+        end
+      end
     end
   end
 
   def right_click
-    select nil if selected
+    self.selected = nil if selected
   end
 end
 end
