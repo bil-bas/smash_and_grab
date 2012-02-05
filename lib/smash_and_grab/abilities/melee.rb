@@ -7,6 +7,10 @@ module SmashAndGrab::Abilities
 
     def target_valid?(tile); tile.object.is_a?(Objects::Entity) and tile.object.enemy?(owner); end
 
+    def tip
+      "#{super} attack in hand-to-hand combat"
+    end
+
     def initialize(owner, data)
       super(owner, data.merge(action_cost: 1))
     end

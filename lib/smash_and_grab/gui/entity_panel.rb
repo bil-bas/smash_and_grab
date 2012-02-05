@@ -49,10 +49,6 @@ module SmashAndGrab
         end
       end
 
-      def skill_str(skill)
-        "#{skill.capitalize} (#{'*' * @entity.ability(skill).skill})"
-      end
-
       def create_details_sub_panel
         @details_sub_panel = Fidgit::Horizontal.new padding: 0, spacing: 0 do
           vertical padding: 0, spacing: 1, width: 160 do
@@ -66,36 +62,21 @@ module SmashAndGrab
 
             @ability_buttons = {}
 
-            tip = if @entity.has_ability? :melee
-                    "#{skill_str :melee} attack in hand-to-hand combat"
-                  else
-                    "Melee [n/a]"
-                  end
-            @ability_buttons[:melee] = button "Me", button_options.merge(tip: tip)
+            label_options = button_options.merge border_thickness: 2, border_color: Color.rgba(255, 255, 255, 100)
 
-            tip = if @entity.has_ability? :ranged
-                    "#{skill_str :ranged} attack in ranged combat"
-                  else
-                    "Ranged [n/a]"
-                  end
-            @ability_buttons[:ranged] = button "Ra", button_options.merge(tip: tip)
-
-            tip = if @entity.has_ability? :sprint
-                    sprint = @entity.ability(:sprint)
-                    "#{skill_str :sprint} gain #{sprint.movement_bonus} movement points at cost of all actions"
-                  else
-                    "Sprint [n/a]"
-                  end
-            @ability_buttons[:sprint] = button "Sp", button_options.merge(tip: tip) do
-              @entity.use_ability :sprint
+            [:melee, :ranged, :sprint].each do |ability_name|
+              if @entity.has_ability? ability_name
+                ability = @entity.ability ability_name
+                @ability_buttons[ability_name] = button "#{ability_name.to_s[0].upcase}#{ability.skill}",
+                                                        button_options.merge(tip: ability.tip)
+              else
+                label "", label_options
+              end
             end
 
-            @ability_buttons[:a] = button "??", button_options.merge(tip: "???")
-
-            @ability_buttons[:b] = button "P1", button_options.merge(tip: "power1")
-            @ability_buttons[:c] = button "P2", button_options.merge(tip: "power2")
-            @ability_buttons[:d] = button "P3", button_options.merge(tip: "power3")
-            @ability_buttons[:e] = button "P4", button_options.merge(tip: "power4")
+            5.times do |i|
+               label "", label_options
+            end
           end
         end
       end

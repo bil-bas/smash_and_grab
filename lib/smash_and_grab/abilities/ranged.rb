@@ -2,9 +2,29 @@ require_relative "ability"
 
 module SmashAndGrab::Abilities
   class Ranged < TargetedAbility
+    attr_reader :min_range, :max_range
+
     def can_undo?; false; end
 
+    # TODO: Take into account min/max range and LOS.
     def target_valid?(tile); !!(tile.object.is_a?(Objects::Entity) and tile.object.enemy?(owner)); end
+
+    def initialize(owner, data)
+      super(owner, data.merge(action_cost: 1))
+      @max_range = data[:max_range] || raise(ArgumentError, "no :max_range specified")
+      @min_range = data[:min_range] || raise(ArgumentError, "no :min_range specified")
+    end
+
+    def tip
+      "#{super} attack in ranged combat, at range #{min_range}..#{max_range}"
+    end
+
+    def to_json(*args)
+      super.merge(
+          min_range: @min_range,
+          max_range: @max_range,
+      ).to_json(*args)
+    end
 
     def action_data(target_tile)
       super(target_tile).merge!(

@@ -2,10 +2,15 @@ module SmashAndGrab::Abilities
   # @abstract
   class Ability
     attr_reader :skill, :owner
+    SKILL_LEVEL_DESCRIPTIONS = %w[Fair Good Excellent Heroic Legendary]
 
     def can_be_undone?; true; end
     def action_cost; @action_cost == :all ? owner.max_action_points : @action_cost; end
     def type; Inflector.underscore(Inflector.demodulize(self.class.name)).to_sym; end
+
+    def tip
+      "#{SKILL_LEVEL_DESCRIPTIONS[skill - 1]} #{type.capitalize} (#{'*' * skill})"
+    end
 
     protected
     def initialize(owner, data)

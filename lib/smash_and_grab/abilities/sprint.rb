@@ -21,6 +21,10 @@ module SmashAndGrab::Abilities
       [bonus.floor, 1].max
     end
 
+    def tip
+      "#{super} gain #{movement_bonus} movement points at cost of all actions"
+    end
+
     def action_data
       super().merge(
           movement_bonus: movement_bonus
