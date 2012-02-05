@@ -25,6 +25,7 @@ class Tile < GameObject
   def position; [@x, @y]; end
   def needs_to_be_seen?; (@temp_occlusions > 0) or @object; end # Causes walls to become transparent.
   def blocks_sight?; @type == 'none' or (@object and @object.blocks_sight?); end
+  def zoc?(faction); entities_exerting_zoc(faction).any?; end
 
   # Blank white tile, useful for colourising tiles.
   class << self

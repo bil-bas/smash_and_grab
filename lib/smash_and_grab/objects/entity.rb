@@ -16,9 +16,6 @@ class Entity < WorldObject
   SPRITE_WIDTH, SPRITE_HEIGHT = 66, 66
   PORTRAIT_WIDTH, PORTRAIT_HEIGHT = 36, 36
 
-  MELEE_COST = 1
-  MELEE_DAMAGE = 5
-
   class << self
     def config; @config ||= YAML.load_file(File.expand_path("config/map/entities.yml", EXTRACT_PATH)); end
     def types; config.keys; end
@@ -182,6 +179,8 @@ class Entity < WorldObject
     # Paths to check { tile => path_to_tile }.
     open_paths = { destination_tile => Paths::Start.new(destination_tile, destination_tile) }
 
+    melee_cost = ability(:melee).action_cost
+
     while open_paths.any?
       path = open_paths.each_value.min_by(&:cost)
       current_tile = path.last
@@ -196,7 +195,7 @@ class Entity < WorldObject
 
         if object and object.is_a?(Objects::Entity) and enemy?(object)
           # Ensure that the current tile is somewhere we could launch an attack from and we could actually perform it.
-          if (current_tile.empty? or current_tile == tile) and ap >= MELEE_COST
+          if (current_tile.empty? or current_tile == tile) and ap >= melee_cost
             valid_tiles << testing_tile
           end
 
@@ -230,6 +229,10 @@ class Entity < WorldObject
     closed_tiles = Set.new # Tiles we've already dealt with.
     open_paths = { tile => Paths::Start.new(tile, destination_tile) } # Paths to check { tile => path_to_tile }.
 
+    destination_object =  destination_tile.object
+    destination_is_enemy = (destination_object and destination_object.is_a? Entity and destination_object.enemy?(self))
+    melee_cost = ability(:melee).action_cost
+
     while open_paths.any?
       # Check the (expected) shortest path and move it to closed, since we have considered it.
       path = open_paths.each_value.min_by(&:cost)
@@ -250,9 +253,12 @@ class Entity < WorldObject
         new_path = nil
 
         object = testing_tile.object
-        if object and object.is_a?(Objects::Entity) and enemy?(object)
+        if testing_tile.zoc?(faction) and not (testing_tile == destination_tile or destination_is_enemy)
+          # Avoid tiles that have zoc, unless at the end of the path. You have to MANUALLY enter.
+          next
+        elsif object and object.is_a?(Objects::Entity) and enemy?(object)
           # Ensure that the current tile is somewhere we could launch an attack from and we could actually perform it.
-          if (current_tile.empty? or current_tile == tile) and ap >= MELEE_COST
+          if (current_tile.empty? or current_tile == tile) and ap >= melee_cost
             new_path = Paths::Melee.new(path, testing_tile)
           else
             next
