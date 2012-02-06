@@ -149,7 +149,7 @@ class Entity < WorldObject
   end
   alias_method :hp=, :health=
 
-  # Called from GameAction::Ability
+  # Called from GameActions::Ability
   # Also used to un-melee :)
   def make_melee_attack(target, damage)
     add_activity do
@@ -443,7 +443,7 @@ class Entity < WorldObject
     self.factor_x = change_in_x > 0 ? 1 : -1
   end
 
-  # Actually perform movement (called from GameAction::Ability).
+  # Actually perform movement (called from GameActions::Ability).
   def move(tiles, movement_cost)
     raise "Not enough movement points (#{self} tried to move #{movement_cost} with #{@movement_points} left #{tiles} )" unless movement_cost <= @movement_points
 

@@ -6,7 +6,7 @@ class ActionHistory < Fidgit::History
 
   def_delegators :@actions, :empty?
 
-  def completed_turns; @actions.count {|a| a.is_a? GameAction::EndTurn }; end
+  def completed_turns; @actions.count {|a| a.is_a? GameActions::EndTurn }; end
 
   # Perform a History::Action, adding it to the history.
   # If there are currently any actions that have been undone, they will be permanently lost and cannot be redone.
