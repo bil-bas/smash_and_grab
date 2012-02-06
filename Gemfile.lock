@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    smash_and_grab (0.0.3alpha)
+    smash_and_grab (0.0.5alpha)
       chingu (~> 0.9rc7)
       fidgit (~> 0.1.10)
       gosu (~> 0.7.41)

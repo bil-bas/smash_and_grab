@@ -20,7 +20,8 @@ SmashAndGrab::Log.log.info { "Smash and Grab loading; please wait.." }
 t = Time.now
 
 begin
-  unless RUNNING_FROM_EXECUTABLE
+  # Running as an executable makes bundler irrelevant; from a gem means someone else decides about whether to use Bundler.
+  unless RUNNING_FROM_EXECUTABLE or Gem.loaded_specs.has_key? APP_NAME
     require 'bundler'
     Bundler.setup :default
   end
