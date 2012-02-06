@@ -1,7 +1,7 @@
 require_relative "../../teststrap"
 require_relative "helpers/ability_helper"
 
-describe SmashAndGrab::Abilities::Melee do
+describe SmashAndGrab::Abilities::Ranged do
   before do
     @entity = Object.new
     @enemy = Object.new
@@ -9,12 +9,12 @@ describe SmashAndGrab::Abilities::Melee do
     @tile = SmashAndGrab::Tile.new(:grass, nil, 1, 2)
   end
 
-  subject { SmashAndGrab::Abilities.ability @entity, type: :melee, action_cost: 1, skill: 5 }
+  subject { SmashAndGrab::Abilities.ability @entity, type: :ranged, skill: 5, min_range: 2, max_range: 5 }
 
   behaves_like SmashAndGrab::Abilities::Ability
 
   should "fail if not given the required arguments" do
-    ->{ SmashAndGrab::Abilities.ability @entity, type: :melee }.should.raise(ArgumentError).message.should.match /No skill value for/
+    ->{ SmashAndGrab::Abilities.ability @entity, type: :ranged }.should.raise(ArgumentError).message.should.match /No skill value for/
   end
 
   should "be initialized" do
@@ -26,9 +26,11 @@ describe SmashAndGrab::Abilities::Melee do
 
   should "serialize to json correctly" do
     JSON.parse(subject.to_json).symbolize.should.equal(
-        type: :melee,
+        type: :ranged,
         skill: 5,
-        action_cost: 1
+        action_cost: 1,
+        min_range: 2,
+        max_range: 5
     )
   end
 
@@ -39,7 +41,7 @@ describe SmashAndGrab::Abilities::Melee do
     stub(@tile).object.returns @enemy
     stub(subject).random_damage.returns 5
     subject.action_data(@enemy).should.equal(
-        ability: :melee,
+        ability: :ranged,
         skill: 5,
         action_cost: 1,
 
@@ -67,7 +69,7 @@ describe SmashAndGrab::Abilities::Melee do
       stub(@entity).map.stub!.object_by_id(13).returns @enemy
       stub(@entity).action_points.returns 1
       mock(@entity).action_points = 0
-      mock(@entity).make_melee_attack(@enemy, 5)
+      mock(@entity).make_ranged_attack(@enemy, 5)
 
       subject.do action_cost: 1, target_id: 13, damage: 5 #, target_position: [1, 2]
     end
@@ -79,7 +81,7 @@ describe SmashAndGrab::Abilities::Melee do
       stub(@entity).map.stub!.object_by_id(13).returns @enemy
       stub(@entity).action_points.returns 0
       mock(@entity).action_points = 1
-      mock(@entity).make_melee_attack(@enemy, -5)
+      mock(@entity).make_ranged_attack(@enemy, -5)
 
       subject.undo action_cost: 1, target_id: 13, damage: 5, target_position: [1, 2]
     end
@@ -87,7 +89,7 @@ describe SmashAndGrab::Abilities::Melee do
     should "give action points, health and return to map (if target dead)" do
       stub(@enemy).tile.returns nil
       mock(@enemy).tile = @tile
-      mock(@entity).make_melee_attack(@enemy, -5)
+      mock(@entity).make_ranged_attack(@enemy, -5)
 
       stub(@entity).map do
         stub(@map).object_by_id(13).returns @enemy

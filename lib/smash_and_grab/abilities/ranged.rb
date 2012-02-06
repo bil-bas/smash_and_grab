@@ -4,7 +4,7 @@ module SmashAndGrab::Abilities
   class Ranged < TargetedAbility
     attr_reader :min_range, :max_range
 
-    def can_undo?; false; end
+    def can_be_undone?; false; end
 
     # TODO: Take into account min/max range and LOS.
     def target_valid?(tile); !!(tile.object.is_a?(Objects::Entity) and tile.object.enemy?(owner)); end
@@ -19,15 +19,15 @@ module SmashAndGrab::Abilities
       "#{super} attack in ranged combat, at range #{min_range}..#{max_range}"
     end
 
-    def to_json(*args)
+    def to_hash
       super.merge(
           min_range: @min_range,
           max_range: @max_range,
-      ).to_json(*args)
+      )
     end
 
-    def action_data(target_tile)
-      super(target_tile).merge!(
+    def action_data(target)
+      super(target.tile).merge!(
           damage: random_damage
       )
     end
@@ -40,13 +40,13 @@ module SmashAndGrab::Abilities
     def do(data)
       super(data)
 
-      owner.map.object_by_id(data[:target_id]).health -= data[:damage]
+      owner.make_ranged_attack(target(data), data[:damage])
     end
 
     def undo(data)
-      target = owner.map.object_by_id(data[:target_id])
-      target.health += data[:damage]
+      target = target(data)
       target.tile = owner.map.tile_at_grid(data[:target_position]) unless target.tile
+      owner.make_ranged_attack(target(data), -data[:damage])
 
       super(data)
     end

@@ -90,13 +90,13 @@ class Entity < WorldObject
     raise @type unless image
 
     @max_movement_points = config[:movement_points]
-    @movement_points = data[:movement_points] || @max_movement_points
+    @movement_points = [data[:movement_points] || Float::INFINITY, @max_movement_points].min
 
     @max_action_points = config[:action_points]
-    @action_points = data[:action_points] || @max_action_points
+    @action_points = [data[:action_points] || Float::INFINITY, @max_action_points].min
 
     @max_health = config[:health]
-    @health = data[:health] || @max_health
+    @health = [data[:health] || Float::INFINITY, @max_health].min
 
     # Load other abilities of the entity from config.
     @abilities = {}
@@ -151,7 +151,7 @@ class Entity < WorldObject
 
   # Called from GameAction::Ability
   # Also used to un-melee :)
-  def melee(target, damage)
+  def make_melee_attack(target, damage)
     add_activity do
       if damage > 0 # do => wound
         face target
@@ -179,6 +179,31 @@ class Entity < WorldObject
         self.z += 10
         delay 0.1
         self.z -= 10
+      end
+    end
+  end
+
+  def make_ranged_attack(target, damage)
+    add_activity do
+      if damage > 0 # do => wound
+        face target
+
+        # Can be dead at this point if there were 2-3 attackers of opportunity!
+        if target.alive?
+          parent.publish :game_info, "#{colorized_name} shot #{target.colorized_name} for {#{DAMAGE_NUMBER_COLOR.colorize damage}}"
+          target.health -= damage
+
+          target.color = Color.rgb(255, 100, 100)
+          delay 0.1
+          target.color = Color::WHITE
+        else
+          parent.publish :game_info, "#{colorized_name} shot #{target.colorized_name} while they were down"
+        end
+      else # undo => heal
+        target.color = Color.rgb(255, 100, 100)
+        delay 0.1
+        target.health -= damage
+        target.color = Color::WHITE
       end
     end
   end
@@ -430,10 +455,12 @@ class Entity < WorldObject
       tiles.each_cons(2) do |from, to|
         face to
 
+        # TODO: this will be triggered _every_ time you move, even when redoing is done!
+        trigger_zoc_melees from
+        break unless alive?
+
         delay 0.1
 
-        # TODO: this will be triggered _every_ time you move, even when redoing is done!
-        trigger_zoc_melee from
         break unless alive?
 
         # Skip through a tile if we are moving through something else!
@@ -446,7 +473,11 @@ class Entity < WorldObject
         end
 
         # TODO: this will be triggered _every_ time you move, even when redoing is done!
-        trigger_zoc_melee to
+        trigger_overwatches to
+        break unless alive?
+
+        # TODO: this will be triggered _every_ time you move, even when redoing is done!
+        trigger_zoc_melees to
         break unless alive?
       end
     end
@@ -454,20 +485,59 @@ class Entity < WorldObject
     nil
   end
 
-  # TODO: Need to think of the best way to trigger this. It should only happen once, when you actually "first" move.
-  def trigger_zoc_melee(tile)
-    entities = tile.entities_exerting_zoc(self)
-    enemies = entities.find_all {|e| e.enemy?(self) and e.has_ability?(:melee) and e.use_ability?(:melee) }
-    enemies.each do |enemy|
-      break unless alive? and enemy.alive?
+  def manhattan_distance(tile)
+    (tile.grid_x - grid_x).abs + (tile.grid_y - grid_y).abs
+  end
 
-      parent.publish :game_info, "#{enemy.colorized_name} got an attack of opportunity!"
-
-      enemy.use_ability :melee, self
-
-      prepend_activity do
-        delay while enemy.busy?
+  # We have moved; let all our enemies shoot at us.
+  def trigger_overwatches(tile)
+    @map.factions.each do |faction|
+      if faction.enemy? self.faction
+        faction.entities.each do |enemy|
+          if alive?
+            enemy.attempt_overwatch self
+            prepend_activity do
+              delay while enemy.busy?
+            end
+          end
+        end
       end
+    end
+  end
+
+  # Someone has moved into our view and we get to shoot them...
+  def attempt_overwatch(target)
+    if alive? and use_ability?(:ranged)
+      ranged = ability :ranged
+      range = manhattan_distance(target.tile)
+      if range.between?(ranged.min_range, ranged.max_range) and
+         line_of_sight_blocked_by(target.tile).nil?
+
+        parent.publish :game_info, "#{colorized_name} made a snap shot!"
+        use_ability :ranged, target
+      end
+    end
+  end
+
+  # TODO: Need to think of the best way to trigger this. It should only happen once, when you actually "first" move.
+  def trigger_zoc_melees(tile)
+    entities = tile.entities_exerting_zoc(self)
+    enemies = entities.find_all {|e| e.enemy? self }
+    enemies.each do |enemy|
+      if alive?
+        enemy.attempt_zoc_melee self
+        prepend_activity do
+          delay while enemy.busy?
+        end
+      end
+    end
+  end
+
+  # Someone has moved into, or out of, our ZoC.
+  def attempt_zoc_melee(target)
+    if alive? and use_ability?(:melee)
+      parent.publish :game_info, "#{colorized_name} got an attack of opportunity!"
+      use_ability :melee, target
     end
   end
 

@@ -85,6 +85,7 @@ describe SmashAndGrab::Abilities::Sprint do
         subject.instance_variable_set :@active, true
 
         # Now deactivate.
+        stub(@entity).max_action_points.returns 2
         stub(@entity).action_points.returns 0
         stub(@entity).max_movement_points.returns 5
         stub(@entity).movement_points.returns 10

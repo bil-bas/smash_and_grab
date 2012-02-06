@@ -23,11 +23,15 @@ module SmashAndGrab::Abilities
     public
     # Data saved with the character.
     def to_json(*a)
+      to_hash.to_json(*a)
+    end
+
+    def to_hash
       {
           type: type,
           skill: skill,
           action_cost: @action_cost,
-      }.to_json(*a)
+      }
     end
 
     public
@@ -126,6 +130,9 @@ module SmashAndGrab::Abilities
           target_position: target_tile.grid_position
       )
     end
+
+    protected
+    def target(data); owner.map.object_by_id(data[:target_id]); end
   end
 
   # An ability that requires that the actor be adjacent to the target
