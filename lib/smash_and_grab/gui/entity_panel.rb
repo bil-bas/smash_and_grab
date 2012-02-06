@@ -96,7 +96,7 @@ module SmashAndGrab
         @action_points.text = "AP: #{entity.ap} / #{entity.max_ap}"
 
         if entity.has_ability? :sprint
-          @movement_points.text += " +#{entity.ability(:sprint).movement_bonus}"
+          @movement_points.text += " + #{entity.ability(:sprint).movement_bonus}"
         end
 
         @ability_buttons.each do |ability, button|

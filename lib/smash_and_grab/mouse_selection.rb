@@ -128,6 +128,12 @@ class MouseSelection < GameObject
       color = (@hover_tile.empty? or @hover_tile.object.inactive?) ? Color::BLUE : Color::CYAN
       @mouse_hover_image.draw_rot @hover_tile.x, @hover_tile.y, ZOrder::TILE_SELECTION, 0, 0.5, 0.5, 1, 1, color
     end
+
+    # Make the stat-bars visible when hovering over something else.
+    if @hover_tile and not (selected and @hover_tile == selected.tile)
+      object = @hover_tile.object
+      object.draw_stat_bars 10000 if object.is_a? Objects::Entity and object.alive?
+    end
   end
 
   def left_click

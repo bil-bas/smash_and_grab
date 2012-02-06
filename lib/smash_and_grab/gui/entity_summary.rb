@@ -22,8 +22,8 @@ class EntitySummary < Fidgit::Vertical
 
       vertical padding: 0, spacing: 0 do
         @health = label "", font_height: 15
-        @movement_points = label "", font_height: 15
         @action_points = label "", font_height: 15
+        @movement_points = label "", font_height: 15
       end
     end
 

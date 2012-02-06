@@ -16,7 +16,7 @@
   :abilities:
     -
       :type: :melee
-      :skill: 4
+      :skill: 3
     -
       :type: :ranged
       :skill: 2
@@ -56,12 +56,12 @@
   :faction: :baddies
   :spritesheet_position: [1, 4]
   :movement_points: 8
-  :action_points: 3
+  :action_points: 2
   :health: 15
   :abilities:
     -
       :type: :melee
-      :skill: 5
+      :skill: 4
     -
       :type: :sprint
       :skill: 1
@@ -70,12 +70,12 @@
   :faction: :baddies
   :spritesheet_position: [0, 4]
   :movement_points: 5
-  :action_points: 3
+  :action_points: 1
   :health: 10
   :abilities:
     -
       :type: :melee
-      :skill: 4
+      :skill: 5
     -
       :type: :sprint
       :skill: 1
@@ -98,7 +98,7 @@
   :faction: :baddies
   :spritesheet_position: [7, 4]
   :movement_points: 7
-  :action_points: 1
+  :action_points: 2
   :health: 10
   :abilities:
     -
@@ -296,7 +296,7 @@
   :faction: :goodies
   :spritesheet_position: [3, 1]
   :movement_points: 8
-  :action_points: 3
+  :action_points: 2
   :health: 15
   :abilities:
     -
@@ -329,7 +329,7 @@
   :abilities:
     -
       :type: :melee
-      :skill: 5
+      :skill: 4
     -
       :type: :sprint
       :skill: 2

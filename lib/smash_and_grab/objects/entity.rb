@@ -16,6 +16,14 @@ class Entity < WorldObject
   SPRITE_WIDTH, SPRITE_HEIGHT = 66, 66
   PORTRAIT_WIDTH, PORTRAIT_HEIGHT = 36, 36
 
+  STATS_BACKGROUND_COLOR = Color::BLACK
+  STATS_HP_COLOR = Color.rgb(0, 200, 0)
+  STATS_MP_COLOR = Color.rgb(100, 100, 255)
+  STATS_AP_COLOR = Color::YELLOW
+  STATS_USED_COLOR = Color.rgb(100, 100, 100)
+  STATS_WIDTH = 12.0
+  STATS_HALF_WIDTH = STATS_WIDTH / 2
+
   class << self
     def config; @config ||= YAML.load_file(File.expand_path("config/map/entities.yml", EXTRACT_PATH)); end
     def types; config.keys; end
@@ -27,6 +35,9 @@ class Entity < WorldObject
 
   attr_reader :faction, :movement_points, :action_points, :health, :type, :portrait,
               :max_movement_points, :max_action_points, :max_health
+
+  alias_method :hp, :health
+  alias_method :max_hp, :max_health
 
   attr_writer :movement_points, :action_points
 
@@ -77,7 +88,6 @@ class Entity < WorldObject
 
     if config[:abilities]
       config[:abilities].each do |ability_data|
-        ability_data = ability_data
         @abilities[ability_data[:type]] = Abilities.ability(self, ability_data)
       end
     end
@@ -85,6 +95,11 @@ class Entity < WorldObject
     @queued_activities = []
 
     @faction << self
+
+    @stat_bars_record = nil
+    subscribe :changed do
+      @stat_bars_record = nil
+    end
   end
 
   def has_ability?(type); @abilities.has_key? type; end
@@ -112,6 +127,7 @@ class Entity < WorldObject
       @queued_activities.empty?
     end
   end
+  alias_method :hp=, :health=
 
   # Called from GameAction::Ability
   # Also used to un-melee :)
@@ -158,7 +174,39 @@ class Entity < WorldObject
   end
 
   def draw
-    super() if alive?
+    return unless alive?
+
+    super()
+
+    draw_stat_bars @y
+  end
+
+  def draw_stat_bars(zorder)
+    @stat_bars_record ||= $window.record 1, 1 do
+      # Draw background shadow.
+      height = 1
+      height += 1 if active?
+      height += 1 if max_ap > 0
+
+      $window.pixel.draw -0.5, -0.5, 0, STATS_WIDTH + 1, height + 1, STATS_BACKGROUND_COLOR
+
+      # Health.
+      $window.pixel.draw 0, 0, 0, STATS_WIDTH * health / max_health, 1, STATS_HP_COLOR
+
+      # Action points.
+      if max_ap > 0
+        pip_width = (STATS_WIDTH + 1 - max_ap) / max_ap
+        max_ap.times do |i|
+          color = i < ap ? STATS_AP_COLOR : STATS_USED_COLOR
+          $window.pixel.draw i * pip_width + i, 1, 0, pip_width, 1, color
+        end
+      end
+
+      # Movement points.
+      $window.pixel.draw 0, 2, 0, 12.0 * mp / max_mp, 1, STATS_MP_COLOR if active?
+    end
+
+    @stat_bars_record.draw @x - STATS_HALF_WIDTH, @y - 4, zorder
   end
 
   def friend?(character); @faction.friend? character.faction; end
