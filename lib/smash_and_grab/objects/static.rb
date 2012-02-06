@@ -12,7 +12,6 @@ class Static < WorldObject
   def inactive?; true; end
 
   def to_s; "<#{self.class.name}/#{@type}##{id} #{tile ? grid_position : "[off-map]"}>"; end
-  def name; @type.to_s.split("_").map(&:capitalize).join(" "); end
 
   class << self
     def config; @config ||= YAML.load_file(File.expand_path("config/map/objects.yml", EXTRACT_PATH)); end

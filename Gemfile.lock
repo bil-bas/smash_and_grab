@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    Smash and Grab (0.0.5alpha)
+    smash_and_grab (0.0.5alpha)
       chingu (~> 0.9rc7)
       fidgit (~> 0.2.0)
       gosu (~> 0.7.41)
@@ -55,7 +55,7 @@ PLATFORMS
   x86-mingw32
 
 DEPENDENCIES
-  Smash and Grab!
   bacon-rr (~> 0.1.0)
   rake (~> 0.9.2.2)
   releasy (~> 0.2.2)
+  smash_and_grab!

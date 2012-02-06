@@ -27,7 +27,7 @@ class PlayLevel < World
       player.faction.subscribe :turn_started do
         publish :game_heading, "=== Turn #{map.turn + 1} ===" if player == @players.first
         publish :game_info, ""
-        publish :game_heading, "#{player.faction}' turn (#{Inflector.demodulize player.class})"
+        publish :game_heading, player.faction.class::TEXT_COLOR.colorize("#{player.faction.name}' turn (#{Inflector.demodulize player.class})")
         publish :game_info, ""
       end
     end

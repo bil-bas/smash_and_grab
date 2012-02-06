@@ -55,8 +55,8 @@ class Entity < WorldObject
   alias_method :ap=, :action_points=
 
   def to_s; "<#{self.class.name}/#{@type}##{id} #{tile ? grid_position : "[off-map]"}>"; end
-  def name; @type.to_s.split("_").map(&:capitalize).join(" "); end
   def alive?; @health > 0 and @tile; end
+  def colorized_name; faction.class::TEXT_COLOR.colorize name; end
 
   def initialize(map, data)
     @type = data[:type]
@@ -126,7 +126,7 @@ class Entity < WorldObject
     end
 
     if @health == 0 and @tile
-      parent.publish :game_info, "#{name} was vanquished!"
+      parent.publish :game_info, "#{colorized_name} was vanquished!"
       self.tile = nil
       @queued_activities.empty?
     end
@@ -145,14 +145,14 @@ class Entity < WorldObject
 
         # Can be dead at this point if there were 2-3 attackers of opportunity!
         if target.alive?
-          parent.publish :game_info, "#{ACTOR_NAME_COLOR.colorize name} smashed #{TARGET_NAME_COLOR.colorize target.name} for {#{DAMAGE_NUMBER_COLOR.colorize damage}}"
+          parent.publish :game_info, "#{colorized_name} smashed #{target.colorized_name} for {#{DAMAGE_NUMBER_COLOR.colorize damage}}"
           target.health -= damage
 
           target.color = Color.rgb(255, 100, 100)
           delay 0.1
           target.color = Color::WHITE
         else
-          parent.publish :game_info, "#{name} kicked #{target.name} while they were down"
+          parent.publish :game_info, "#{colorized_name} kicked #{target.colorized_name} while they were down"
         end
       else # undo => heal
         target.color = Color.rgb(255, 100, 100)
@@ -445,7 +445,7 @@ class Entity < WorldObject
     enemies.each do |enemy|
       break unless alive? and enemy.alive?
 
-      parent.publish :game_info, "#{ACTOR_NAME_COLOR.colorize enemy.name} got an attack of opportunity!"
+      parent.publish :game_info, "#{enemy.colorized_name} got an attack of opportunity!"
 
       enemy.use_ability :melee, self
 

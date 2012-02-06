@@ -3,7 +3,7 @@ $LOAD_PATH.unshift File.expand_path("../lib", __FILE__)
 require "smash_and_grab/version"
 
 Gem::Specification.new do |s|
-  s.name = "Smash and Grab"
+  s.name = "smash_and_grab"
   s.version = SmashAndGrab::VERSION
 
   s.platform    = Gem::Platform::RUBY
