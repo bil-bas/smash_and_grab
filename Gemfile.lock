@@ -3,7 +3,7 @@ PATH
   specs:
     smash_and_grab (0.0.5alpha)
       chingu (~> 0.9rc7)
-      fidgit (~> 0.2.0)
+      fidgit (~> 0.2.1)
       gosu (~> 0.7.41)
       r18n-desktop (~> 0.4.14)
       texplay (~> 0.3)
@@ -23,7 +23,7 @@ GEM
     faster_xml_simple (0.5.0)
       libxml-ruby (>= 0.3.8.4)
     ffi (1.0.9-x86-mingw32)
-    fidgit (0.2.0)
+    fidgit (0.2.1)
       chingu (~> 0.9rc7)
       clipboard (~> 0.9.9)
       ffi (= 1.0.9)
