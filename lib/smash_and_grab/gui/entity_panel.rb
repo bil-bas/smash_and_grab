@@ -49,7 +49,7 @@ module SmashAndGrab
           text = nil
           scroll = scroll_window width: 350, height: 72 do
             text = text_area text: "#{@entity.name} once ate a pomegranate, but it took all day and all night... " * 5,
-                                  width: 330, font_height: 14, enabled: false
+                                  width: 330, font_height: 14, editable: false
           end
           scroll.background_color = text.background_color
         end

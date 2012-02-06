@@ -43,7 +43,7 @@ require 'chingu'
 
 require 'fidgit'
 Fidgit::Element.schema.merge_schema! YAML.load(File.read(File.expand_path('config/gui/schema.yml', EXTRACT_PATH)))
-require_folder("fidgit_ext", %w[event element container cursor])
+require_folder("fidgit_ext", %w[element container cursor])
 
 require 'texplay'
 require_folder('texplay_ext', %w[color image window])

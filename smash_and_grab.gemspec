@@ -3,7 +3,7 @@ $LOAD_PATH.unshift File.expand_path("../lib", __FILE__)
 require "smash_and_grab/version"
 
 Gem::Specification.new do |s|
-  s.name = "smash_and_grab"
+  s.name = "Smash and Grab"
   s.version = SmashAndGrab::VERSION
 
   s.platform    = Gem::Platform::RUBY
@@ -25,7 +25,7 @@ END
 
   s.add_runtime_dependency "gosu", "~> 0.7.41"
   s.add_runtime_dependency "chingu", "~> 0.9rc7"
-  s.add_runtime_dependency "fidgit", "~> 0.1.10"
+  s.add_runtime_dependency "fidgit", "~> 0.2.0"
   s.add_runtime_dependency "texplay", "~> 0.3"
   #s.add_runtime_dependency "r18n-desktop", "~> 0.4.9"
 

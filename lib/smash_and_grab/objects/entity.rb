@@ -24,6 +24,10 @@ class Entity < WorldObject
   STATS_WIDTH = 12.0
   STATS_HALF_WIDTH = STATS_WIDTH / 2
 
+  ACTOR_NAME_COLOR = Color.rgb(50, 200, 50)
+  TARGET_NAME_COLOR = Color.rgb(50, 200, 50)
+  DAMAGE_NUMBER_COLOR = Color::RED
+
   class << self
     def config; @config ||= YAML.load_file(File.expand_path("config/map/entities.yml", EXTRACT_PATH)); end
     def types; config.keys; end
@@ -141,7 +145,7 @@ class Entity < WorldObject
 
         # Can be dead at this point if there were 2-3 attackers of opportunity!
         if target.alive?
-          parent.publish :game_info, "#{name} smashed #{target.name} for {#{damage}}"
+          parent.publish :game_info, "#{ACTOR_NAME_COLOR.colorize name} smashed #{TARGET_NAME_COLOR.colorize target.name} for {#{DAMAGE_NUMBER_COLOR.colorize damage}}"
           target.health -= damage
 
           target.color = Color.rgb(255, 100, 100)
@@ -441,7 +445,7 @@ class Entity < WorldObject
     enemies.each do |enemy|
       break unless alive? and enemy.alive?
 
-      parent.publish :game_info, "#{enemy.name} got an attack of opportunity!"
+      parent.publish :game_info, "#{ACTOR_NAME_COLOR.colorize enemy.name} got an attack of opportunity!"
 
       enemy.use_ability :melee, self
 

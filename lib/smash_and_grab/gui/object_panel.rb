@@ -27,7 +27,7 @@ module SmashAndGrab
           Fidgit::Vertical.new padding: 0, spacing: 0 do
             scroll_window width: 350, height: 72 do
               text_area text: "#{@object.name} once was a pomegranate, but it got better... " * 10,
-                        background_color: Color::NONE, width: 330, font_height: 14
+                        background_color: Color::NONE, width: 330, font_height: 14, editable: false
             end
           end
         end
