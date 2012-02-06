@@ -90,13 +90,13 @@ class Entity < WorldObject
     raise @type unless image
 
     @max_movement_points = config[:movement_points]
-    @movement_points = [data[:movement_points] || Float::INFINITY, @max_movement_points].min
+    @movement_points = data[:movement_points] || @max_movement_points
 
     @max_action_points = config[:action_points]
-    @action_points = [data[:action_points] || Float::INFINITY, @max_action_points].min
+    @action_points = data[:action_points] || @max_action_points
 
     @max_health = config[:health]
-    @health = [data[:health] || Float::INFINITY, @max_health].min
+    @health = data[:health] || @max_health
 
     # Load other abilities of the entity from config.
     @abilities = {}

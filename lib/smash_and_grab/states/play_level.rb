@@ -32,6 +32,20 @@ class PlayLevel < World
       end
     end
 
+    # If loading a level, start the first turn, otherwise just keep going.
+    name = File.basename(file).chomp(File.extname(file))
+    if File.extname(file) == ".sgl"
+      publish :game_heading, "=== Started #{name} ==="
+      publish :game_info, ""
+      map.factions.first.start_turn
+    else
+      faction = map.active_faction
+      publish :game_heading, "=== Resuming #{name} in turn #{map.turn + 1} ==="
+      publish :game_info, ""
+      publish :game_heading,faction.class::TEXT_COLOR.colorize("#{faction.name}' turn (#{Inflector.demodulize faction.player.class})")
+      publish :game_info, ""
+    end
+
     save_game_as AUTOSAVE_FILE
 
     @mouse_selection = MouseSelection.new @map
