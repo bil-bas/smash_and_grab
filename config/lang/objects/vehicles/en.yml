@@ -1,0 +1,11 @@
+---
+
+Vehicle:
+  ambulance_car:
+    name: Ambulance
+
+  tank:
+    name: Tank
+
+  cop_car:
+    name: Police cruiser

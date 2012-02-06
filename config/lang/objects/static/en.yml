@@ -1,0 +1,8 @@
+---
+
+Static:
+  bag_of_money:
+    name: Bag of money
+
+  tree:
+    name: Tree

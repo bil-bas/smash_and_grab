@@ -27,7 +27,7 @@ END
   s.add_runtime_dependency "chingu", "~> 0.9rc7"
   s.add_runtime_dependency "fidgit", "~> 0.2.0"
   s.add_runtime_dependency "texplay", "~> 0.3"
-  #s.add_runtime_dependency "r18n-desktop", "~> 0.4.9"
+  s.add_runtime_dependency "r18n-desktop", "~> 0.4.14"
 
   s.add_development_dependency "releasy", "~> 0.2.2"
   s.add_development_dependency "rake", "~> 0.9.2.2"

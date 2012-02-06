@@ -19,7 +19,9 @@ class WorldObject < GameObject
   def exerts_zoc?; false; end
   def fills_tile_on_minimap?; false; end
   def casts_shadow?; true; end
-  def name; @type.to_s.split("_").map(&:capitalize).join(" "); end
+
+  def t; R18n.get.t[Inflector.demodulize self.class.name][type]; end
+  def name; t.name; end
   def colorized_name; name; end
 
   OUTLINE_SCALE = Image::THIN_OUTLINE_SCALE

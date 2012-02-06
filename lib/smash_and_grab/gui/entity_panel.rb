@@ -1,6 +1,8 @@
 module SmashAndGrab
   module Gui
     class EntityPanel < Fidgit::Horizontal
+      TITLE_COLOR = Color.rgb(150, 150, 150)
+
       event :info_toggled
 
       def initialize(entity, info_shown, options = {})
@@ -25,8 +27,9 @@ module SmashAndGrab
           end
         end
 
-        vertical padding: 0, spacing: 4 do
-          @name = label @entity.name
+        vertical padding: 0, spacing: 1.5 do
+          @name = label @entity.name, font_height: 20
+          label TITLE_COLOR.colorize("#{entity.title} - #{@entity.faction.colorized_name}"), font_height: 12
           @sub_panel_container = vertical spacing: 0, padding: 0
         end
 

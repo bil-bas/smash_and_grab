@@ -5,6 +5,7 @@ PATH
       chingu (~> 0.9rc7)
       fidgit (~> 0.2.0)
       gosu (~> 0.7.41)
+      r18n-desktop (~> 0.4.14)
       texplay (~> 0.3)
 
 GEM
@@ -38,6 +39,9 @@ GEM
       nokogiri (>= 1.4.0)
     nokogiri (1.5.0-x86-mingw32)
     ocra (1.3.0)
+    r18n-core (0.4.14)
+    r18n-desktop (0.4.14)
+      r18n-core (= 0.4.14)
     rake (0.9.2.2)
     releasy (0.2.2)
       cri (~> 2.1.0)

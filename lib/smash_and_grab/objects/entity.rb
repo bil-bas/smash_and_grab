@@ -56,6 +56,7 @@ class Entity < WorldObject
 
   def to_s; "<#{self.class.name}/#{@type}##{id} #{tile ? grid_position : "[off-map]"}>"; end
   def alive?; @health > 0 and @tile; end
+  def title; t.title; end
   def colorized_name; faction.class::TEXT_COLOR.colorize name; end
 
   def initialize(map, data)

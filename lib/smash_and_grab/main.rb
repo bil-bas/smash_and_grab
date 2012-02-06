@@ -39,6 +39,9 @@ require 'syck' # Required for unknown reason, when ocraed!
 require 'gosu'
 require_folder('gosu_ext', %w[font])
 
+require 'r18n-desktop'
+R18n.from_env File.join(EXTRACT_PATH, 'config/lang'), Gosu.language
+
 require 'chingu'
 
 require 'fidgit'

@@ -1,0 +1,134 @@
+---
+
+Entity:
+  # Entities are mobile people and creatures, which can be moved by player/AI.
+  
+  # === BADDIES ===
+  
+  # - Supervillains -
+  
+  green_goddess:
+    name: Green Goddess
+    title: Nefarious ninja from Nebraska
+  
+  octobrain: # Scientist with giant brain.
+    name: Octobrain
+    title: Mastermind with the brains of eight men
+  
+  femme_fatale: # Woman in red dress.
+    name: Felicity X
+    title: Scheming Femme Fatale
+  
+  radioactive_gorilla:
+    name: Atomape
+    title: Radioactive gorrila
+  
+  robot:
+    name: Rbt. 99
+    title: '"Robert" - Deranged automaton'
+  
+  artist:
+    name: The Painter
+    title: Fine art forger
+  
+  invisible_man:
+    name: Hiro Nosimi
+    title: Invisible man
+  
+  professor_goggles:
+    name: Professor Goggles
+    title: Demented scientist
+  
+  # - Minions -
+  
+  # === GOODIES ===
+  
+  # - Cops, G-men and Soldiers -
+  
+  cop_with_gun:
+    name: Cop
+    title: Law enforcement
+  
+  g_man_coat_with_gun:
+    name: G-Man
+    title: Federal agent
+  
+  g_man_shirt_with_gun:
+    name: G-Man
+    title: Federal agent
+  
+  soldier_with_gun:
+    name: Soldier
+    title: Military
+  
+  soldier_with_bazooka:
+    name: Bazooka soldier
+    title: Military
+  
+  # - Superheroes -
+  
+  catman:
+    name: Cat Man
+    title: Notorious cat burgler
+  
+  femme_fatale2: # Woman in green dress.
+    name: Olivia Dupres
+    title: Femme Fatale
+  
+  homerun: # Baseball player
+    name: Homerun
+    title: Retired baseball legend
+  
+  moleman:
+    name: The Mole Man
+    title: Infiltrator
+  
+  mountie: # Canadian Mountie.
+    name: The Mountie
+    title: Foreign law enforcement who lost his horse
+  
+  spandexman: # Guy in red spandex.
+    name: Spandexman
+    title: Legendary superhero
+  
+  stinger: # Wasp-lady
+    name: Stinger
+    title: Waspish beatnick
+  
+  knockout: # Boxer.
+    name: Knock-out
+    title: Has-been pugilist
+  
+  # === BYSTANDERS ===
+  
+  # - Newspaper -
+  
+  boy_selling_papers:
+    name: Paper-boy
+    title: Read all about it!
+  
+  editor:
+    name: "O'Malley"
+    title: Editor for the Daily Clarion
+  
+  photographer:
+    name: Peter Panto
+    title: Works for the Daily Clarion
+  
+  reporter:
+    name: Clara Kandinski
+    title: Reporter for the Daily Clarion
+  
+  # - Other innocents and children
+  
+  assistant:
+    name: Beril Neville
+    title: Assistant scientist
+  
+  boy_with_slingshot:
+    name: Sam
+    title: Mischievious tomboy with slingshot
+  
+  girl_with_balloon:
+    name: Sue
+    title: Has a nice balloon
