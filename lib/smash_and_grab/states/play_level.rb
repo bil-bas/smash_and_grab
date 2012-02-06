@@ -139,10 +139,10 @@ class PlayLevel < World
 
     @turn_label.text = "Turn: #{@map.turn + 1} (#{@map.active_faction})"
 
-    human = @map.active_faction.player.is_a? Players::Human
-    @end_turn_button.enabled = human
-    @undo_button.enabled = human && @map.actions.can_undo?
-    @redo_button.enabled = human && @map.actions.can_redo?
+    usable = @map.active_faction.player.is_a?(Players::Human) && !@map.busy?
+    @end_turn_button.enabled = usable
+    @undo_button.enabled = usable && @map.actions.can_undo?
+    @redo_button.enabled = usable && @map.actions.can_redo?
   end
 
   def quickload
