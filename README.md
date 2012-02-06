@@ -3,6 +3,7 @@ Smash and Grab
 
 * [Website](http://spooner.github.com/games/smash_and_grab/)
 * The game was developed by Spooner (Bil Bas) bil.bagpuss@gmail.com
+* License: MIT
 
 Description
 -----------
