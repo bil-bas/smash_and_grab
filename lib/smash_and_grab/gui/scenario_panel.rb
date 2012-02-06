@@ -16,6 +16,10 @@ module SmashAndGrab
           @game_log = GameLog.new(state, parent: self)
         end
       end
+
+      def finalize
+        # Don't need to clean up.
+      end
     end
   end
 end

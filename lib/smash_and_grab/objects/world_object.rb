@@ -96,10 +96,8 @@ class WorldObject < GameObject
   def active?; false; end
 
   def destroy
-    self.tile = nil
     map.remove self
-
-    publish :changed
+    self.tile = nil
 
     super
   end

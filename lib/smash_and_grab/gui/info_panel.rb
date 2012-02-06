@@ -25,7 +25,8 @@ module SmashAndGrab
 
       def object=(object)
         return if @object == object
-        @scenario_panel.parent = nil
+
+        @frame.each(&:finalize)
 
         @frame.clear
         case object

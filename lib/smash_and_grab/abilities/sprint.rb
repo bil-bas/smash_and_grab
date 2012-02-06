@@ -1,9 +1,13 @@
 require_relative "ability"
 
 module SmashAndGrab::Abilities
-  class Sprint < SelfAbility
+  class Sprint < ToggleAbility
     def initialize(owner, data)
       super(owner, data.merge(action_cost: :all))
+
+      owner.subscribe :ended_turn do
+        @active = false
+      end
     end
 
     def movement_bonus
@@ -31,16 +35,16 @@ module SmashAndGrab::Abilities
       )
     end
 
-    def do(data)
-      super(data)
-
+    protected
+    def activate(data)
+      super
       owner.movement_points += data[:movement_bonus]
     end
 
-    def undo(data)
+    protected
+    def deactivate(data)
+      super
       owner.movement_points -= data[:movement_bonus]
-
-      super(data)
     end
   end
 end

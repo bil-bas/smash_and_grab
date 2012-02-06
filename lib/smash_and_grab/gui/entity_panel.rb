@@ -28,7 +28,7 @@ module SmashAndGrab
         end
 
         vertical padding: 0, spacing: 1.5 do
-          @name = label @entity.name, font_height: 20
+          @name = label @entity.name, font_height: 20, color: Color::WHITE
           label TITLE_COLOR.colorize("#{entity.title} - #{@entity.faction.colorized_name}"), font_height: 12
           @sub_panel_container = vertical spacing: 0, padding: 0
         end
@@ -39,7 +39,11 @@ module SmashAndGrab
 
         update_details @entity
 
-        @entity.subscribe :changed, method(:update_details)
+        @changed_event = @entity.subscribe :changed, method(:update_details)
+      end
+
+      def finalize
+        @changed_event.unsubscribe
       end
 
       def switch_sub_panel
@@ -50,7 +54,7 @@ module SmashAndGrab
       def create_info_sub_panel
         @info_sub_panel = Fidgit::Vertical.new padding: 0, spacing: 0 do
           text = nil
-          scroll = scroll_window width: 350, height: 72 do
+          scroll = scroll_window width: 350, height: 68 do
             text = text_area text: "#{@entity.name} once ate a pomegranate, but it took all day and all night... " * 5,
                                   width: 330, font_height: 14, editable: false
           end
@@ -79,7 +83,9 @@ module SmashAndGrab
                 @ability_buttons[ability_name] = button("#{ability_name.to_s[0].upcase}#{ability.skill}",
                                                         button_options.merge(tip: ability.tip)) do
 
-                  @entity.use_ability :sprint if ability_name == :sprint
+                  if ability_name == :sprint
+                    @entity.use_ability :sprint
+                  end
                 end
               else
                 label "", label_options
@@ -103,7 +109,12 @@ module SmashAndGrab
         end
 
         @ability_buttons.each do |ability, button|
-          button.enabled = (entity.active? and (entity.has_ability?(ability) and entity.action_points >= entity.ability(ability).action_cost))
+          button.enabled = entity.active? && entity.faction.player.is_a?(Players::Human) && entity.use_ability?(ability)
+
+          # TODO: this should be more sensible (allows un-sprinting).
+          if ability == :sprint && entity.active? && entity.faction.player.is_a?(Players::Human) && entity.ability(ability).deactivate?
+            button.enabled = true
+          end
         end
 
         @portrait.image = entity.image

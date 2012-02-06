@@ -35,6 +35,9 @@ class Entity < WorldObject
     def portraits; @portraits ||= SpriteSheet.new("entity_portraits.png", PORTRAIT_WIDTH, PORTRAIT_HEIGHT, 8); end
   end
 
+  event :ended_turn
+  event :started_turn
+
   def_delegators :@faction, :minimap_color, :active?, :inactive?
 
   attr_reader :faction, :movement_points, :action_points, :health, :type, :portrait,
@@ -43,7 +46,17 @@ class Entity < WorldObject
   alias_method :hp, :health
   alias_method :max_hp, :max_health
 
-  attr_writer :movement_points, :action_points
+  def movement_points=(movement_points)
+    @movement_points = movement_points
+    publish :changed
+    @movement_points
+  end
+
+  def action_points=(action_points)
+    @action_points = action_points
+    publish :changed
+    @action_points
+  end
 
   alias_method :max_mp, :max_movement_points
   alias_method :max_ap, :max_action_points
@@ -131,6 +144,8 @@ class Entity < WorldObject
       self.tile = nil
       @queued_activities.empty?
     end
+
+    @health
   end
   alias_method :hp=, :health=
 
@@ -169,13 +184,13 @@ class Entity < WorldObject
   end
 
   def start_turn
-    @movement_points = @max_movement_points
-    @action_points = @max_action_points
-    publish :changed
+    self.movement_points = @max_movement_points
+    self.action_points = @max_action_points
+    publish :started_turn
   end
 
   def end_turn
-    # Do something?
+    publish :ended_turn
   end
 
   def draw
@@ -371,9 +386,9 @@ class Entity < WorldObject
   end
 
   def clear_activities
-    has_activities = @queued_activities.any?
+    had_activities = @queued_activities.any?
     @queued_activities.clear
-    publish :changed if has_activities # Means busy? changed from true to false.
+    publish :changed if had_activities # Means busy? changed from true to false.
   end
 
   def busy?
@@ -526,7 +541,6 @@ class Entity < WorldObject
   def use_ability(name, *args)
     raise "#{self} does not have ability: #{name.inspect}" unless has_ability? name
     map.actions.do :ability, ability(name).action_data(*args)
-    publish :changed
   end
 
   def use_ability?(name)

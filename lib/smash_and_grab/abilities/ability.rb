@@ -57,6 +57,8 @@ module SmashAndGrab::Abilities
   # Ability that has an effect every turn.
   # @abstract
   class ContinuousAbility < Ability
+    def active?; @active; end
+
     def initialize(owner, data)
       @active = data[:active]
       super(owner, data)
@@ -74,8 +76,35 @@ module SmashAndGrab::Abilities
   # An ability that has an effect, but the player can turn it on and off. e.g. Invisibility.
   # @abstract
   class ToggleAbility < ContinuousAbility
+    def activate?; owner.action_points >= action_cost and not active?; end
+    def deactivate?; owner.movement_points >= movement_bonus and active?; end
+
     def initialize(owner, data)
       super(owner, { active: false }.merge!(data))
+    end
+
+    def do(data)
+      if active?
+        deactivate data
+      else
+        activate data
+      end
+    end
+
+    def undo(data)
+      self.do data # Effect is based on current state, not on whether it is done or undone.
+    end
+
+    protected
+    def activate(data)
+      owner.action_points -= action_cost
+      @active = true
+    end
+
+    protected
+    def deactivate(data)
+      owner.action_points += action_cost
+      @active = false
     end
   end
 

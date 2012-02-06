@@ -36,6 +36,7 @@ class EntitySummary < Fidgit::Vertical
     @movement_points.text = "MP: #{entity.mp}"
     @action_points.text = "AP: #{entity.ap}"
     @portrait.image = entity.portrait
+    @name.color = entity.alive? ? Color::WHITE : Color::GRAY
   end
 
   public

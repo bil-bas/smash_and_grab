@@ -61,7 +61,7 @@ class PlayLevel < World
       @button_box = vertical parent: container, padding: 4, spacing: 8, width: 150, background_color: Color::BLACK do
         @turn_label = label " ", font_height: 14
 
-        button "End turn" do
+        @end_turn_button = button "End turn" do
           end_turn
         end
 
@@ -96,7 +96,7 @@ class PlayLevel < World
     selection = @mouse_selection.selected
     @mouse_selection.selected = nil
     @map.actions.redo if @map.actions.can_redo?
-    @mouse_selection.selected =sd selection if selection
+    @mouse_selection.selected = selection if selection
   end
 
   def map=(map)
@@ -139,8 +139,10 @@ class PlayLevel < World
 
     @turn_label.text = "Turn: #{@map.turn + 1} (#{@map.active_faction})"
 
-    @undo_button.enabled = @map.actions.can_undo?
-    @redo_button.enabled = @map.actions.can_redo?
+    human = @map.active_faction.player.is_a? Players::Human
+    @end_turn_button.enabled = human
+    @undo_button.enabled = human && @map.actions.can_undo?
+    @redo_button.enabled = human && @map.actions.can_redo?
   end
 
   def quickload
