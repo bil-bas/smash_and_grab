@@ -4,6 +4,18 @@ class Tile < GameObject
 
   WIDTH, HEIGHT = 32, 16
 
+  #   X
+  #  / \
+  # X T X  <- this tile
+  #  \ /   <- covered by any wall here
+  #   X
+  #  / \   <- covered by wall height 1+ here
+  # X   X
+  #  \ /   <- covered by wall height 1+ here
+  #   X
+  #   X
+  #  / \   <- covered by wall height 2+ here
+  #
   # x, y, direction to cause occlusion.
   WALL_OCCLUSION_POSITIONS = [
       [[ 0,  0], :left],
