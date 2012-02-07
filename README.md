@@ -62,25 +62,25 @@ Move your supervillains around until you win!
 
 ### Implemented game features
 
-* Your Villains can:
+* All characters can:
+    - get reactive melee attacks from an enemy entering OR leaving an adjacent tile (won't attack through walls :) )
+    - make ranged shots against anyone moving in their LoS and within range (shoots through walls :( ).
+    - NOT make voluntary ranged attacks.
+
+* You can control your Baddies to:
     - move around.
     - melee with enemies (Goodies or Bystanders).
-    - sprint to get extra movement (sacrificing all actions for that turn).
-    - get reactive melee attacks from ZoC.
+    - sprint to get extra movement (sacrificing all actions for that turn). Can be cancelled at any time (if you have enough MP left).
 
-* Zones of Control:
-    - Enemies project a ZoC into adjacent tiles IF they have enough actions left to melee.
-    - Entering or leaving a ZoC triggers a melee attack, which will occur before the mover can attack!
+* Goodies AI can:
+    - melee with a Villain in range or move aimlessly.
 
-* Goodies will:
-    - attack if they can or wander aimlessly in their turn.
-    - Get reactive melee attacks from ZoC.
-
-* Bystanders will wander aimlessly in their turn.
+* Bystander AI can:
+    - wander aimlessly in their turn.
 
 * Scroll map with keyboard arrows; zoom with mouse wheel.
 * Saving/loading (F5/F6) of state in Editor & Game.
-* Undo/Redo (Ctrl-Z/Ctrl-Shift-Z)support in both Editor and Game (can't take back attacks though, since they are non-deterministic).
+* Undo/Redo (Ctrl-Z/Ctrl-Shift-Z) support in both Editor and Game (can't take back attacks though, since they are non-deterministic).
 
 ### Implemented editor features
 

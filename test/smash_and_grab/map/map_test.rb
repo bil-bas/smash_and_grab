@@ -9,7 +9,7 @@ describe SmashAndGrab::Map do
             "id" => 0,
             "health" => 8,
             "movement_points" => 7,
-            "action_points" => 1,
+            "action_points" => 2,
             "facing" => "left",
             "tile" => [
                 1,

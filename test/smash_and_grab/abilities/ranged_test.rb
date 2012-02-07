@@ -9,12 +9,12 @@ describe SmashAndGrab::Abilities::Ranged do
     @tile = SmashAndGrab::Tile.new(:grass, nil, 1, 2)
   end
 
-  subject { SmashAndGrab::Abilities.ability @entity, type: :ranged, skill: 5, min_range: 2, max_range: 5 }
+  subject { SmashAndGrab::Abilities.ability @entity, type: :ranged, skill: 5, max_range: 5 }
 
   behaves_like SmashAndGrab::Abilities::Ability
 
   should "fail if not given the required arguments" do
-    ->{ SmashAndGrab::Abilities.ability @entity, type: :ranged }.should.raise(ArgumentError).message.should.match /No skill value for/
+    ->{ SmashAndGrab::Abilities.ability @entity, type: :ranged }.should.raise(ArgumentError).message.should.match /no :max_range specified/
   end
 
   should "be initialized" do

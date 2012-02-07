@@ -486,6 +486,25 @@ class Entity < WorldObject
     nil
   end
 
+  def potential_ranged
+    tiles = []
+
+    if use_ability? :ranged
+      ranged = ability :ranged
+      min, max = ranged.min_range, ranged.max_range
+      ((grid_x - max)..(grid_x + max)).each do |x|
+        ((grid_y - max)..(grid_y + max)).each do |y|
+          tile = map.tile_at_grid(x, y)
+          if tile and manhattan_distance(tile).between?(min, max) and line_of_sight? tile
+            tiles << tile
+          end
+        end
+      end
+    end
+
+    tiles
+  end
+
   def manhattan_distance(tile)
     (tile.grid_x - grid_x).abs + (tile.grid_y - grid_y).abs
   end

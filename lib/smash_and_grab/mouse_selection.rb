@@ -11,6 +11,7 @@ class MouseSelection < GameObject
     @map = map
 
     @potential_moves = []
+    @potential_ranged = []
 
     @selected_image = Image["tile_selection.png"]
     @mouse_hover_image = Image["mouse_hover.png"]
@@ -18,6 +19,7 @@ class MouseSelection < GameObject
     @selected = @hover_tile = nil
     @path = nil
     @moves_record = nil
+    @ranged_record = nil
     @selected_changed_handler = nil
 
     super(options)
@@ -77,6 +79,8 @@ class MouseSelection < GameObject
     else
       modify_occlusions @potential_moves, +1
       @potential_moves.clear
+      modify_occlusions @potential_ranged, +1
+      @potential_ranged.clear
     end
   end
 
@@ -109,6 +113,23 @@ class MouseSelection < GameObject
     end
   end
 
+  def calculate_potential_ranged
+    modify_occlusions @potential_ranged, -1
+    @potential_ranged = selected.potential_ranged
+    modify_occlusions @potential_ranged, +1
+
+    # Draw a mark on all tiles that could be affected by ranged attack.
+    @ranged_record = if @potential_ranged.empty?
+      nil
+    else
+      $window.record 1, 1 do
+        @potential_ranged.each do |tile|
+          Tile.blank.draw_rot tile.x, tile.y, 0, 0, 0.5, 0.5, 0.3, 0.3, ZOC_COLOR
+        end
+      end
+    end
+  end
+
   def modify_occlusions(tiles, amount)
     Array(tiles).each do |tile|
       tile.modify_occlusions amount
@@ -132,6 +153,7 @@ class MouseSelection < GameObject
 
       # Highlight all squares that character can travel to.
       @moves_record.draw 0, 0, ZOrder::TILE_SELECTION if @moves_record
+      @ranged_record.draw 0, 0, ZOrder::TILE_SELECTION if @ranged_record
       @path.draw if @path
 
     elsif @hover_tile
@@ -166,6 +188,7 @@ class MouseSelection < GameObject
 
       calculate_path
       calculate_potential_moves
+      calculate_potential_ranged
     elsif @hover_tile and @hover_tile.object
       # Select a character to move.
       self.selected = @hover_tile.object
@@ -174,13 +197,17 @@ class MouseSelection < GameObject
 
   def recalculate
     @moves_record = nil
+    @ranged_record = nil
 
     if selected and selected_can_be_controlled?
       calculate_path
       calculate_potential_moves
+      calculate_potential_ranged
     else
       modify_occlusions @potential_moves, -1
       @potential_moves.clear
+      modify_occlusions @potential_ranged, -1
+      @potential_ranged.clear
 
       modify_occlusions @path.tiles, -1 if @path
       @path = nil

@@ -20,7 +20,6 @@
     -
       :type: :ranged
       :skill: 2
-      :min_range: 2
       :max_range: 5
     -
       :type: :sprint
@@ -112,12 +111,16 @@
   :faction: :baddies
   :spritesheet_position: [2, 4]
   :movement_points: 7
-  :action_points: 1
+  :action_points: 2
   :health: 8
   :abilities:
     -
       :type: :melee
       :skill: 2
+    -
+      :type: :ranged
+      :skill: 4
+      :max_range: 10
     -
       :type: :sprint
       :skill: 2
@@ -141,7 +144,6 @@
     -
       :type: :ranged
       :skill: 2
-      :min_range: 2
       :max_range: 6
     -
       :type: :sprint
@@ -160,7 +162,6 @@
     -
       :type: :ranged
       :skill: 2
-      :min_range: 2
       :max_range: 8
     -
       :type: :sprint
@@ -179,7 +180,6 @@
     -
       :type: :ranged
       :skill: 2
-      :min_range: 2
       :max_range: 8
     -
       :type: :sprint

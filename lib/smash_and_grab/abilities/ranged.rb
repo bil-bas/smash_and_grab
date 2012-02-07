@@ -10,9 +10,15 @@ module SmashAndGrab::Abilities
     def target_valid?(tile); !!(tile.object.is_a?(Objects::Entity) and tile.object.enemy?(owner)); end
 
     def initialize(owner, data)
-      super(owner, data.merge(action_cost: 1))
+      data = {
+          action_cost: 1,
+          min_range: 2 # Can't fire at adjacent (melee) squares.
+      }.merge data
+
+      @min_range = data[:min_range]
       @max_range = data[:max_range] || raise(ArgumentError, "no :max_range specified")
-      @min_range = data[:min_range] || raise(ArgumentError, "no :min_range specified")
+
+      super(owner, data)
     end
 
     def tip
