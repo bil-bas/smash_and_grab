@@ -23,6 +23,7 @@ class WorldObject < GameObject
   def t; R18n.get.t[Inflector.demodulize self.class.name][type]; end
   def name; t.name; end
   def colorized_name; name; end
+  def base_color; Color::BLUE; end
 
   OUTLINE_SCALE = Image::THIN_OUTLINE_SCALE
 

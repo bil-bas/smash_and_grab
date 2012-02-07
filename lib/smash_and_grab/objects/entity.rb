@@ -23,15 +23,21 @@ class Entity < WorldObject
 
   STATS_BACKGROUND_COLOR = Color::BLACK
   STATS_HP_COLOR = Color.rgb(0, 200, 0)
-  STATS_MP_COLOR = Color.rgb(100, 100, 255)
+  STATS_MP_COLOR = Color::rgb(50, 50, 255)
   STATS_AP_COLOR = Color::YELLOW
-  STATS_USED_COLOR = Color.rgb(100, 100, 100)
+  STATS_USED_COLOR = Color.rgb(70, 70, 70)
   STATS_WIDTH = 12.0
   STATS_HALF_WIDTH = STATS_WIDTH / 2
 
   ACTOR_NAME_COLOR = Color.rgb(50, 200, 50)
   TARGET_NAME_COLOR = Color.rgb(50, 200, 50)
   DAMAGE_NUMBER_COLOR = Color::RED
+
+  COLOR_ACTIVE = Color::rgb(255, 255, 255)
+  COLOR_ACTIVE_NO_MOVE = STATS_AP_COLOR
+  COLOR_ACTIVE_NO_ACTION = STATS_MP_COLOR
+  COLOR_ACTIVE_FINISHED = STATS_USED_COLOR
+  COLOR_INACTIVE = Color::BLACK
 
   class << self
     def config; @config ||= YAML.load_file(File.expand_path("config/map/entities.yml", EXTRACT_PATH)); end
@@ -227,8 +233,27 @@ class Entity < WorldObject
     publish :ended_turn
   end
 
+  # Color of circular base you stand on.
+  def base_color
+    if active?
+      if move?
+        ap > 0 ? COLOR_ACTIVE : COLOR_ACTIVE_NO_ACTION
+      else
+        ap > 0 ? COLOR_ACTIVE_NO_MOVE : COLOR_ACTIVE_FINISHED
+      end
+    else
+      COLOR_INACTIVE
+    end
+  end
+
   def draw
     return unless alive?
+
+    if active?
+      color = base_color.dup
+      color.alpha = 60
+      Image["tile_selection.png"].draw_rot x, y, y, 0, 0.5, 0.5, 1, 1, color
+    end
 
     super()
 
@@ -245,7 +270,8 @@ class Entity < WorldObject
       $window.pixel.draw -0.5, -0.5, 0, STATS_WIDTH + 1, height + 1, STATS_BACKGROUND_COLOR
 
       # Health.
-      $window.pixel.draw 0, 0, 0, STATS_WIDTH * health / max_health, 1, STATS_HP_COLOR
+      $window.pixel.draw 0, 0, 0, STATS_WIDTH, 1, STATS_USED_COLOR
+      $window.pixel.draw 0, 0, 0, STATS_WIDTH * health / [health, max_health].max, 1, STATS_HP_COLOR
 
       # Action points.
       if max_ap > 0
@@ -257,7 +283,11 @@ class Entity < WorldObject
       end
 
       # Movement points.
-      $window.pixel.draw 0, 2, 0, 12.0 * mp / max_mp, 1, STATS_MP_COLOR if active?
+      if active?
+        $window.pixel.draw 0, 2, 0, STATS_WIDTH, 1, STATS_USED_COLOR
+
+        $window.pixel.draw 0, 2, 0, 12.0 * mp / [mp, max_mp].max, 1, STATS_MP_COLOR if active?
+      end
     end
 
     @stat_bars_record.draw @x - STATS_HALF_WIDTH, @y - 4, zorder

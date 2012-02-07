@@ -64,7 +64,7 @@ class Path
             end
 
         color = if tile == first or tiles_within_range.include?(tile)
-          Color::GREEN
+          Color.rgb(50, 50, 255)
         else
           Color::BLACK
         end

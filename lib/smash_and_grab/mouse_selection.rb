@@ -2,7 +2,7 @@ module SmashAndGrab
 class MouseSelection < GameObject
   attr_reader :selected, :hover_tile
 
-  MOVE_COLOR = Color.rgba(0, 255, 0, 60)
+  MOVE_COLOR = Color.rgba(50, 50, 255, 60)
   POTENTIAL_ATTACK_COLOR = Color.rgba(255, 255, 255, 100)
   RANGED_EYE_COLOR = Color.rgba(255, 255, 255, 30)
   NO_MOVE_COLOR = Color.rgba(255, 0, 0, 30)
@@ -163,17 +163,7 @@ class MouseSelection < GameObject
   def draw
     # Draw a disc under the selected object.
     if selected and selected.tile
-      selected_color = if selected.is_a? Objects::Entity
-                         if selected_can_be_controlled? and selected.move?
-                           Color::GREEN
-                         else
-                           Color::BLACK
-                         end
-                        else
-                          Color::BLUE
-                        end
-
-      @selected_image.draw_rot selected.tile.x, selected.tile.y, ZOrder::TILE_SELECTION, 0, 0.5, 0.5, 1, 1, selected_color
+      @selected_image.draw_rot selected.tile.x, selected.tile.y, ZOrder::TILE_SELECTION, 0, 0.5, 0.5, 1, 1, selected.base_color
 
       # Highlight all squares that character can travel to.
       @moves_record.draw 0, 0, ZOrder::TILE_SELECTION if @moves_record
