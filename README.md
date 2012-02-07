@@ -62,22 +62,24 @@ Move your supervillains around until you win!
 
 ### Implemented game features
 
-* All characters can:
-    - get reactive melee attacks from an enemy entering OR leaving an adjacent tile (won't attack through walls :) )
-    - make ranged shots against anyone moving in their LoS and within range (shoots through walls :( ).
+* Play in single-player (Human vs. AI), hot-seat (Human vs. Human) or AI vs. AI modes.
 
-* You can control your Baddies to:
+* All characters can:
+    - get reactive melee attacks from an enemy entering OR leaving an adjacent tile.
+    - make ranged shots against anyone moving in their LoS and within range.
+
+* You can control your Baddies and/or Goodies to:
     - move around.
-    - melee with enemies (Goodies or Bystanders).
-    - shoot enemies if they are in LoS (shoots through walls :( )
+    - melee with enemies (Baddies => Goodies or Bystanders, Goodies => Baddies).
+    - shoot enemies within range and LoS.
     - sprint to get extra movement (sacrificing all actions for that turn). Can be cancelled at any time (if you have enough MP left).
 
-* Goodies AI can:
-    - charge into melee with a Villain in range.
-    - shoot a Villain within range.
+* Goodies/Baddies AI can:
+    - charge into melee with an enemy in range.
+    - shoot an enemy within range and LoS.
     - move aimlessly.
 
-* Bystander AI can:
+* Bystanders AI can:
     - wander aimlessly in their turn.
 
 * Scroll map with keyboard arrows; zoom with mouse wheel.

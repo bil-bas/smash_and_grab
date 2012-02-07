@@ -2,14 +2,15 @@ module SmashAndGrab
   module Mixins
     module LineOfSight
       #
-      def line_of_sight?(tile)
-        !line_of_sight_blocked_by(tile)
+      def line_of_sight?(target_tile)
+        !line_of_sight_blocked_by(target_tile)
       end
 
       # Returns the tile that blocks sight, otherwise nil.
       # Implements 'Bresenham's line algorithm'
+      # @return [Tile, Wall, nil]
       def line_of_sight_blocked_by(target_tile)
-        start_tile = tile
+        raise unless target_tile.is_a? Tile
 
         # Check for the special case of looking diagonally.
         x1, y1 = tile.grid_x, tile.grid_y
@@ -20,52 +21,101 @@ module SmashAndGrab
         dx, dy = (x2 - x1).abs, (y2 - y1).abs
 
         if dx == dy
-          # Special case of the diagonal line.
-          (dx - 1).times do
-            x1 += step_x
-            y1 += step_y
-
-            # If the centre tile is blocked, then we don't work.
-            tile = @map.tile_at_grid(x1, y1)
-            if tile.blocks_sight?
-              #Tile.blank.draw_rot tile.x, tile.y, ZOrder::TILE_SELECTION, 0, 0.5, 0.5, 1, 1, Color::RED
-              return tile
-            else
-              #Tile.blank.draw_rot tile.x, tile.y, ZOrder::TILE_SELECTION, 0, 0.5, 0.5, 1, 1, Color::BLUE
-            end
+          # Special case of the diagonal line, which has to run either
+          # .45      ..5
+          # 23.  OR  .34
+          # 1..      12.
+          # Blocked only if BOTH are blocked - return blockage from just one if both are blocked.
+          blockage1 = zig_zag_blocked_by(tile, step_x, step_y, dx - 1, true)
+          blockage2 = zig_zag_blocked_by(tile, step_x, step_y, dx - 1, false)
+          if blockage1 && blockage2
+            # Choose the blockage that is closest to us, since the other is irrelevant.
+            [blockage1, blockage2].min_by {|z| manhattan_distance z }
+          elsif blockage1
+            blockage1
+          else
+            blockage2
           end
         else
-          # General case, ray-trace.
-          error = dx - dy
+          ray_trace_blocked_by tile, step_x, step_y, dx, dy
+        end
+      end
 
-          # Ensure that all tiles are visited that the sight-line passes over,
-          # not just those that create a "drawn" line.
-          dx *= 2
-          dy *= 2
+      protected
+      def zig_zag_blocked_by(from, step_x, step_y, length, x_first)
+        current = from
+        x, y = from.grid_x, from.grid_y
 
-          length = ((dx + dy + 1) / 2)
-
-          (length - 1).times do
-            # Note that this ignores the special case of error == 0
-            if error > 0
-              error -= dy
-              x1 += step_x
-            else
-              error += dx
-              y1 += step_y
-            end
-
-            tile = @map.tile_at_grid(x1, y1)
-            if tile.blocks_sight?
-              #Tile.blank.draw_rot tile.x, tile.y, ZOrder::TILE_SELECTION, 0, 0.5, 0.5, 1, 1, Color::RED
-              return tile
-            else
-              #Tile.blank.draw_rot tile.x, tile.y, ZOrder::TILE_SELECTION, 0, 0.5, 0.5, 1, 1, Color::BLUE
-            end
+        length.times do
+          if x_first
+            x += step_x
+          else
+            y += step_y
           end
+
+          checking = @map.tile_at_grid(x, y)
+          blockage = tile_to_tile_blocked_by current, checking
+          return blockage if blockage
+          current = checking
+
+          if x_first
+            y += step_y
+          else
+            x += step_x
+          end
+
+          checking = @map.tile_at_grid(x, y)
+          blockage = tile_to_tile_blocked_by current, checking
+          return blockage if blockage
+          current = checking
         end
 
-        nil # Didn't hit anything.
+        nil
+      end
+
+      protected
+      def ray_trace_blocked_by(from, step_x, step_y, dx, dy)
+        current = from
+        x, y = from.grid_x, from.grid_y
+
+        # General case, ray-trace.
+        error = dx - dy
+
+        # Ensure that all tiles are visited that the sight-line passes over,
+        # not just those that create a "drawn" line.
+        dx *= 2
+        dy *= 2
+
+        length = ((dx + dy + 1) / 2)
+
+        (length - 1).times do
+          # Note that this ignores the special case of error == 0
+          if error > 0
+            error -= dy
+            x += step_x
+          else
+            error += dx
+            y += step_y
+          end
+
+          # Look at the next tile and see which wall is in the way.
+          checking = @map.tile_at_grid(x, y)
+          blockage = tile_to_tile_blocked_by current, checking
+          return blockage if blockage
+          current = checking
+        end
+
+        nil
+      end
+
+      protected
+      def tile_to_tile_blocked_by(from, to)
+        wall = from.wall_to to
+        if wall and wall.blocks_sight?
+          wall
+        elsif to.blocks_sight?
+          to
+        end
       end
     end
   end

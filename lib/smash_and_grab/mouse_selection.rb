@@ -124,7 +124,7 @@ class MouseSelection < GameObject
     else
       $window.record 1, 1 do
         @potential_ranged.each do |tile|
-          Tile.blank.draw_rot tile.x, tile.y, 0, 0, 0.5, 0.5, 0.3, 0.3, ZOC_COLOR
+          Tile.blank.draw_rot tile.x, tile.y, 0, 0, 0.5, 0.5, 0.3, 0.3, Color::RED
         end
       end
     end

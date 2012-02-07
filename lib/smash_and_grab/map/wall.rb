@@ -124,7 +124,7 @@ class Wall < GameObject
   end
 
   def destination(from)
-    blocks_movement? ? nil : @destinations[from]
+    @destinations[from]
   end
 
   def draw
