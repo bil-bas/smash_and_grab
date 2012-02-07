@@ -153,8 +153,17 @@ class MouseSelection < GameObject
 
       # Highlight all squares that character can travel to.
       @moves_record.draw 0, 0, ZOrder::TILE_SELECTION if @moves_record
-      @ranged_record.draw 0, 0, ZOrder::TILE_SELECTION if @ranged_record
-      @path.draw if @path
+      if @ranged_record
+        @ranged_record.draw 0, 0, ZOrder::TILE_SELECTION
+
+        if @hover_tile and @hover_tile.object and
+            @hover_tile.object.is_a?(Objects::Entity) and selected.enemy?(@hover_tile.object) and
+            selected.line_of_sight?(@hover_tile)
+          Tile.blank.draw_rot @hover_tile.x, @hover_tile.y, 0, 0, 0.5, 0.5, 1.1, 1.1, ZOC_COLOR
+        else
+          @path.draw if @path
+        end
+      end
 
     elsif @hover_tile
       color = (@hover_tile.empty? or @hover_tile.object.inactive?) ? Color::BLUE : Color::CYAN
@@ -169,7 +178,14 @@ class MouseSelection < GameObject
   end
 
   def left_click
-    if @potential_moves.include? @hover_tile
+    if @ranged_record and @hover_tile and @hover_tile.object and
+        @hover_tile.object.is_a?(Objects::Entity) and selected.enemy?(@hover_tile.object) and
+        selected.line_of_sight?(@hover_tile)
+
+      selected.use_ability :ranged, @hover_tile.object
+      calculate_potential_ranged unless selected.use_ability? :ranged
+
+    elsif @potential_moves.include? @hover_tile
       path = @path # @path will change as we move.
 
       # Move the character, perhaps with melee at the end.

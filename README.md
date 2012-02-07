@@ -65,11 +65,11 @@ Move your supervillains around until you win!
 * All characters can:
     - get reactive melee attacks from an enemy entering OR leaving an adjacent tile (won't attack through walls :) )
     - make ranged shots against anyone moving in their LoS and within range (shoots through walls :( ).
-    - NOT make voluntary ranged attacks.
 
 * You can control your Baddies to:
     - move around.
     - melee with enemies (Goodies or Bystanders).
+    - shoot enemies if they are in LoS (shoots through walls :( )
     - sprint to get extra movement (sacrificing all actions for that turn). Can be cancelled at any time (if you have enough MP left).
 
 * Goodies AI can:
