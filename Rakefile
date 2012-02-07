@@ -10,8 +10,8 @@ require_relative "lib/smash_and_grab/version"
 CLEAN.include("*.log")
 CLOBBER.include("doc/**/*")
 
-require_relative 'build/outline_images'
-require_relative 'build/create_portraits'
+require_relative 'tasks/outline_images'
+require_relative 'tasks/create_portraits'
 
 Releasy::Project.new do
   name "Smash and Grab"
