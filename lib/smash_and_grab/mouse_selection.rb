@@ -153,16 +153,15 @@ class MouseSelection < GameObject
 
       # Highlight all squares that character can travel to.
       @moves_record.draw 0, 0, ZOrder::TILE_SELECTION if @moves_record
-      if @ranged_record
-        @ranged_record.draw 0, 0, ZOrder::TILE_SELECTION
 
-        if @hover_tile and @hover_tile.object and
-            @hover_tile.object.is_a?(Objects::Entity) and selected.enemy?(@hover_tile.object) and
-            selected.line_of_sight?(@hover_tile)
-          Tile.blank.draw_rot @hover_tile.x, @hover_tile.y, 0, 0, 0.5, 0.5, 1.1, 1.1, ZOC_COLOR
-        else
-          @path.draw if @path
-        end
+      @ranged_record.draw 0, 0, ZOrder::TILE_SELECTION if @ranged_record
+
+      if @ranged_record and @potential_ranged.include?(@hover_tile) and @hover_tile.object and
+          @hover_tile.object.is_a?(Objects::Entity) and selected.enemy?(@hover_tile.object) and
+          selected.line_of_sight?(@hover_tile)
+        Tile.blank.draw_rot @hover_tile.x, @hover_tile.y, 0, 0, 0.5, 0.5, 1.1, 1.1, ZOC_COLOR
+      else
+        @path.draw if @path
       end
 
     elsif @hover_tile
