@@ -43,6 +43,10 @@ TEXT
         options[:dev] = true
       end
 
+      parser.on('--fullscreen', "Run fullscreen at native resolution") do
+        options[:fullscreen] = true
+      end
+
       parser.on('--console', 'Console mode (no log file)') do
         options[:log] = nil # Write to console.
       end
@@ -75,6 +79,7 @@ TEXT
     options[:log] = DEFAULT_LOG_FILE_PATH
   end
 
+  FULLSCREEN = options[:fullscreen]
   LOG_FILE = options[:log]
   DEVELOPMENT_MODE = options[:dev]
 

@@ -3,7 +3,11 @@ class GameWindow < Chingu::Window
   attr_reader :pixel
 
   def initialize
-    super(800, 600, false)
+    if FULLSCREEN
+      super(screen_width, screen_height, true)
+    else
+      super(800, 600, false)
+    end
   end
 
   def setup
