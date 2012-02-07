@@ -36,8 +36,8 @@ class Entity < WorldObject
   class << self
     def config; @config ||= YAML.load_file(File.expand_path("config/map/entities.yml", EXTRACT_PATH)); end
     def types; config.keys; end
-    def sprites; @sprites ||= SpriteSheet.new("entities.png", SPRITE_WIDTH, SPRITE_HEIGHT, 8); end
-    def portraits; @portraits ||= SpriteSheet.new("entity_portraits.png", PORTRAIT_WIDTH, PORTRAIT_HEIGHT, 8); end
+    def sprites; @sprites ||= SpriteSheet["entities.png", SPRITE_WIDTH, SPRITE_HEIGHT, 8]; end
+    def portraits; @portraits ||= SpriteSheet["entity_portraits.png", PORTRAIT_WIDTH, PORTRAIT_HEIGHT, 8]; end
   end
 
   event :ended_turn
@@ -385,7 +385,11 @@ class Entity < WorldObject
       ((grid_x - max)..(grid_x + max)).each do |x|
         ((grid_y - max)..(grid_y + max)).each do |y|
           tile = map.tile_at_grid(x, y)
-          if tile and manhattan_distance(tile).between?(min, max) and line_of_sight? tile
+          if tile and tile != self.tile and
+              not (tile.object.is_a?(Static)) and
+              not (tile.object.is_a?(Entity) and friend?(tile.object)) and
+              manhattan_distance(tile).between?(min, max) and line_of_sight? tile
+
             tiles << tile
           end
         end
@@ -417,15 +421,18 @@ class Entity < WorldObject
 
   # Someone has moved into our view and we get to shoot them...
   def attempt_overwatch(target)
-    if alive? and use_ability?(:ranged)
-      ranged = ability :ranged
-      range = manhattan_distance(target.tile)
-      if range.between?(ranged.min_range, ranged.max_range) and
-         line_of_sight_blocked_by(target.tile).nil?
+    if overwatch? target.tile
+      parent.publish :game_info, "#{colorized_name} made a snap shot!"
+      use_ability :ranged, target
+    end
+  end
 
-        parent.publish :game_info, "#{colorized_name} made a snap shot!"
-        use_ability :ranged, target
-      end
+  def overwatch?(tile)
+    if alive? and use_ability? :ranged
+      ranged = ability :ranged
+      range = manhattan_distance tile
+
+      range.between?(ranged.min_range, ranged.max_range) and line_of_sight? tile
     end
   end
 

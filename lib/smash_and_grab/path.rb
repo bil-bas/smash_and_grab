@@ -7,7 +7,7 @@ class Path
   TILE_SIZE = 16
 
   class << self
-    def sprites; @sprites ||= SpriteSheet.new("path.png", 32, 16, 4); end
+    def sprites; @sprites ||= SpriteSheet["path.png", 32, 16, 4]; end
   end
 
   attr_reader :cost, :move_distance, :previous_path, :destination_distance, :first, :last

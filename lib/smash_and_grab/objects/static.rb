@@ -16,7 +16,7 @@ class Static < WorldObject
   class << self
     def config; @config ||= YAML.load_file(File.expand_path("config/map/objects.yml", EXTRACT_PATH)); end
     def types; config.keys; end
-    def sprites; @sprites ||= SpriteSheet.new("objects.png", 64 + 2, 64 + 2, 8); end
+    def sprites; @sprites ||= SpriteSheet["objects.png", 64 + 2, 64 + 2, 8]; end
   end
 
   def initialize(map, data)

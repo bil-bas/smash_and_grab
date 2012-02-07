@@ -3,9 +3,10 @@ class MouseSelection < GameObject
   attr_reader :selected, :hover_tile
 
   MOVE_COLOR = Color.rgba(0, 255, 0, 60)
-  MELEE_COLOR = Color.rgba(255, 0, 0, 80)
+  POTENTIAL_ATTACK_COLOR = Color.rgba(255, 255, 255, 100)
+  RANGED_EYE_COLOR = Color.rgba(255, 255, 255, 30)
   NO_MOVE_COLOR = Color.rgba(255, 0, 0, 30)
-  ZOC_COLOR = Color.rgba(255, 0, 0, 100)
+  WARNING_COLOR = Color.rgba(255, 255, 255, 50) # ZOC/Overwatch warnings
   
   def initialize(map, options = {})
     @map = map
@@ -15,6 +16,14 @@ class MouseSelection < GameObject
 
     @selected_image = Image["tile_selection.png"]
     @mouse_hover_image = Image["mouse_hover.png"]
+
+    path_images = SpriteSheet["path.png", 32, 16, 4]
+    @ranged_target_image = path_images[0, 4]
+    @ranged_eye_image = path_images[1, 4]
+    @ranged_dot_image = path_images[2, 4]
+    @melee_target_image = path_images[3, 1]
+    @zoc_image = path_images[3, 4]
+    @overwatch_image = path_images[2, 4]
 
     @selected = @hover_tile = nil
     @path = nil
@@ -84,6 +93,16 @@ class MouseSelection < GameObject
     end
   end
 
+  def overwatch_possible?(tile)
+    return false if tile.object
+
+    @map.factions.any? do |faction|
+      if faction.enemy? selected.faction
+        faction.entities.any? {|e| e.overwatch? tile }
+      end
+    end
+  end
+
   def calculate_potential_moves
     modify_occlusions @potential_moves, -1
     @potential_moves = selected.potential_moves
@@ -95,18 +114,19 @@ class MouseSelection < GameObject
       $window.record(1, 1) do
         @potential_moves.each do |tile|
           entity = tile.object
-          color = if entity and entity.enemy?(selected)
-            MELEE_COLOR
+          if entity and entity.enemy?(selected)
+            @melee_target_image.draw_rot tile.x, tile.y, 0, 0, 0.5, 0.5, 1, 1, POTENTIAL_ATTACK_COLOR
           else
-            MOVE_COLOR
+            Tile.blank.draw_rot tile.x, tile.y, 0, 0, 0.5, 0.5, 1, 1, MOVE_COLOR, :additive
           end
-
-          # Tile background
-          Tile.blank.draw_rot tile.x, tile.y, 0, 0, 0.5, 0.5, 1, 1, color, :additive
 
           # ZOC indicator.
           if tile.entities_exerting_zoc(selected.tile.object.faction).any? and tile.empty?
-            Tile.blank.draw_rot tile.x, tile.y, 0, 0, 0.5, 0.5, 0.7, 0.7, ZOC_COLOR
+            @zoc_image.draw_rot tile.x, tile.y, 0, 0, 0.5, 0.5, 1, 1, WARNING_COLOR
+          end
+
+          if overwatch_possible? tile
+            @overwatch_image.draw_rot tile.x, tile.y, 0, 0, 0.5, 0.5, 1, 1, WARNING_COLOR
           end
         end
       end
@@ -124,7 +144,11 @@ class MouseSelection < GameObject
     else
       $window.record 1, 1 do
         @potential_ranged.each do |tile|
-          Tile.blank.draw_rot tile.x, tile.y, 0, 0, 0.5, 0.5, 0.3, 0.3, Color::RED
+          if tile.object and tile.object.is_a?(Objects::Entity) and selected.enemy?(tile.object)
+            @ranged_target_image.draw_rot tile.x, tile.y, 0, 0, 0.5, 0.5, 1, 1, POTENTIAL_ATTACK_COLOR
+          else
+            @ranged_eye_image.draw_rot tile.x, tile.y, 0, 0, 0.5, 0.5, 1, 1, RANGED_EYE_COLOR
+          end
         end
       end
     end
@@ -159,7 +183,7 @@ class MouseSelection < GameObject
       if @ranged_record and @potential_ranged.include?(@hover_tile) and @hover_tile.object and
           @hover_tile.object.is_a?(Objects::Entity) and selected.enemy?(@hover_tile.object) and
           selected.line_of_sight?(@hover_tile)
-        Tile.blank.draw_rot @hover_tile.x, @hover_tile.y, 0, 0, 0.5, 0.5, 1.1, 1.1, ZOC_COLOR
+        @ranged_target_image.draw_rot @hover_tile.x, @hover_tile.y, 0, 0, 0.5, 0.5, 1, 1
       else
         @path.draw if @path
       end

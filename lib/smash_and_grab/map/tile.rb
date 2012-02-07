@@ -31,7 +31,7 @@ class Tile < GameObject
   class << self
     def blank; @sprites[0]; end
     def config; @config ||= YAML.load_file(File.expand_path("config/map/tiles.yml", EXTRACT_PATH)); end
-    def sprites; @sprites ||= SpriteSheet.new("floor_tiles.png", WIDTH, HEIGHT, 4); end
+    def sprites; @sprites ||= SpriteSheet["floor_tiles.png", WIDTH, HEIGHT, 4]; end
   end
 
   attr_reader :entities_exerting_zoc
