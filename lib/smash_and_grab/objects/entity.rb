@@ -77,6 +77,10 @@ class Entity < WorldObject
   def title; t.title; end
   def colorized_name; faction.class::TEXT_COLOR.colorize name; end
 
+  def bystander?; faction.is_a? Factions::Bystanders; end
+  def goody?; faction.is_a? Factions::Goodies; end
+  def baddy?; faction.is_a? Factions::Baddies; end
+
   def initialize(map, data)
     @type = data[:type]
     config = self.class.config[data[:type]]

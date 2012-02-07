@@ -19,12 +19,22 @@ module SmashAndGrab
             end
 
             if ranged.any?
+              # Avoid bystanders if there are better opponents.
+              unless ranged.all? {|a| a.bystander? }
+                ranged.delete_if {|a| a.bystander? }
+              end
+
               entity.use_ability :ranged, ranged.sample
               # Try melee or moving next time.
             else
               moves, attacks = entity.potential_moves.partition {|t| t.empty? }
 
               if attacks.any?
+                # Avoid bystanders if there are better opponents.
+                unless attacks.all? {|a| a.object.bystander? }
+                  attacks.delete_if {|a| a.object.bystander? }
+                end
+
                 # TODO: Pick the nearest attack and consider re-attacking.
                 path = entity.path_to(attacks.sample)
                 entity.use_ability :move, path.previous_path if path.requires_movement?
