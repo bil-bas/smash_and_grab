@@ -293,13 +293,14 @@ class Entity < WorldObject
 
       # Health.
       $window.pixel.draw 0, 0, 0, STATS_WIDTH, 1, STATS_USED_COLOR
-      $window.pixel.draw 0, 0, 0, STATS_WIDTH * health / [health, max_health].max, 1, STATS_HP_COLOR
+      width = alive? ? STATS_WIDTH * hp : 0
+      $window.pixel.draw 0, 0, 0,  width / [health, max_health].max, 1, STATS_HP_COLOR
 
       # Action points.
       if max_ap > 0
         pip_width = (STATS_WIDTH + 1 - max_ap) / max_ap
         max_ap.times do |i|
-          color = i < ap ? STATS_AP_COLOR : STATS_USED_COLOR
+          color = (i < ap and alive?) ? STATS_AP_COLOR : STATS_USED_COLOR
           $window.pixel.draw i * pip_width + i, 1, 0, pip_width, 1, color
         end
       end
@@ -308,7 +309,8 @@ class Entity < WorldObject
       if active?
         $window.pixel.draw 0, 2, 0, STATS_WIDTH, 1, STATS_USED_COLOR
 
-        $window.pixel.draw 0, 2, 0, 12.0 * mp / [mp, max_mp].max, 1, STATS_MP_COLOR if active?
+        width = alive? ? STATS_WIDTH * mp : 0
+        $window.pixel.draw 0, 2, 0, width / [mp, max_mp].max, 1, STATS_MP_COLOR if active?
       end
     end
 
