@@ -37,6 +37,16 @@ class MouseSelection < GameObject
 
   def update
     self.selected = nil if selected and selected.tile.nil?
+
+    # Ensure the character faces the mouse, but don't flip out when moving the mouse directly above or
+    # below the character, so ensure that the cursor has to move a few pixels further across to trigger switch.
+    if @hover_tile and selected_can_be_controlled?
+      if (parent.cursor_world_x - selected.x >  2 and selected.factor_x < 0) or # Turn right
+         (parent.cursor_world_x - selected.x < -2 and selected.factor_x > 0)    # Turn left
+        selected.face parent.cursor_world_x
+      end
+    end
+
     super
   end
 
@@ -130,7 +140,7 @@ class MouseSelection < GameObject
     end
 
     # Make the stat-bars visible when hovering over something else.
-    if @hover_tile and not (selected and @hover_tile == selected.tile)
+    if @hover_tile
       object = @hover_tile.object
       object.draw_stat_bars 10000 if object.is_a? Objects::Entity and object.alive?
     end

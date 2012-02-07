@@ -43,6 +43,7 @@ require 'r18n-desktop'
 R18n.from_env File.join(EXTRACT_PATH, 'config/lang'), Gosu.language
 
 require 'chingu'
+require_folder("chingu_ext", %w[basic_game_object])
 
 require 'fidgit'
 Fidgit::Element.schema.merge_schema! YAML.load(File.read(File.expand_path('config/gui/schema.yml', EXTRACT_PATH)))

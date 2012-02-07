@@ -5,7 +5,7 @@ module States
 class PlayLevel < World
   include Fidgit::Event
 
-  attr_reader :info_panel
+  attr_reader :info_panel, :cursor_world_x, :cursor_world_y
 
   event :game_info
   event :game_heading
@@ -18,6 +18,7 @@ class PlayLevel < World
     @players = [Players::Human.new, Players::AI.new, Players::AI.new]
 
     @quicksaved = false
+    @cursor_world_x = @cursor_world_x = nil
 
     load_game file
 
@@ -139,9 +140,13 @@ class PlayLevel < World
                                 $window.mouse_y >= 0 and $window.mouse_y < $window.height and
                                 @container.each.none? {|e| e.hit? $window.mouse_x, $window.mouse_y }
 
-      @map.tile_at_position((@camera_offset_x + $window.mouse_x) / @zoom,
-         (@camera_offset_y + $window.mouse_y) / @zoom)
+      @cursor_world_x = (@camera_offset_x + $window.mouse_x) / @zoom
+      @cursor_world_y = (@camera_offset_y + $window.mouse_y) / @zoom
+
+      @map.tile_at_position @cursor_world_x, @cursor_world_y
     else
+      @cursor_world_x = @cursor_world_y = nil
+
       nil
     end
 
@@ -166,6 +171,7 @@ class PlayLevel < World
   end
 
   def quicksave
+    publish :game_heading, "<<< Quick-saved >>>"
     save_game_as QUICKSAVE_FILE
     @quicksaved = true
   end

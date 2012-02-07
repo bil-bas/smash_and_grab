@@ -437,9 +437,10 @@ class Entity < WorldObject
     end
   end
 
-  # @param target [Tile, Objects::WorldObject]
+  # @param target [Tile, Objects::WorldObject, Numeric]
   def face(target)
-    change_in_x = target.x - x
+    x_pos = target.is_a?(Numeric) ? target : target.x
+    change_in_x = x_pos - x
     self.factor_x = change_in_x > 0 ? 1 : -1
   end
 
