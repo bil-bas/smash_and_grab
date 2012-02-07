@@ -239,10 +239,12 @@ class Entity < WorldObject
     self.movement_points = @max_movement_points
     self.action_points = @max_action_points
     publish :started_turn
+    publish :changed
   end
 
   def end_turn
     publish :ended_turn
+    publish :changed
   end
 
   # Color of circular base you stand on.
