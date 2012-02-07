@@ -30,7 +30,14 @@ module SmashAndGrab
           blockage2 = zig_zag_blocked_by(tile, step_x, step_y, dx - 1, false)
           if blockage1 && blockage2
             # Choose the blockage that is closest to us, since the other is irrelevant.
-            [blockage1, blockage2].min_by {|z| manhattan_distance z }
+            [blockage1, blockage2].min_by do |blockage|
+              case blockage
+                when Wall
+                  blockage.tiles.map {|t| manhattan_distance t }.min
+                when Tile
+                  manhattan_distance blockage
+              end
+            end
           elsif blockage1
             blockage1
           else
