@@ -23,11 +23,13 @@ module SmashAndGrab
         @scroll_window.background_color = @text.background_color
 
         state.subscribe :game_info do |_, text|
+          text = text.gsub /<[^>]*>/, ''
           append text
           log.info { "game_info: #{text}" }
         end
 
         state.subscribe :game_heading do |_, text|
+          text = text.gsub /<[^>]*>/, ''
           append HEADING_COLOR.colorize("{ #{text} }")
           log.info { "game_heading: #{text}" }
         end

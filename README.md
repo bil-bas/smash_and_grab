@@ -73,7 +73,9 @@ Move your supervillains around until you win!
     - sprint to get extra movement (sacrificing all actions for that turn). Can be cancelled at any time (if you have enough MP left).
 
 * Goodies AI can:
-    - melee with a Villain in range or move aimlessly.
+    - charge into melee with a Villain in range.
+    - shoot a Villain within range.
+    - move aimlessly.
 
 * Bystander AI can:
     - wander aimlessly in their turn.
