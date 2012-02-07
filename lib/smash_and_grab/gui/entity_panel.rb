@@ -100,6 +100,8 @@ module SmashAndGrab
       end
 
       def update_details(entity)
+        return unless entity.faction.player
+
         @health.text = "HP: #{entity.health} / #{entity.max_health}"
         @movement_points.text = "MP: #{entity.mp} / #{entity.max_mp}"
         @action_points.text = "AP: #{entity.ap} / #{entity.max_ap}"
@@ -109,10 +111,10 @@ module SmashAndGrab
         end
 
         @ability_buttons.each do |ability, button|
-          button.enabled = entity.active? && entity.faction.player.is_a?(Players::Human) && entity.use_ability?(ability)
+          button.enabled = entity.active? && entity.faction.player.human? && entity.use_ability?(ability)
 
           # TODO: this should be more sensible (allows un-sprinting).
-          if ability == :sprint && entity.active? && entity.faction.player.is_a?(Players::Human) && entity.ability(ability).deactivate?
+          if ability == :sprint && entity.active? && entity.faction.player.human? && entity.ability(ability).deactivate?
             button.enabled = true
           end
         end
