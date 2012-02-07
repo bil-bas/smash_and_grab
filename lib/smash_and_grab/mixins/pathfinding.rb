@@ -89,10 +89,10 @@ module SmashAndGrab
             new_path = nil
 
             object = testing_tile.object
-            if testing_tile.zoc?(faction) and not (testing_tile == destination_tile or destination_is_enemy)
-              # Avoid tiles that have zoc, unless at the end of the path. You have to MANUALLY enter.
-              next
-            elsif object and object.is_a?(Objects::Entity) and enemy?(object)
+            #if testing_tile.zoc?(faction) and not (testing_tile == destination_tile or destination_is_enemy)
+            #  # Avoid tiles that have zoc, unless at the end of the path. You have to MANUALLY enter.
+            #  next
+            if object and object.is_a?(Objects::Entity) and enemy?(object)
               # Ensure that the current tile is somewhere we could launch an attack from and we could actually perform it.
               if (current_tile.empty? or current_tile == tile) and ap >= melee_cost
                 new_path = Paths::Melee.new(path, testing_tile)

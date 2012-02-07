@@ -166,17 +166,16 @@ class Tile < GameObject
   end
 
   # Returns wall in this direction.
-  # @return [Wall]
   def wall(direction)
     @walls[direction]
   end
 
-  # @return [Wall] wall between this and other tile.
+  # @return [Wall, nil] wall between this and other tile.
   def wall_to(tile)
-    @walls[direction_to tile]
+    @walls[direction_to(tile)]
   end
 
-  # @return [Symbol] Direction to another tile
+  # @return [Symbol, nil] Direction to another tile
   def direction_to(tile)
     @walls.each_pair do |direction, wall|
       return direction if wall.destination(self) == tile
