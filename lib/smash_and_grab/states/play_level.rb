@@ -10,12 +10,13 @@ class PlayLevel < World
   event :game_info
   event :game_heading
 
-  def initialize(file)
+  # Players is villains
+  def initialize(file, baddies_player, goodies_player)
     super()
 
     add_inputs(space: :end_turn)
 
-    @players = [Players::Human.new, Players::AI.new, Players::AI.new]
+    @players = [baddies_player, goodies_player, Players::AI.new]
 
     @quicksaved = false
     @cursor_world_x = @cursor_world_x = nil

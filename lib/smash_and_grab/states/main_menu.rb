@@ -11,7 +11,7 @@ class MainMenu < Fidgit::GuiState
 
     @container.background_color = Color.rgb(0, 0, 25)
 
-    vertical align: :center do
+    vertical align: :center, padding: 0, spacing: 0 do
       horizontal align: :center do
         image_frame Objects::Static.sprites[1, 0], factor: 3
 
@@ -28,9 +28,17 @@ class MainMenu < Fidgit::GuiState
         image_frame Objects::Entity.sprites[3, 1], factor: 4
 
         vertical align: :center do
-          options = { width: 120, justify: :center }
-          button "Play", options do
-            push_game_state States::PlayLevel.new(GAME_FILE)
+          options = { width: 200, justify: :center }
+          button "Single Player", options do
+            push_game_state States::PlayLevel.new(GAME_FILE, Players::Human.new, Players::AI.new)
+          end
+
+          button "Round Robin", options do
+            push_game_state States::PlayLevel.new(GAME_FILE, Players::Human.new, Players::Human.new)
+          end
+
+          button "AI vs AI", options do
+            push_game_state States::PlayLevel.new(GAME_FILE, Players::AI.new, Players::AI.new)
           end
 
           button "Edit", options do
