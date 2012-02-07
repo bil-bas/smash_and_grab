@@ -33,7 +33,7 @@ class MainMenu < Fidgit::GuiState
             push_game_state States::PlayLevel.new(GAME_FILE, Players::Human.new, Players::AI.new)
           end
 
-          button "Round Robin", options do
+          button "Hot-seat", options do
             push_game_state States::PlayLevel.new(GAME_FILE, Players::Human.new, Players::Human.new)
           end
 
