@@ -93,16 +93,6 @@ class MouseSelection < GameObject
     end
   end
 
-  def overwatch_possible?(tile)
-    return false if tile.object
-
-    @map.factions.any? do |faction|
-      if faction.enemy? selected.faction
-        faction.entities.any? {|e| e.overwatch? tile }
-      end
-    end
-  end
-
   def calculate_potential_moves
     modify_occlusions @potential_moves, -1
     @potential_moves = selected.potential_moves
@@ -125,7 +115,7 @@ class MouseSelection < GameObject
             @zoc_image.draw_rot tile.x, tile.y, 0, 0, 0.5, 0.5, 1, 1, WARNING_COLOR
           end
 
-          if overwatch_possible? tile
+          if tile.overwatched? selected.faction
             @overwatch_image.draw_rot tile.x, tile.y, 0, 0, 0.5, 0.5, 1, 1, WARNING_COLOR
           end
         end
@@ -174,8 +164,8 @@ class MouseSelection < GameObject
           @hover_tile.object.is_a?(Objects::Entity) and selected.enemy?(@hover_tile.object) and
           selected.line_of_sight?(@hover_tile)
         @ranged_target_image.draw_rot @hover_tile.x, @hover_tile.y, 0, 0, 0.5, 0.5, 1, 1
-      else
-        @path.draw if @path
+      elsif @path
+        @path.draw selected.mp
       end
 
     elsif @hover_tile
@@ -186,7 +176,7 @@ class MouseSelection < GameObject
     # Make the stat-bars visible when hovering over something else.
     if @hover_tile
       object = @hover_tile.object
-      object.draw_stat_bars zorder: 10000 if object.is_a? Objects::Entity and object.alive?
+      object.draw_stat_bars zorder: ZOrder::BEHIND_GUI if object.is_a? Objects::Entity and object.alive?
     end
   end
 

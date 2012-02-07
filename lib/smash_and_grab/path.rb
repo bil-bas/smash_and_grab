@@ -16,13 +16,13 @@ class Path
   def tiles; @previous_path.tiles + [@last]; end
   def sprites; self.class.sprites; end
 
-  def initialize(previous_path, next_tile, extra_move_distance)
+  def initialize(previous_path, next_tile, extra_move_distance, disincentive)
     @previous_path = previous_path
     @first, @last = @previous_path.first, next_tile
 
     @move_distance = @previous_path.move_distance + extra_move_distance
     @destination_distance = @previous_path.destination_distance
-    @cost = @move_distance + @destination_distance
+    @cost = @move_distance + @destination_distance + disincentive
   end
 
   # @option from [Tile] Tile to start drawing the path from.
@@ -74,16 +74,20 @@ class Path
     end
   end
 
-  def draw
+  def draw(move_points)
     @record.draw 0, 0, ZOrder::PATH
+
+    if last.empty? and move_distance > 0
+      Font[FONT_NAME, 8].draw_rel move_points - move_distance, last.x, last.y, ZOrder::BEHIND_GUI, 0.5, 0.5
+    end
   end
 end
 
 # A path consisting just of movement.
 class Move < Path
   def mover; first.object; end
-  def initialize(previous_path, last, extra_move_distance)
-    super(previous_path, last, last.movement_cost + extra_move_distance)
+  def initialize(previous_path, last, extra_move_distance, disincentive)
+    super(previous_path, last, last.movement_cost + extra_move_distance, disincentive)
   end
 end
 
@@ -96,7 +100,7 @@ class Melee < Path
   def defender; last.object; end
   def requires_movement?; previous_path.is_a? Paths::Move; end
   def initialize(previous_path, last)
-    super(previous_path, last, 0)
+    super(previous_path, last, 0, 0)
   end
 
   def prepare_for_drawing(tiles_within_range, options = {})
@@ -127,6 +131,8 @@ end
 
 # Path where the destination is unreachable.
 class Inaccessible < Path
+  def cost; 0; end
+  def move_distance; Float::INFINITY; end
   def accessible?; false; end
   def tiles; [@last]; end
 
@@ -143,6 +149,8 @@ end
 
 # Path going to the same location as it started.
 class None < Path
+  def cost; 0; end
+  def move_distance; 0; end
   def accessible?; false; end
   def tiles; []; end
   def initialize; end

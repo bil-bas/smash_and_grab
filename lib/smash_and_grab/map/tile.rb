@@ -64,6 +64,14 @@ class Tile < GameObject
     @entities_exerting_zoc = Set.new
   end
 
+  def overwatched?(faction_targeted)
+    return false unless empty?
+
+    map.factions.any? do |faction|
+      faction.enemy?(faction_targeted) and faction.entities.any? {|e| e.overwatch? self }
+    end
+  end
+
   def entities_exerting_zoc(faction)
     @entities_exerting_zoc.select {|e| e.action? and e.faction.enemy? faction }
   end

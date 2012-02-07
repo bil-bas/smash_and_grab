@@ -35,7 +35,7 @@ module SmashAndGrab
               end
 
             elsif testing_tile.passable?(self) and (object.nil? or object.passable?(self))
-              new_path = Paths::Move.new(path, testing_tile, wall.movement_cost)
+              new_path = Paths::Move.new(path, testing_tile, wall.movement_cost, 0)
 
               # If the path is shorter than one we've already calculated, then replace it. Otherwise just store it.
               if new_path.move_distance <= movement_points
@@ -89,9 +89,6 @@ module SmashAndGrab
             new_path = nil
 
             object = testing_tile.object
-            #if testing_tile.zoc?(faction) and not (testing_tile == destination_tile or destination_is_enemy)
-            #  # Avoid tiles that have zoc, unless at the end of the path. You have to MANUALLY enter.
-            #  next
             if object and object.is_a?(Objects::Entity) and enemy?(object)
               # Ensure that the current tile is somewhere we could launch an attack from and we could actually perform it.
               if (current_tile.empty? or current_tile == tile) and ap >= melee_cost
@@ -101,7 +98,14 @@ module SmashAndGrab
               end
             elsif testing_tile.passable?(self)
               if object.nil? or object.passable?(self)
-                new_path = Paths::Move.new(path, testing_tile, wall.movement_cost)
+                disincentive = 0
+                disincentive += 1 if testing_tile.overwatched? faction
+                if testing_tile.object
+                  disincentive += 1 # Try to avoid moving through objects, so try alternate routes in preference.
+                else
+                  disincentive += 1 if testing_tile.zoc? faction
+                end
+                new_path = Paths::Move.new(path, testing_tile, wall.movement_cost, disincentive)
               else
                 next
               end
