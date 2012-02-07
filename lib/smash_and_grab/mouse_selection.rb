@@ -161,9 +161,9 @@ class MouseSelection < GameObject
   end
   
   def draw
-    # Draw a disc under the selected object.
     if selected and selected.tile
-      @selected_image.draw_rot selected.tile.x, selected.tile.y, ZOrder::TILE_SELECTION, 0, 0.5, 0.5, 1, 1, selected.base_color
+      # Draw a disc/box under the selected object.
+      selected.draw_base
 
       # Highlight all squares that character can travel to.
       @moves_record.draw 0, 0, ZOrder::TILE_SELECTION if @moves_record

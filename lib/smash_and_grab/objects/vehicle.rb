@@ -79,6 +79,12 @@ class Vehicle < WorldObject
     end
   end
 
+  def draw_base
+    tiles do |tile|
+      Image["tiles_selection.png"].draw_rot tile.x, tile.y, ZOrder::TILE_SELECTION, 0, 0.5, 0.5, 1, 1, base_color
+    end
+  end
+
   def draw
     # Draw the image in sections, since it has to exist at several zorder positions in order to render correctly.
     DRAW_POSITIONS.each do |clip_width, offset_z|

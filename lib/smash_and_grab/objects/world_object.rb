@@ -93,6 +93,10 @@ class WorldObject < GameObject
     @image.draw_rot @x, @y + 2.5 - @z, @y, 0, 0.5, 1, OUTLINE_SCALE * @factor_x, OUTLINE_SCALE, color
   end
 
+  def draw_base
+    Image["tile_selection.png"].draw_rot x, y, ZOrder::TILE_SELECTION, 0, 0.5, 0.5, 1, 1, base_color
+  end
+
   def busy?; false; end
   def active?; false; end
 
