@@ -39,8 +39,8 @@ module SmashAndGrab::Abilities
     end
 
     def random_damage
-      # 1..skill as damage in a bell-ish curve.
-      (skill - 1).times.find_all { rand(2) == 1 }.size + 1
+      # 0..skill as damage in a bell-ish curve.
+      skill.times.find_all { rand(6) + 1 <= 2 }.size # 2 potential hits on each d6.
     end
 
     def do(data)

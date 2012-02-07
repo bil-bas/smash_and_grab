@@ -60,7 +60,7 @@ describe SmashAndGrab::Abilities::Ranged do
 
     should "never give a value less than 1" do
       stub(subject).rand(is_a(Integer)) { 0 }
-      subject.random_damage == 1
+      subject.random_damage == 0
     end
   end
 

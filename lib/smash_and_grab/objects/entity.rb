@@ -168,7 +168,15 @@ class Entity < WorldObject
   # Also used to un-melee :)
   def make_melee_attack(target, damage)
     add_activity do
-      if damage > 0 # do => wound
+      if damage == 0 # Missed
+        face target
+        self.z += 10
+        delay 0.1
+        self.z -= 10
+
+        parent.publish :game_info, "#{colorized_name} swung at #{target.colorized_name}, but missed"
+
+      elsif damage > 0 # do => wound
         face target
         self.z += 10
         delay 0.1
@@ -200,7 +208,11 @@ class Entity < WorldObject
 
   def make_ranged_attack(target, damage)
     add_activity do
-      if damage > 0 # do => wound
+      if damage == 0
+        face target
+
+        parent.publish :game_info, "#{colorized_name} shot at #{target.colorized_name}, but missed"
+      elsif damage > 0 # do => wound
         face target
 
         # Can be dead at this point if there were 2-3 attackers of opportunity!
