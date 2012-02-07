@@ -186,7 +186,7 @@ class MouseSelection < GameObject
     # Make the stat-bars visible when hovering over something else.
     if @hover_tile
       object = @hover_tile.object
-      object.draw_stat_bars 10000 if object.is_a? Objects::Entity and object.alive?
+      object.draw_stat_bars zorder: 10000 if object.is_a? Objects::Entity and object.alive?
     end
   end
 

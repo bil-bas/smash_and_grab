@@ -257,10 +257,18 @@ class Entity < WorldObject
 
     super()
 
-    draw_stat_bars @y
+    draw_stat_bars
   end
 
-  def draw_stat_bars(zorder)
+  def draw_stat_bars(options = {})
+    options = {
+        x: x - STATS_HALF_WIDTH,
+        y: y - 4,
+        zorder: y,
+        factor_x: 1,
+        factor_y: 1,
+    }.merge! options
+
     @stat_bars_record ||= $window.record 1, 1 do
       # Draw background shadow.
       height = 1
@@ -290,7 +298,7 @@ class Entity < WorldObject
       end
     end
 
-    @stat_bars_record.draw @x - STATS_HALF_WIDTH, @y - 4, zorder
+    @stat_bars_record.draw options[:x], options[:y], options[:zorder], options[:factor_x], options[:factor_y]
   end
 
   def friend?(character); @faction.friend? character.faction; end

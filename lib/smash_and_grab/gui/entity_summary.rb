@@ -16,25 +16,26 @@ class EntitySummary < Fidgit::Vertical
 
     @name = label "", font_height: 15
 
-    horizontal padding: 0, spacing: 4 do
+    @box = horizontal padding: 0, spacing: 4 do
       @portrait = image_frame nil, padding: 0, background_color: Color::GRAY,
                               border_thickness: 1, border_color: Color::BLACK
 
-      vertical padding: 0, spacing: 0 do
-        @health = label "", font_height: 15
-        @action_points = label "", font_height: 15
-        @movement_points = label "", font_height: 15
-      end
+      # Just to get a position to place the stats box.
+      @stats_position = vertical padding: 0
     end
 
-     self.entity = entity
+    self.entity = entity
+  end
+
+  def draw
+    super
+    @entity.draw_stat_bars x: @stats_position.x, y: @stats_position.y + 3, zorder: z, factor_x: 6, factor_y: 6
   end
 
   public
   def update_details(entity)
-    @health.text = "HP: #{entity.health}"
-    @movement_points.text = "MP: #{entity.mp}"
-    @action_points.text = "AP: #{entity.ap}"
+    self.tip = "HP: #{entity.health} / #{entity.max_health}; MP: #{entity.mp} / #{entity.max_mp}; AP: #{entity.ap} / #{entity.max_ap}"
+
     @portrait.image = entity.portrait
     @name.color = entity.alive? ? Color::WHITE : Color::GRAY
   end
