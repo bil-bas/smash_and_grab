@@ -8,7 +8,7 @@ describe SmashAndGrab::Map do
             "type" => "professor_goggles",
             "id" => 0,
             "health" => 5,
-            "contents" => nil,
+            "contents_id" => nil,
             "movement_points" => 7,
             "action_points" => 2,
             "facing" => "left",
@@ -63,7 +63,11 @@ describe SmashAndGrab::Map do
     }
   end
 
-  subject { SmashAndGrab::Map.new map_data.symbolize }
+  helper :factions do
+    [SmashAndGrab::Factions::Faction.new] * 3
+  end
+
+  subject { SmashAndGrab::Map.new map_data.symbolize, factions, start: false }
 
   describe "#tile_at_grid" do
     should "find the correct tile" do
@@ -102,7 +106,7 @@ describe SmashAndGrab::Map do
   end
 
   describe "#save_data" do
-    subject { SmashAndGrab::Map.new(map_data.symbolize).save_data }
+    subject { SmashAndGrab::Map.new(map_data.symbolize, factions, start: false).save_data }
 
     should "contain the same data as was loaded" do
       subject[:version].should.equal SmashAndGrab::VERSION

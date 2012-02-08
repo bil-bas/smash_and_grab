@@ -3,17 +3,12 @@ module SmashAndGrab
     module HasContents
       attr_reader :contents
 
-      def setup_contents(data, has_actions)
-        if has_actions
-          @abilities[:pick_up] = Abilities.ability(self, type: :pick_up)
-          @abilities[:drop] = Abilities.ability(self, type: :drop)
-        end
-
-        @contents = if data
-                      Objects::Static.new map, data
-                    else
-                      nil
-                    end
+      def setup_contents
+        # @tmp_contents_id was just a holder until we could do this; can't get it to work unless
+        # all objects have been loaded.
+        @contents = @tmp_contents_id ? map.object_by_id(@tmp_contents_id) : nil
+        log.debug { "#{self} started carrying #{@contents}"} if @contents
+        @tmp_contents_id = nil
       end
 
       def pick_up?(object)

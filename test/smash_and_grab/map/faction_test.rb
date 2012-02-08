@@ -12,23 +12,25 @@ shared SmashAndGrab::Factions::Faction do
 end
 
 describe SmashAndGrab::Factions::Faction do
-  helper(:baddies) { SmashAndGrab::Factions::Baddies.new nil }
-  helper(:goodies) { SmashAndGrab::Factions::Goodies.new nil }
-  helper(:bystanders) { SmashAndGrab::Factions::Bystanders.new nil }
+  before do
+    @baddies = SmashAndGrab::Factions::Baddies.new
+    @goodies = SmashAndGrab::Factions::Goodies.new
+    @bystanders =  SmashAndGrab::Factions::Bystanders.new
+  end
 
-  subject { described.new nil }
+  subject { described.new }
 
   describe SmashAndGrab::Factions::Goodies do
     behaves_like SmashAndGrab::Factions::Faction
 
     should "dislike baddies" do
-      subject.should.be.enemy? baddies
-      subject.should.not.be.friend? baddies
+      subject.should.be.enemy? @baddies
+      subject.should.not.be.friend? @baddies
     end
 
     should "like bystanders" do
-      subject.should.not.be.enemy? bystanders
-      subject.should.be.friend? bystanders
+      subject.should.not.be.enemy? @bystanders
+      subject.should.be.friend? @bystanders
     end
   end
 
@@ -36,13 +38,13 @@ describe SmashAndGrab::Factions::Faction do
     behaves_like SmashAndGrab::Factions::Faction
 
     should "dislike goodies" do
-      subject.should.be.enemy? goodies
-      subject.should.not.be.friend? goodies
+      subject.should.be.enemy? @goodies
+      subject.should.not.be.friend? @goodies
     end
 
     should "dislike bystanders" do
-      subject.should.be.enemy? bystanders
-      subject.should.not.be.friend? bystanders
+      subject.should.be.enemy? @bystanders
+      subject.should.not.be.friend? @bystanders
     end
   end
 
@@ -50,13 +52,13 @@ describe SmashAndGrab::Factions::Faction do
     behaves_like SmashAndGrab::Factions::Faction
 
     should "like goodies" do
-      subject.should.not.be.enemy? goodies
-      subject.should.be.friend? goodies
+      subject.should.not.be.enemy? @goodies
+      subject.should.be.friend? @goodies
     end
 
     should "dislike baddies" do
-      subject.should.be.enemy? baddies
-      subject.should.not.be.friend? baddies
+      subject.should.be.enemy? @baddies
+      subject.should.not.be.friend? @baddies
     end
   end
 end

@@ -105,6 +105,9 @@ class World < Fidgit::GuiState
 
     assign_entities_to_factions
 
+    # Make sure that every entity has picked up the object they had before.
+    map.factions.each {|f| f.entities.each {|e| e.setup_contents } }
+
     create_gui
     create_minimap
 

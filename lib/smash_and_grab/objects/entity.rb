@@ -130,9 +130,14 @@ class Entity < WorldObject
       end
     end
 
-    @queued_activities = []
+    if max_ap > 0
+      @abilities[:pick_up] = Abilities.ability(self, type: :pick_up)
+      @abilities[:drop] = Abilities.ability(self, type: :drop)
+    end
 
-    setup_contents data[:contents], max_ap > 0
+    @tmp_contents_id = data[:contents_id] # Need to wait until all objects are loaded before picking it up.
+
+    @queued_activities = []
 
     @stat_bars_record = nil
     subscribe :changed do
@@ -573,7 +578,7 @@ class Entity < WorldObject
         type: type,
         id: id,
         health: health_points,
-        contents: contents,
+        contents_id: contents ? contents.id : nil,
         movement_points: movement_points,
         action_points: action_points,
         facing: factor_x > 0 ? :right : :left,
