@@ -43,6 +43,7 @@ class EntitySummary < Fidgit::Vertical
 
     @portrait.image = entity.portrait
     @name.color = entity.alive? ? Color::WHITE : Color::GRAY
+    @portrait.enabled = entity.alive?
   end
 
   public
