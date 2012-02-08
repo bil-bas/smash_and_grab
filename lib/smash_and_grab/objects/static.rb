@@ -19,6 +19,9 @@ class Static < WorldObject
     def sprites; @sprites ||= SpriteSheet["objects.png", 64 + 2, 64 + 2, 8]; end
   end
 
+  # TODO: configure this value.
+  def pick_up?(entity); @passable; end
+
   def initialize(map, data)
     @type = data[:type]
     config = self.class.config[@type]
@@ -40,8 +43,13 @@ class Static < WorldObject
         :class => CLASS,
         type: @type,
         id: id,
-        tile: grid_position,
+        tile: tile ? grid_position : nil,
     }.to_json(*a)
+  end
+
+  def draw
+    # Without a tile, it has probably been picked up.
+    super if tile
   end
 end
 end

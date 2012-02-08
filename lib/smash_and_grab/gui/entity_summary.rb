@@ -30,6 +30,11 @@ class EntitySummary < Fidgit::Vertical
   def draw
     super
     @entity.draw_stat_bars x: @stats_position.x, y: @stats_position.y + 1, zorder: z, factor_x: 6, factor_y: 6
+
+    if @entity.contents
+      # TODO: Measure the sprite properly.
+      @entity.contents.image.draw x + width - 10, y - 12, z
+    end
   end
 
   public

@@ -15,6 +15,7 @@ module SmashAndGrab
         open_paths = { destination_tile => Paths::Start.new(destination_tile, destination_tile) }
 
         melee_cost = has_ability?(:melee) ? ability(:melee).action_cost : Float::INFINITY
+        pick_up_cost = has_ability?(:pick_up) ? ability(:pick_up).action_cost : Float::INFINITY
 
         while open_paths.any?
           path = open_paths.each_value.min_by(&:cost)
@@ -31,6 +32,11 @@ module SmashAndGrab
             if object and object.is_a?(Objects::Entity) and enemy?(object)
               # Ensure that the current tile is somewhere we could launch an attack from and we could actually perform it.
               if (current_tile.empty? or current_tile == tile) and ap >= melee_cost
+                valid_tiles << testing_tile
+              end
+
+            elsif object and object.is_a?(Objects::Static) and pick_up?(object)
+              if (current_tile.empty? or current_tile == tile) and ap >= pick_up_cost
                 valid_tiles << testing_tile
               end
 
@@ -68,6 +74,7 @@ module SmashAndGrab
         destination_is_enemy = (destination_object and destination_object.is_a? Objects::Entity and destination_object.enemy?(self))
 
         melee_cost = has_ability?(:melee) ? ability(:melee).action_cost : Float::INFINITY
+        pick_up_cost = has_ability?(:pick_up) ? ability(:pick_up).action_cost : Float::INFINITY
 
         while open_paths.any?
           # Check the (expected) shortest path and move it to closed, since we have considered it.
@@ -96,6 +103,14 @@ module SmashAndGrab
               else
                 next
               end
+
+            elsif object and object.is_a?(Objects::Static) and pick_up?(object)
+              if (current_tile.empty? or current_tile == tile) and ap >= pick_up_cost
+                new_path = Paths::PickUp.new(path, testing_tile)
+              else
+                next
+              end
+
             elsif testing_tile.passable?(self)
               if object.nil? or object.passable?(self)
                 disincentive = 0

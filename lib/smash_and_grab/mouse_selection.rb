@@ -22,6 +22,7 @@ class MouseSelection < GameObject
     @ranged_eye_image = path_images[1, 4]
     @ranged_dot_image = path_images[2, 4]
     @melee_target_image = path_images[3, 1]
+    @pick_up_image = path_images[0, 5]
     @zoc_image = path_images[3, 4]
     @overwatch_image = path_images[2, 4]
 
@@ -103,11 +104,16 @@ class MouseSelection < GameObject
     else
       $window.record(1, 1) do
         @potential_moves.each do |tile|
-          entity = tile.object
-          if entity and entity.enemy?(selected)
-            @melee_target_image.draw_rot tile.x, tile.y, 0, 0, 0.5, 0.5, 1, 1, POTENTIAL_ATTACK_COLOR
-          else
-            Tile.blank.draw_rot tile.x, tile.y, 0, 0, 0.5, 0.5, 1, 1, MOVE_COLOR, :additive
+          case tile.object
+            when Objects::Entity
+              if tile.object.enemy?(selected)
+                @melee_target_image.draw_rot tile.x, tile.y, 0, 0, 0.5, 0.5, 1, 1, POTENTIAL_ATTACK_COLOR
+              end
+            when Objects::Static
+              @pick_up_image.draw_rot tile.x, tile.y, 0, 0, 0.5, 0.5, 1, 1, POTENTIAL_ATTACK_COLOR
+
+            else
+              Tile.blank.draw_rot tile.x, tile.y, 0, 0, 0.5, 0.5, 1, 1, MOVE_COLOR, :additive
           end
 
           # ZOC indicator.
@@ -189,19 +195,28 @@ class MouseSelection < GameObject
       calculate_potential_ranged unless selected.use_ability? :ranged
 
     elsif @potential_moves.include? @hover_tile
-      path = @path # @path will change as we move.
+      actor = selected
+      saved_path = @path # @path will change as we move.
 
       # Move the character, perhaps with melee at the end.
-      case path
+      case saved_path
         when Paths::Move
-          selected.use_ability :move, path
+          actor.use_ability :move, saved_path
+
         when Paths::Melee
-          selected.use_ability :move, path.previous_path if path.requires_movement?
+          actor.use_ability :move, saved_path.previous_path if saved_path.requires_movement?
 
           # Only perform melee if you weren't killed by attacks of opportunity.
-          attacker, target = selected, path.last.object
-          attacker.add_activity do
-            attacker.use_ability :melee, target if attacker.alive?
+          actor.add_activity do
+            actor.use_ability :melee, saved_path.defender if actor.alive?
+          end
+
+        when Paths::PickUp
+          actor.use_ability :move, saved_path.previous_path if saved_path.requires_movement?
+
+          # Only pick up if you weren't killed by attacks of opportunity.
+          actor.add_activity do
+            actor.use_ability :pick_up, saved_path.object if actor.alive?
           end
       end
 

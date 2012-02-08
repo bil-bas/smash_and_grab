@@ -1,4 +1,4 @@
-require_folder "abilities", %w[area melee move ranged sprint]
+require_folder "abilities", %w[area drop melee move pick_up ranged sprint]
 
 module SmashAndGrab::Abilities
   # Create an ability based on class name.

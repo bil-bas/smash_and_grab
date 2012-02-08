@@ -77,14 +77,14 @@ module SmashAndGrab
 
             label_options = button_options.merge border_thickness: 2, border_color: Color.rgba(255, 255, 255, 100)
 
-            [:melee, :ranged, :sprint].each do |ability_name|
+            [:melee, :ranged, :sprint, :drop].each do |ability_name|
               if @entity.has_ability? ability_name
                 ability = @entity.ability ability_name
                 @ability_buttons[ability_name] = button("#{ability_name.to_s[0].upcase}#{ability.skill}",
                                                         button_options.merge(tip: ability.tip)) do
 
-                  if ability_name == :sprint
-                    @entity.use_ability :sprint
+                  if ability_name == :sprint or ability_name == :drop
+                    @entity.use_ability ability_name
                   end
                 end
               else
@@ -92,7 +92,7 @@ module SmashAndGrab
               end
             end
 
-            5.times do |i|
+            4.times do |i|
                label "", label_options
             end
           end

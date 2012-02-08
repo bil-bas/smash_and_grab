@@ -96,7 +96,6 @@ class Melee < Path
   COLOR_IN_RANGE = Color::WHITE
   COLOR_OUT_OF_RANGE = Color.rgb(100, 100, 100)
 
-  def attacker; previous_path.last.object; end
   def defender; last.object; end
   def requires_movement?; previous_path.is_a? Paths::Move; end
   def initialize(previous_path, last)
@@ -110,10 +109,29 @@ class Melee < Path
 
   def draw(*args)
     super(*args)
+    sprites[3, 1].draw_rot last.x, last.y, ZOrder::PATH, 0, 0.5, 0.5, 1, 1, @draw_color
+  end
+end
 
-    if last.object.is_a? Objects::Entity
-      sprites[3, 1].draw_rot last.x, last.y, ZOrder::PATH, 0, 0.5, 0.5, 1, 1, @draw_color
-    end
+# A path consisting of melee, possibly with some movement beforehand.
+class PickUp < Path
+  COLOR_IN_RANGE = Color::WHITE
+  COLOR_OUT_OF_RANGE = Color.rgb(100, 100, 100)
+
+  def object; last.object; end
+  def requires_movement?; previous_path.is_a? Paths::Move; end
+  def initialize(previous_path, last)
+    super(previous_path, last, 0, 0)
+  end
+
+  def prepare_for_drawing(tiles_within_range, options = {})
+    super(tiles_within_range)
+    @draw_color = tiles_within_range.include?(last) ? COLOR_IN_RANGE : COLOR_OUT_OF_RANGE
+  end
+
+  def draw(*args)
+    super(*args)
+    sprites[0, 5].draw_rot last.x, last.y, ZOrder::PATH, 0, 0.5, 0.5, 1, 1, @draw_color
   end
 end
 

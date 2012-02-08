@@ -2,14 +2,20 @@ module SmashAndGrab::Abilities
   # @abstract
   class Ability
     attr_reader :skill, :owner
+    NON_SKILL = 0
     SKILL_LEVEL_DESCRIPTIONS = %w[Fair Good Excellent Heroic Legendary]
 
+    def use?; true; end
     def can_be_undone?; true; end
     def action_cost; @action_cost == :all ? owner.max_action_points : @action_cost; end
     def type; Inflector.underscore(Inflector.demodulize(self.class.name)).to_sym; end
 
     def tip
-      "#{SKILL_LEVEL_DESCRIPTIONS[skill - 1]} #{type.capitalize} (#{'*' * skill})"
+      if skill > NON_SKILL
+       "#{SKILL_LEVEL_DESCRIPTIONS[skill - 1]} #{type.capitalize} (#{'*' * skill})"
+      else
+        type.capitalize
+      end
     end
 
     protected
@@ -136,7 +142,7 @@ module SmashAndGrab::Abilities
   end
 
   # An ability that requires that the actor be adjacent to the target
-  # and will move them if necessary. E.g. Melee.
+  # and will move them if necessary. E.g. Melee or PickUp.
   # @abstract
   class TouchAbility < TargetedAbility
   end

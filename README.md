@@ -73,6 +73,8 @@ Move your supervillains around until you win!
     - move around.
     - melee with enemies (Baddies => Goodies or Bystanders, Goodies => Baddies).
     - shoot enemies within range and LoS.
+    - pick up objects, like bags of cash, by clicking on them.
+    - drop objects, to random adjacent square, with the drop button.
     - sprint to get extra movement (sacrificing all actions for that turn). Can be cancelled at any time (if you have enough MP left).
     - see indicated:
         * all tiles they can move to
@@ -82,6 +84,7 @@ Move your supervillains around until you win!
 
 * AI
     - the AI is pretty dreadful, even by game standards :)
+    - The AI ignores objects, like bags of money.
     -  Goodies/Baddies AI can:
         * charge into melee with an enemy in range.
         * shoot an enemy within range and LoS.

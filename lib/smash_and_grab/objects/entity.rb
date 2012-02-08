@@ -8,6 +8,7 @@ require_relative "floating_text"
 
 require_relative "../mixins/line_of_sight"
 require_relative "../mixins/pathfinding"
+require_relative "../mixins/has_contents"
 
 module SmashAndGrab
 module Objects
@@ -15,6 +16,7 @@ class Entity < WorldObject
   extend Forwardable
   include Mixins::LineOfSight
   include Mixins::Pathfinding
+  include Mixins::HasContents
 
   CLASS = :entity
 
@@ -127,6 +129,8 @@ class Entity < WorldObject
     end
 
     @queued_activities = []
+
+    setup_contents data[:contents], max_ap > 0
 
     @faction << self
 
@@ -554,21 +558,22 @@ class Entity < WorldObject
   end
 
   def use_ability?(name)
-    alive? and has_ability?(name) and ap >= ability(name).action_cost
+    alive? and has_ability?(name) and ap >= ability(name).action_cost and ability(name).use?
   end
 
   def to_json(*a)
     data = {
         :class => CLASS,
-        type: @type,
+        type: type,
         id: id,
-        health: @health_points,
-        movement_points: @movement_points,
-        action_points: @action_points,
+        health: health_points,
+        contents: contents,
+        movement_points: movement_points,
+        action_points: action_points,
         facing: factor_x > 0 ? :right : :left,
     }
 
-    data[:tile] = grid_position if @tile
+    data[:tile] = grid_position if tile
 
     data.to_json(*a)
   end

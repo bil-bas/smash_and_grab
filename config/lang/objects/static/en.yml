@@ -1,8 +1,8 @@
 ---
 
 Static:
-  bag_of_money:
-    name: Bag of money
+  bag_of_cash:
+    name: Big bag of money
 
   tree:
     name: Tree
