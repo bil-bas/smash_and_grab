@@ -72,16 +72,40 @@ class PlayLevel < World
     @container = Fidgit::Container.new do |container|
       @minimap = Gui::Minimap.new parent: container
 
-      # Unit roster.
-      @summary_bar = vertical parent: container, padding: 4, spacing: 4, background_color: Color::BLACK do |packer|
-        @map.active_faction.entities.each do |entity|
-          summary = Gui::EntitySummary.new entity, parent: packer
-          summary.subscribe :left_mouse_button do
-            @mouse_selection.selected = entity if entity.alive?
-            @info_panel.object = entity
+      # Unit roster for each human-controlled faction.
+      @summaries_lists = {}
+
+      # Create a summary list for each human-controlled faction.
+      @map.factions.each do |faction|
+        if faction.player.is_a? Players::Human
+          @summaries_lists[faction] = Fidgit::Vertical.new padding: 4, spacing: 4 do |packer|
+            # Put each entity into the list.
+            faction.entities.each do |entity|
+              summary = Gui::EntitySummary.new entity, parent: packer
+              summary.subscribe :left_mouse_button do
+                @mouse_selection.selected = entity if entity.alive?
+                @info_panel.object = entity
+              end
+            end
           end
+
+          # At the start of the turn, change in our summary list.
+          # Means the last human player's list will be shown during the AI turns.
+          faction.subscribe :turn_started do
+            @summary_bar.clear
+            @summary_bar.add @summaries_lists[faction]
+          end
+
+          # TODO: Add and remove entities to the lists as unit list changes.
+          #faction.subscribe :entity_added do
+          #end
+          #faction.subscribe :entity_removed do
+          #end
         end
       end
+
+      # Will contain the summary lists.
+      @summary_bar = vertical parent: container, padding: 0, spacing: 0, background_color: Color::BLACK
 
       # Info panel.
       @info_panel = Gui::InfoPanel.new self, parent: container
