@@ -137,11 +137,7 @@ class Map
   def start_game
     # Ensure that everyone is at max health when scenario helps (not more or less).
     @factions.each do |faction|
-       faction.entities.each do |entity|
-         entity.hp = entity.max_hp
-         entity.ap = entity.max_ap
-         entity.mp = entity.max_mp
-       end
+       faction.entities.each {|e| e.start_game }
     end
 
     @active_faction.start_game

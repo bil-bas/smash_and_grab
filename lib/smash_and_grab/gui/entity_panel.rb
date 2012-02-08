@@ -102,7 +102,7 @@ module SmashAndGrab
       def update_details(entity)
         return unless entity.faction.player
 
-        @health.text = "HP: #{entity.health} / #{entity.max_health}"
+        @health.text = "HP: #{entity.hp} / #{entity.max_hp}"
         @movement_points.text = "MP: #{entity.mp} / #{entity.max_mp}"
         @action_points.text = "AP: #{entity.ap} / #{entity.max_ap}"
 

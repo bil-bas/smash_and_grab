@@ -12,7 +12,7 @@
   :spritesheet_position: [5, 4]
   :movement_points: 10
   :action_points: 3
-  :health: 8
+  :health_points: 6
   :abilities:
     -
       :type: :melee
@@ -30,11 +30,18 @@
   :faction: :baddies
   :spritesheet_position: [7, 3]
   :movement_points: 6
-  :action_points: 1
-  :health: 5
+  :action_points: 2
+  :health_points: 4
   :abilities:
     -
       :type: :melee
+      :skill: 1
+    -
+      :type: :ranged
+      :skill: 4
+      :max_range: 2
+    -
+      :type: :sprint
       :skill: 1
 
 :femme_fatale: # Woman in red dress.
@@ -42,7 +49,7 @@
   :spritesheet_position: [7, 1]
   :movement_points: 8
   :action_points: 2
-  :health: 8
+  :health_points: 5
   :abilities:
     -
       :type: :melee
@@ -56,7 +63,7 @@
   :spritesheet_position: [1, 4]
   :movement_points: 8
   :action_points: 2
-  :health: 15
+  :health_points: 9
   :abilities:
     -
       :type: :melee
@@ -69,22 +76,19 @@
   :faction: :baddies
   :spritesheet_position: [0, 4]
   :movement_points: 5
-  :action_points: 1
-  :health: 10
+  :action_points: 2
+  :health_points: 10
   :abilities:
     -
       :type: :melee
       :skill: 5
-    -
-      :type: :sprint
-      :skill: 1
 
 :artist:
   :faction: :baddies
   :spritesheet_position: [3, 2]
   :movement_points: 8
   :action_points: 2
-  :health: 10
+  :health_points: 5
   :abilities:
     -
       :type: :melee
@@ -98,7 +102,7 @@
   :spritesheet_position: [7, 4]
   :movement_points: 7
   :action_points: 2
-  :health: 10
+  :health_points: 5
   :abilities:
     -
       :type: :melee
@@ -112,7 +116,7 @@
   :spritesheet_position: [2, 4]
   :movement_points: 7
   :action_points: 2
-  :health: 8
+  :health_points: 5
   :abilities:
     -
       :type: :melee
@@ -136,7 +140,7 @@
   :spritesheet_position: [0, 0]
   :movement_points: 8
   :action_points: 1
-  :health: 5
+  :health_points: 4
   :abilities:
     -
       :type: :melee
@@ -154,7 +158,7 @@
   :spritesheet_position: [5, 0]
   :movement_points: 8
   :action_points: 1
-  :health: 5
+  :health_points: 4
   :abilities:
     -
       :type: :melee
@@ -172,7 +176,7 @@
   :spritesheet_position: [6, 0]
   :movement_points: 8
   :action_points: 1
-  :health: 5
+  :health_points: 4
   :abilities:
     -
       :type: :melee
@@ -190,7 +194,7 @@
   :spritesheet_position: [3, 0]
   :movement_points: 8
   :action_points: 1
-  :health: 5
+  :health_points: 4
   :abilities:
     -
       :type: :melee
@@ -209,7 +213,7 @@
   :spritesheet_position: [4, 0]
   :movement_points: 6
   :action_points: 1
-  :health: 5
+  :health_points: 4
   :abilities:
     -
       :type: :melee
@@ -227,7 +231,7 @@
   :spritesheet_position: [4, 1]
   :movement_points: 10
   :action_points: 2
-  :health: 8
+  :health_points: 5
   :abilities:
     -
       :type: :melee
@@ -241,7 +245,7 @@
   :spritesheet_position: [6, 1]
   :movement_points: 8
   :action_points: 2
-  :health: 8
+  :health_points: 5
   :abilities:
     -
       :type: :melee
@@ -255,7 +259,7 @@
   :spritesheet_position: [2, 2]
   :movement_points: 10
   :action_points: 2
-  :health: 10
+  :health_points: 6
   :abilities:
     -
       :type: :melee
@@ -269,7 +273,7 @@
   :spritesheet_position: [0, 2]
   :movement_points: 7
   :action_points: 2
-  :health: 12
+  :health_points: 7
   :abilities:
     -
       :type: :melee
@@ -283,7 +287,7 @@
   :spritesheet_position: [0, 5]
   :movement_points: 8
   :action_points: 2
-  :health: 10
+  :health_points: 7
   :abilities:
     -
       :type: :melee
@@ -297,7 +301,7 @@
   :spritesheet_position: [3, 1]
   :movement_points: 8
   :action_points: 2
-  :health: 15
+  :health_points: 10
   :abilities:
     -
       :type: :melee
@@ -311,7 +315,7 @@
   :spritesheet_position: [1, 2]
   :movement_points: 8
   :action_points: 2
-  :health: 10
+  :health_points: 6
   :abilities:
     -
       :type: :melee
@@ -325,7 +329,7 @@
   :spritesheet_position: [5, 1]
   :movement_points: 8
   :action_points: 3
-  :health: 10
+  :health_points: 8
   :abilities:
     -
       :type: :melee
@@ -343,7 +347,7 @@
   :spritesheet_position: [6, 4]
   :movement_points: 7
   :action_points: 0
-  :health: 1
+  :health_points: 1
   :abilities: []
 
 :editor:
@@ -351,7 +355,7 @@
   :spritesheet_position: [5, 2]
   :movement_points: 6
   :action_points: 0
-  :health: 2
+  :health_points: 2
   :abilities: []
 
 :photographer:
@@ -359,7 +363,7 @@
   :spritesheet_position: [7, 0]
   :movement_points: 8
   :action_points: 0
-  :health: 2
+  :health_points: 2
   :abilities: []
 
 :reporter:
@@ -367,7 +371,7 @@
   :spritesheet_position: [0, 1]
   :movement_points: 8
   :action_points: 0
-  :health: 2
+  :health_points: 2
   :abilities: []
 
 # - Other innocents and children
@@ -377,7 +381,7 @@
   :spritesheet_position: [3, 4]
   :movement_points: 8
   :action_points: 0
-  :health: 2
+  :health_points: 2
   :abilities: []
 
 :boy_with_slingshot:
@@ -385,7 +389,7 @@
   :spritesheet_position: [1, 1]
   :movement_points: 7
   :action_points: 0
-  :health: 2
+  :health_points: 2
   :abilities: []
 
 :girl_with_balloon:
@@ -393,5 +397,5 @@
   :spritesheet_position: [2, 1]
   :movement_points: 7
   :action_points: 0
-  :health: 2
+  :health_points: 2
   :abilities: []

@@ -25,9 +25,10 @@ class Entity < WorldObject
   STATS_HP_COLOR = Color.rgb(0, 200, 0)
   STATS_MP_COLOR = Color::rgb(50, 50, 255)
   STATS_AP_COLOR = Color::YELLOW
-  STATS_USED_COLOR = Color.rgb(70, 70, 70)
   STATS_WIDTH = 12.0
   STATS_HALF_WIDTH = STATS_WIDTH / 2
+  PIP_WIDTH, PIP_SEP_WIDTH = 2, 0.5
+  STATS_USED_SATURATION = 0.5
 
   ACTOR_NAME_COLOR = Color.rgb(50, 200, 50)
   TARGET_NAME_COLOR = Color.rgb(50, 200, 50)
@@ -36,7 +37,7 @@ class Entity < WorldObject
   COLOR_ACTIVE = Color::rgb(255, 255, 255)
   COLOR_ACTIVE_NO_MOVE = STATS_AP_COLOR
   COLOR_ACTIVE_NO_ACTION = STATS_MP_COLOR
-  COLOR_ACTIVE_FINISHED = STATS_USED_COLOR
+  COLOR_ACTIVE_FINISHED = Color.rgb(70, 70, 70)
   COLOR_INACTIVE = Color::BLACK
 
   class << self
@@ -51,11 +52,11 @@ class Entity < WorldObject
 
   def_delegators :@faction, :minimap_color, :active?, :inactive?
 
-  attr_reader :faction, :movement_points, :action_points, :health, :type, :portrait,
-              :max_movement_points, :max_action_points, :max_health
+  attr_reader :faction, :movement_points, :action_points, :health_points, :type, :portrait,
+              :max_movement_points, :max_action_points, :max_health_points
 
-  alias_method :hp, :health
-  alias_method :max_hp, :max_health
+  alias_method :hp, :health_points
+  alias_method :max_hp, :max_health_points
 
   def movement_points=(movement_points)
     @movement_points = movement_points
@@ -79,7 +80,7 @@ class Entity < WorldObject
   alias_method :ap=, :action_points=
 
   def to_s; "<#{self.class.name}/#{@type}##{id} #{tile ? grid_position : "[off-map]"}>"; end
-  def alive?; @health > 0 and @tile; end
+  def alive?; @health_points > 0 and @tile; end
   def title; t.title; end
   def colorized_name; faction.class::TEXT_COLOR.colorize name; end
 
@@ -110,8 +111,8 @@ class Entity < WorldObject
     @max_action_points = config[:action_points]
     @action_points = data[:action_points] || @max_action_points
 
-    @max_health = config[:health]
-    @health = data[:health] || @max_health
+    @max_health_points = config[:health_points]
+    @health_points = data[:health_points] || @max_health_points
 
     # Load other abilities of the entity from config.
     @abilities = {}
@@ -138,31 +139,31 @@ class Entity < WorldObject
   def has_ability?(type); @abilities.has_key? type; end
   def ability(type); @abilities[type]; end
 
-  def health=(value)
-    original_health = @health
-    @health = [value, 0].max
+  def health_points=(value)
+    original_health = @health_points
+    @health_points = [value, 0].max
 
     # Show damage/healing as a floating number.
-    if original_health != @health
-      text, color = if @health > original_health
-                      ["+#{@health - original_health}", Color::GREEN]
+    if original_health != @health_points
+      text, color = if @health_points > original_health
+                      ["+#{@health_points - original_health}", Color::GREEN]
                     else
-                      [(@health - original_health).to_s, Color::RED]
+                      [(@health_points - original_health).to_s, Color::RED]
                     end
 
       FloatingText.new(text, color: color, x: x, y: y - height / 3, zorder: y - 0.01)
       publish :changed
     end
 
-    if @health == 0 and @tile
+    if @health_points == 0 and @tile
       parent.publish :game_info, "#{colorized_name} was vanquished!"
       self.tile = nil
       @queued_activities.empty?
     end
 
-    @health
+    @health_points
   end
-  alias_method :hp=, :health=
+  alias_method :hp=, :health_points=
 
   # Called from GameActions::Ability
   # Also used to un-melee :)
@@ -175,6 +176,7 @@ class Entity < WorldObject
         self.z -= 10
 
         parent.publish :game_info, "#{colorized_name} swung at #{target.colorized_name}, but missed"
+        missed target
 
       elsif damage > 0 # do => wound
         face target
@@ -185,7 +187,7 @@ class Entity < WorldObject
         # Can be dead at this point if there were 2-3 attackers of opportunity!
         if target.alive?
           parent.publish :game_info, "#{colorized_name} smashed #{target.colorized_name} for {#{DAMAGE_NUMBER_COLOR.colorize damage}}"
-          target.health -= damage
+          target.hp -= damage
 
           target.color = Color.rgb(255, 100, 100)
           delay 0.1
@@ -196,7 +198,7 @@ class Entity < WorldObject
       else # undo => heal
         target.color = Color.rgb(255, 100, 100)
         delay 0.1
-        target.health -= damage
+        target.hp -= damage
         target.color = Color::WHITE
 
         self.z += 10
@@ -206,19 +208,25 @@ class Entity < WorldObject
     end
   end
 
+  def missed(target)
+    FloatingText.new("Miss!", color: Color::YELLOW, x: target.x, y: target.y - target.height / 3, zorder: target.y - 0.01)
+  end
+
   def make_ranged_attack(target, damage)
     add_activity do
       if damage == 0
         face target
 
         parent.publish :game_info, "#{colorized_name} shot at #{target.colorized_name}, but missed"
+
+        missed target
       elsif damage > 0 # do => wound
         face target
 
         # Can be dead at this point if there were 2-3 attackers of opportunity!
         if target.alive?
           parent.publish :game_info, "#{colorized_name} shot #{target.colorized_name} for {#{DAMAGE_NUMBER_COLOR.colorize damage}}"
-          target.health -= damage
+          target.hp -= damage
 
           target.color = Color.rgb(255, 100, 100)
           delay 0.1
@@ -229,15 +237,21 @@ class Entity < WorldObject
       else # undo => heal
         target.color = Color.rgb(255, 100, 100)
         delay 0.1
-        target.health -= damage
+        target.hp -= damage
         target.color = Color::WHITE
       end
     end
   end
 
+  def start_game
+    @health_points = max_hp # Has to be done directly or you could take damage or heal from it :D
+    self.mp = max_mp
+    self.ap = max_ap
+  end
+
   def start_turn
-    self.movement_points = @max_movement_points
-    self.action_points = @max_action_points
+    self.mp = max_mp
+    self.ap = max_ap
     publish :started_turn
     publish :changed
   end
@@ -271,7 +285,26 @@ class Entity < WorldObject
 
     super()
 
-    draw_stat_bars
+    draw_stat_bars if parent.zoom >= 2
+  end
+
+  def draw_stat_pips(value, max, color, y)
+    # Draw a background which appears between and underneath the pips.
+    width = (max - 1) * PIP_SEP_WIDTH + max * PIP_WIDTH
+    $window.pixel.draw 0, y, 0, width, 1 + PIP_SEP_WIDTH, STATS_BACKGROUND_COLOR
+
+    # Draw the pips themselves.
+    max.times do |i|
+      if i < value and alive?
+        pip_color = color
+      else
+        pip_color = color.dup
+        pip_color.red *= STATS_USED_SATURATION
+        pip_color.blue *= STATS_USED_SATURATION
+        pip_color.green *= STATS_USED_SATURATION
+      end
+      $window.pixel.draw i * (PIP_WIDTH + PIP_SEP_WIDTH), y, 0, PIP_WIDTH, 1, pip_color
+    end
   end
 
   def draw_stat_bars(options = {})
@@ -284,33 +317,35 @@ class Entity < WorldObject
     }.merge! options
 
     @stat_bars_record ||= $window.record 1, 1 do
-      # Draw background shadow.
-      height = 1
-      height += 1 if active?
-      height += 1 if max_ap > 0
-
-      $window.pixel.draw -0.5, -0.5, 0, STATS_WIDTH + 1, height + 1, STATS_BACKGROUND_COLOR
-
-      # Health.
-      $window.pixel.draw 0, 0, 0, STATS_WIDTH, 1, STATS_USED_COLOR
-      width = alive? ? STATS_WIDTH * hp : 0
-      $window.pixel.draw 0, 0, 0,  width / [health, max_health].max, 1, STATS_HP_COLOR
-
-      # Action points.
-      if max_ap > 0
-        pip_width = (STATS_WIDTH + 1 - max_ap) / max_ap
-        max_ap.times do |i|
-          color = (i < ap and alive?) ? STATS_AP_COLOR : STATS_USED_COLOR
-          $window.pixel.draw i * pip_width + i, 1, 0, pip_width, 1, color
-        end
+      # Health. 1 or two rows of up to 5 pips. Cannot have > 10 HP!
+      full_rows, top_row_pips = max_hp.divmod 5
+      case full_rows
+        when 0
+          draw_stat_pips(hp, top_row_pips, STATS_HP_COLOR, 1.5)
+        when 1
+          draw_stat_pips(hp - 5, top_row_pips, STATS_HP_COLOR, 0) if max_hp > 5
+          draw_stat_pips([hp,  5].min, 5, STATS_HP_COLOR, 1.5)
+        else # 2
+          draw_stat_pips(hp - 5, 5, STATS_HP_COLOR, 0)
+          draw_stat_pips([hp,  5].min, 5, STATS_HP_COLOR, 1.5)
       end
 
-      # Movement points.
+      # Action points. Cannot have > 5 AP!
+      if max_ap > 0
+        draw_stat_pips(ap, max_ap, STATS_AP_COLOR, 3)
+      end
+
+      # Movement points. Just use a bar, since they aren't so critical and could be up to 20.
       if active?
-        $window.pixel.draw 0, 2, 0, STATS_WIDTH, 1, STATS_USED_COLOR
+        $window.pixel.draw 0, 4.5, 0, STATS_WIDTH, 1.5, STATS_BACKGROUND_COLOR
+        used_color = STATS_MP_COLOR.dup
+        used_color.red *= STATS_USED_SATURATION
+        used_color.blue *= STATS_USED_SATURATION
+        used_color.green *= STATS_USED_SATURATION
+        $window.pixel.draw 0, 4.5, 0, STATS_WIDTH, 1, used_color
 
         width = alive? ? STATS_WIDTH * mp : 0
-        $window.pixel.draw 0, 2, 0, width / [mp, max_mp].max, 1, STATS_MP_COLOR if active?
+        $window.pixel.draw 0, 4.5, 0, width / [mp, max_mp].max, 1, STATS_MP_COLOR if active?
       end
     end
 
@@ -527,7 +562,7 @@ class Entity < WorldObject
         :class => CLASS,
         type: @type,
         id: id,
-        health: @health,
+        health: @health_points,
         movement_points: @movement_points,
         action_points: @action_points,
         facing: factor_x > 0 ? :right : :left,
