@@ -172,7 +172,13 @@ class Entity < WorldObject
 
     if @health_points == 0 and @tile
       parent.publish :game_info, "#{colorized_name} was vanquished!"
+
+      # Leave the tile, then drop anything we are carrying into it.
+      # TODO: this is not undo/redoable!
+      old_tile = tile
       self.tile = nil
+      drop old_tile if contents
+
       @queued_activities.empty?
     end
 
