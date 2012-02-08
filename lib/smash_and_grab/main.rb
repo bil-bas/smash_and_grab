@@ -84,8 +84,9 @@ SmashAndGrab::Log.log.debug { "Scripts loaded in #{"%.3f" % (Time.now - t)} s" }
 t = Time.now
 SmashAndGrab::GameWindow.new
 SmashAndGrab::Log.log.debug { "Window created in #{"%.3f" % (Time.now - t)} s" }
-SmashAndGrab::  FONT_NAME = "UnmaskedBB.ttf"
-unless defined? Ocra or defined? Bacon
+SmashAndGrab::FONT_NAME = "UnmaskedBB.ttf"
+
+unless defined?(Ocra) or defined?(Bacon)
   SmashAndGrab::Log.log.info { "Game window opened" }
   $window.show
 
