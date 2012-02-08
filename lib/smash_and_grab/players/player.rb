@@ -16,12 +16,8 @@ module SmashAndGrab
 
         @faction.player = self
 
-        @faction.subscribe :turn_started do |faction, entities|
-          @active_entities = entities.select(&:alive?).shuffle
-        end
-
         @faction.subscribe :turn_ended do
-          @active_entities = nil
+          # Do nothing.
         end
       end
 

@@ -13,7 +13,6 @@ require_relative "../mixins/has_contents"
 module SmashAndGrab
 module Objects
 class Entity < WorldObject
-  extend Forwardable
   include Mixins::LineOfSight
   include Mixins::Pathfinding
   include Mixins::HasContents
@@ -52,13 +51,15 @@ class Entity < WorldObject
   event :ended_turn
   event :started_turn
 
-  def_delegators :@faction, :minimap_color, :active?, :inactive?
-
   attr_reader :faction, :movement_points, :action_points, :health_points, :type, :portrait,
-              :max_movement_points, :max_action_points, :max_health_points
+              :max_movement_points, :max_action_points, :max_health_points, :default_faction_type
 
   alias_method :hp, :health_points
   alias_method :max_hp, :max_health_points
+
+  def minimap_color; @faction.minimap_color; end
+  def active?; @faction.active?; end
+  def inactive?; @faction.inactive?; end
 
   def movement_points=(movement_points)
     @movement_points = movement_points
@@ -94,7 +95,8 @@ class Entity < WorldObject
     @type = data[:type]
     config = self.class.config[data[:type]]
 
-    @faction = map.send(config[:faction])
+    @default_faction_type = config[:faction]
+    @faction = nil
 
     options = {
         image: self.class.sprites[*config[:spritesheet_position]],
@@ -132,12 +134,16 @@ class Entity < WorldObject
 
     setup_contents data[:contents], max_ap > 0
 
-    @faction << self
-
     @stat_bars_record = nil
     subscribe :changed do
       @stat_bars_record = nil
     end
+  end
+
+  def faction=(faction)
+    @faction.remove self if @faction
+    @faction = faction
+    @faction << self
   end
 
   def has_ability?(type); @abilities.has_key? type; end

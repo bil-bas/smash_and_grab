@@ -18,14 +18,9 @@ class World < Fidgit::GuiState
   QUICKSAVE_FILE = File.expand_path("quicksave.sgs", SAVE_PATH)
   AUTOSAVE_FILE = File.expand_path("autosave.sgs", SAVE_PATH)
 
-  def map=(map)
-    @map = map
-    @map.record_grid GRID_COLOR
+  def create_gui; raise NotImplementedError; end
 
-    @camera_offset_x, @camera_offset_y = [0, -@map.to_rect.center_y]
-
-    create_gui
-
+  def create_minimap
     @minimap.map = @map
 
     @map.subscribe :tile_contents_changed do |map, tile|
@@ -94,7 +89,7 @@ class World < Fidgit::GuiState
     File.open("#{file}.json", "w") {|f| f.write json } # DEBUG ONLY!
   end
 
-  def load_game(file)
+  def load_game(file, factions, options = {})
     t = Time.now
 
     json = Zlib::GzipReader.open(file) do |gz|
@@ -103,10 +98,20 @@ class World < Fidgit::GuiState
 
     data = JSON.parse(json).symbolize
 
-    self.map = Map.new data
+    @map =  Map.new data, factions, options
+    @map.record_grid GRID_COLOR
+
+    @camera_offset_x, @camera_offset_y = [0, -@map.to_rect.center_y]
+
+    assign_entities_to_factions
+
+    create_gui
+    create_minimap
 
     log.info { "Loaded game from #{file} [#{File.size(file)} bytes] in #{"%.3f" % (Time.now - t) }s" }
   end
+
+  def assign_entities_to_factions; raise NotImplementedError; end
 
   def autosave
     save_game_as AUTOSAVE_FILE

@@ -1,6 +1,6 @@
 module SmashAndGrab
 module Factions
-  class Faction
+  class Faction < BasicGameObject
     include Fidgit::Event
     extend Forwardable
     include Log
@@ -22,11 +22,17 @@ module Factions
     def colorized_name; self.class::TEXT_COLOR.colorize name; end
     def name; Inflector.demodulize self.class.name; end
 
-    def initialize(map)
-      @map = map
+    def initialize
+      super
+
+      @map = nil
       @entities = []
       @active = false
       @player = nil
+    end
+
+    def map=(map)
+      @map = map
     end
 
     def <<(entity)
@@ -39,15 +45,22 @@ module Factions
 
     # Start of first turn of the game.
     def start_game
+      raise unless @map
       start_turn
     end
 
     # Restart from a loaded position.
     def resume_game
+      raise unless @map
       @active = true
     end
 
     def start_turn
+      parent.publish :game_heading, "=== Turn #{map.turn + 1} ==="
+      parent.publish :game_info, ""
+      parent.publish :game_heading, self.class::TEXT_COLOR.colorize("#{name}' turn (#{Inflector.demodulize player.class})")
+      parent.publish :game_info, ""
+
       log.info "#{self} started turn #{@map.turn + 1}"
       @active = true
       @entities.each(&:start_turn)

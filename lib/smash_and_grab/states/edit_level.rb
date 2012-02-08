@@ -4,6 +4,7 @@ module SmashAndGrab
 module States
 class EditLevel < World
   PLACEMENT_COLOR = Color.rgba(255, 255, 255, 190)
+  FACTIONS = [:baddies, :goodies, :bystanders]
 
   def initialize(file)
     super()
@@ -13,10 +14,20 @@ class EditLevel < World
 
     @selected_wall = nil
 
-    load_game file
+    factions = FACTIONS.map do |f|
+      Factions.const_get(f.capitalize).new
+    end
+
+    load_game file, factions
 
     on_input :right_mouse_button do
       @selector.pick_up(@hover_tile, @hover_wall)
+    end
+  end
+
+  def assign_entities_to_factions
+    map.world_objects.grep(Objects::Entity).each do |o|
+      o.faction = map.factions[FACTIONS.index o.default_faction_type]
     end
   end
 
@@ -58,8 +69,8 @@ class EditLevel < World
     load_game @editing_file
   end
 
-  def load_game(file)
-    super
+  def load_game(file, factions)
+    super file, factions, start: false
     @editing_file = file
     @actions = EditorActionHistory.new
   end

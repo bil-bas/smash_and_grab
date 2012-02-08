@@ -11,28 +11,31 @@ class PlayLevel < World
   event :game_heading
 
   # Players is villains
-  def initialize(file, baddies_player, goodies_player)
+  def initialize(file, baddies_players, goodies_players)
     super()
 
     add_inputs(space: :end_turn)
 
-    @players = [baddies_player, goodies_player, Players::AI.new]
+    @players = {
+      baddies: Array(baddies_players),
+      goodies: Array(goodies_players),
+      bystanders: [Players::AI.new],
+    }
 
     @quicksaved = false
     @cursor_world_x = @cursor_world_x = nil
 
-    load_game file
+    factions = []
 
-    @players.each.with_index do |player, i|
-      map.factions[i].player = player
-      player.faction = map.factions[i]
-      player.faction.subscribe :turn_started do
-        publish :game_heading, "=== Turn #{map.turn + 1} ===" if player == @players.first
-        publish :game_info, ""
-        publish :game_heading, player.faction.class::TEXT_COLOR.colorize("#{player.faction.name}' turn (#{Inflector.demodulize player.class})")
-        publish :game_info, ""
+    @players.each_pair do |faction_name, players|
+      players.each do |player|
+        new_faction = Factions.const_get(faction_name.capitalize).new
+        factions << new_faction
+        player.faction = new_faction
       end
     end
+
+    load_game file, factions
 
     # If loading a level, start the first turn, otherwise just keep going.
     name = File.basename(file).chomp(File.extname(file))
@@ -53,25 +56,35 @@ class PlayLevel < World
     @mouse_selection = MouseSelection.new @map
   end
 
+  def assign_entities_to_factions
+    factions_by_type = map.factions.group_by {|f| Inflector.demodulize(f.class.name).downcase.to_sym }
+    factions_by_type.each_pair do |faction_name, factions|
+      entities = map.world_objects.grep(Objects::Entity).find_all {|o| o.default_faction_type == faction_name }
+      # Split them up as evenly as possible if more than one player is controlling them.
+      entities_per_faction = entities.size.fdiv(factions.size).ceil
+      entities.each_slice(entities_per_faction).with_index do |entities, i|
+        entities.each {|e| e.faction = factions[i] }
+      end
+    end
+  end
+
   def create_gui
     @container = Fidgit::Container.new do |container|
       @minimap = Gui::Minimap.new parent: container
 
       # Unit roster.
       @summary_bar = vertical parent: container, padding: 4, spacing: 4, background_color: Color::BLACK do |packer|
-        [@map.baddies.size, 8].min.times do |i|
-          baddy = @map.baddies[i]
-          summary = Gui::EntitySummary.new baddy, parent: packer
+        @map.active_faction.entities.each do |entity|
+          summary = Gui::EntitySummary.new entity, parent: packer
           summary.subscribe :left_mouse_button do
-            @mouse_selection.selected = baddy if baddy.alive?
-            @info_panel.object = baddy
+            @mouse_selection.selected = entity if entity.alive?
+            @info_panel.object = entity
           end
         end
       end
 
       # Info panel.
       @info_panel = Gui::InfoPanel.new self, parent: container
-      @info_panel.object = @map.baddies[0]
 
       # Button box.
       @button_box = vertical parent: container, padding: 4, spacing: 8, width: 150, background_color: Color::BLACK do
@@ -167,7 +180,7 @@ class PlayLevel < World
 
   def quickload
     if @quicksaved
-      switch_game_state self.class.new(QUICKSAVE_FILE)
+      switch_game_state self.class.new(QUICKSAVE_FILE, @players[:baddies], @players[:goodies])
     end
   end
 

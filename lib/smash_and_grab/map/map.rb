@@ -36,7 +36,7 @@ class Map
   event :wall_type_changed # The actual type itself changed.
 
   attr_reader :grid_width, :grid_height, :actions
-  attr_reader :goodies, :baddies, :bystanders, :active_faction, :turn, :factions
+  attr_reader :active_faction, :turn, :factions, :world_objects
     
   def to_rect; Rect.new(0, 0, @grid_width * Tile::WIDTH, @grid_height * Tile::HEIGHT); end
 
@@ -45,8 +45,16 @@ class Map
   def busy?; factions.any? {|f| f.entities.any?(&:busy?) }; end
 
   # tile_classes: Nested arrays of Tile class names (Tile::Grass is represented as "Grass")
-  def initialize(data)
+  def initialize(data, factions, options = {})
+    options = {
+        start: true,
+    }.merge! options
+
     t = Time.now
+
+    raise unless factions.inspect unless factions.size >= 3
+    @factions = factions
+    @factions.each {|f| f.map = self }
 
     @effects = []
     @world_objects = []
@@ -79,12 +87,6 @@ class Map
       Wall.new self, wall_data
     end
 
-    @goodies = Factions::Goodies.new self
-    @baddies = Factions::Baddies.new self
-    @bystanders = Factions::Bystanders.new self
-
-    @factions = [@baddies, @goodies, @bystanders] # And order of play.
-
     data[:objects].each do |object_data|
       case object_data[:class]
         when Objects::Entity::CLASS
@@ -109,10 +111,12 @@ class Map
 
     record
 
-    if @actions.empty?
-      start_game
-    else
-      resume_game
+    if options[:start]
+      if @actions.empty?
+        start_game
+      else
+        resume_game
+      end
     end
 
     # Ensure that if any tiles are changed, that the map is redrawn.

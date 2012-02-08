@@ -33,6 +33,10 @@ class MainMenu < Fidgit::GuiState
             push_game_state States::PlayLevel.new(GAME_FILE, Players::Human.new, Players::AI.new)
           end
 
+          button "Co-op", options do
+            push_game_state States::PlayLevel.new(GAME_FILE, [Players::Human.new, Players::Human.new], Players::AI.new)
+          end
+
           button "Hot-seat", options do
             push_game_state States::PlayLevel.new(GAME_FILE, Players::Human.new, Players::Human.new)
           end

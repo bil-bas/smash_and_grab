@@ -15,16 +15,18 @@ module SmashAndGrab
         }.merge! options
         super options
 
-        @object = nil
         @show_info = false
-        @scenario_panel = ScenarioPanel.new state
+
         @frame = vertical padding: 4, background_color: Color.rgb(0, 0, 150), width: 440, height: 112
+
+        @scenario_panel = ScenarioPanel.new state
+        self.object = nil
 
         self.x, self.y = ($window.width - width) / 2, $window.height - height
       end
 
       def object=(object)
-        return if @object == object
+        return if defined? @object and object == @object
 
         @frame.each(&:finalize)
 
