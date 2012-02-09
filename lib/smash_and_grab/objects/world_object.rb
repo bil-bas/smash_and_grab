@@ -63,11 +63,18 @@ class WorldObject < GameObject
   def tiles(&block)
     yield @tile
   end
- 
+
+  def factor_x=(factor_x)
+    # Ensure that the shadow is redrawn.
+    super factor_x
+    @recorded_shadow = nil
+    factor_x
+  end
+
   def draw
     # Draw a shadow
-    @recorded_shadow ||= $window.record(1, 1) do
-      if casts_shadow?
+    if casts_shadow?
+      @recorded_shadow ||= $window.record(1, 1) do
         color = Color.rgba(0, 0, 0, (alpha * 0.3).to_i)
 
         shadow_scale = 0.5
@@ -86,9 +93,9 @@ class WorldObject < GameObject
           image.draw_as_quad(*top_right, *top_left, *bottom_right, *bottom_left, ZOrder::SHADOWS)
         end
       end
-    end
 
-    @recorded_shadow.draw 0, 0, ZOrder::SHADOWS if casts_shadow?
+      @recorded_shadow.draw 0, 0, ZOrder::SHADOWS
+    end
 
     @image.draw_rot @x, @y + 2.5 - @z, @y, 0, 0.5, 1, OUTLINE_SCALE * @factor_x, OUTLINE_SCALE, color
   end
