@@ -22,7 +22,7 @@ module SmashAndGrab::Abilities
     end
 
     def tip
-      "#{super} attack in ranged combat, at range #{min_range}..#{max_range}"
+      "#{super} attack in ranged combat, at range #{min_range}-#{max_range}"
     end
 
     def to_hash
