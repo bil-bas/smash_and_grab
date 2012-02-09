@@ -1,0 +1,6 @@
+[submodule "wiki"]
+	path = wiki
+	url = git@github.com:Spooner/smash_and_grab.wiki.git
+[submodule "server"]
+	path = server
+	url = git@github.com:Spooner/smash_and_grab_server.git
