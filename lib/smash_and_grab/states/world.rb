@@ -80,7 +80,7 @@ class World < Fidgit::GuiState
 
     FileUtils.mkdir_p File.dirname(file)
 
-    Zlib::GzipWriter.open(file) do |gz|
+    Zlib::GzipWriter.open(file, 9) do |gz|
       gz.write json
     end
 
