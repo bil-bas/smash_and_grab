@@ -1,1 +1,0 @@
-Welcome to the smash_and_grab wiki!

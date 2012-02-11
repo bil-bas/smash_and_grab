@@ -11,3 +11,6 @@
 /doc
 /config/levels/*.sgl.json
 /pkg
+/server
+/wiki
+/design
