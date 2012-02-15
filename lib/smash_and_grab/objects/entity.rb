@@ -21,13 +21,14 @@ class Entity < WorldObject
 
   SPRITE_WIDTH, SPRITE_HEIGHT = 66, 66
   PORTRAIT_WIDTH, PORTRAIT_HEIGHT = 36, 36
+  DEFAULT_VISIBLE_SPRITE_HEIGHT = 26
 
   STATS_BACKGROUND_COLOR = Color.rgba 0, 0, 0, 180
   STATS_HP_COLOR = Color.rgb 0, 200, 0
   STATS_MP_COLOR = Color::rgb 50, 50, 255
   STATS_AP_COLOR = Color::YELLOW
   STATS_EP_COLOR = Color::RED
-  PIP_WIDTH, PIP_SEP_WIDTH = 1.5, 0.5
+  PIP_WIDTH, PIP_SEP_WIDTH = 2, 0.5
   STATS_WIDTH = PIP_WIDTH * 5 + PIP_SEP_WIDTH * 4
   STATS_HALF_WIDTH = STATS_WIDTH / 2
   STATS_USED_SATURATION = 0.5
@@ -52,7 +53,7 @@ class Entity < WorldObject
   event :ended_turn
   event :started_turn
 
-  attr_reader :faction, :type, :portrait, :default_faction_type
+  attr_reader :faction, :type, :portrait, :default_faction_type, :visible_sprite_height
   attr_reader :movement_points, :max_movement_points,
               :action_points, :max_action_points,
               :health_points, :max_health_points,
@@ -117,6 +118,7 @@ class Entity < WorldObject
     }
 
     @portrait = self.class.portraits[*config[:spritesheet_position]]
+    @visible_sprite_height = config[:visible_sprite_height] || DEFAULT_VISIBLE_SPRITE_HEIGHT
 
     super(map, data, options)
 
@@ -352,7 +354,7 @@ class Entity < WorldObject
   def draw_stat_bars(options = {})
     options = {
         x: x - STATS_HALF_WIDTH,
-        y: y - 4,
+        y: y - 2 - visible_sprite_height,
         zorder: y,
         factor_x: 1,
         factor_y: 1,

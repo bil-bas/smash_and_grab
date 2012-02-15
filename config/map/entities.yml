@@ -29,6 +29,7 @@
 :octobrain: # Scientist with giant brain.
   :faction: :baddies
   :spritesheet_position: [7, 3]
+  :visible_sprite_height: 28
   :movement_points: 6
   :action_points: 2
   :health_points: 4
@@ -61,6 +62,7 @@
 :radioactive_gorilla:
   :faction: :baddies
   :spritesheet_position: [1, 4]
+  :visible_sprite_height: 34
   :movement_points: 8
   :action_points: 2
   :health_points: 9
@@ -75,6 +77,7 @@
 :robot:
   :faction: :baddies
   :spritesheet_position: [0, 4]
+  :visible_sprite_height: 36
   :movement_points: 5
   :action_points: 2
   :health_points: 10
@@ -345,6 +348,7 @@
 :boy_selling_papers:
   :faction: :bystanders
   :spritesheet_position: [6, 4]
+  :visible_sprite_height: 20
   :movement_points: 7
   :action_points: 0
   :health_points: 1
@@ -387,6 +391,7 @@
 :boy_with_slingshot:
   :faction: :bystanders
   :spritesheet_position: [1, 1]
+  :visible_sprite_height: 20
   :movement_points: 7
   :action_points: 0
   :health_points: 2
@@ -395,6 +400,7 @@
 :girl_with_balloon:
   :faction: :bystanders
   :spritesheet_position: [2, 1]
+  :visible_sprite_height: 20
   :movement_points: 7
   :action_points: 0
   :health_points: 2
