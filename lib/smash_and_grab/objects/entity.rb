@@ -110,7 +110,7 @@ class Entity < WorldObject
     config = self.class.config[data[:type]]
 
     @default_faction_type = config[:faction]
-    @faction = nil
+    @faction = data[:faction] # Probably not set though; will use @default_faction_type later to set it.
 
     options = {
         image: self.class.sprites[*config[:spritesheet_position]],

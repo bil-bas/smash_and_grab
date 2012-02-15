@@ -10,9 +10,9 @@ IMAGES = [
 desc "Process images (double in size and add an outline)"
 task :outline_images do
   require 'texplay'
-  require_relative '../lib/texplay_ext/color'
-  require_relative '../lib/texplay_ext/image'
-  require_relative '../lib/texplay_ext/window'
+  require_relative '../lib/smash_and_grab/texplay_ext/color'
+  require_relative '../lib/smash_and_grab/texplay_ext/image'
+  require_relative '../lib/smash_and_grab/texplay_ext/window'
 
   puts "=== Processing images ===\n\n"
 

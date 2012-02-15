@@ -14,10 +14,12 @@ class PlaceObject < EditorAction
       @tile.map.remove @old_object
     end
 
+    initial_faction = @tile.map.factions[States::EditLevel::FACTIONS.index @object_class.config[@type][:faction]]
     @new_object = @object_class.new @tile.map,
                                  type: @type,
                                  tile: @tile.grid_position,
-                                 facing: :right
+                                 facing: :right,
+                                 faction: initial_faction
   end
 
   def undo

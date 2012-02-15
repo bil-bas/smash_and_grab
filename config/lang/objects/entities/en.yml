@@ -6,38 +6,43 @@ Entity:
   # === BADDIES ===
   
   # - Supervillains -
-  
-  green_goddess:
-    name: Green Goddess
-    title: Nefarious ninja from Nebraska
-  
-  octobrain: # Scientist with giant brain.
-    name: Octobrain
-    title: Mastermind with the brains of eight men
-  
-  femme_fatale: # Woman in red dress.
-    name: Felicity X
-    title: Scheming Femme Fatale
-  
-  radioactive_gorilla:
-    name: Atom Ape
-    title: Radioactive gorrila
-  
-  robot:
-    name: Rbt. 99
-    title: '"Robert" - Deranged automaton'
-  
+
+
   artist:
     name: The Painter
     title: Fine art forger
   
+  femme_fatale: # Woman in red dress.
+    name: Felicity X
+    title: Scheming Femme Fatale
+
+  green_goddess:
+    name: Green Goddess
+    title: Nefarious ninja from Nebraska
+  
   invisible_man:
     name: Hiro Nosimi
     title: Invisible man
+
+  octobrain: # Scientist with giant brain.
+    name: Octobrain
+    title: Mastermind with the brains of eight men
   
   professor_goggles:
     name: Prof. Goggles
     title: Demented scientist
+
+  radioactive_gorilla:
+    name: Atom Ape
+    title: Radioactive gorrila
+
+  robot:
+    name: Rbt. 99
+    title: '"Robert" - Deranged automaton'
+
+  yuri_blastin:
+    name: Yuri Blastin
+    title: Soviet physisict
   
   # - Minions -
   
@@ -70,6 +75,10 @@ Entity:
   catman:
     name: Cat Man
     title: Notorious cat burgler
+
+  enormous_esme: # Giant
+    name: Enormous Esme
+    title: Unusually large woman
   
   femme_fatale2: # Woman in green dress.
     name: Olivia Dupres
@@ -78,6 +87,10 @@ Entity:
   homerun: # Baseball player
     name: Homerun
     title: Retired baseball legend
+
+  knockout: # Boxer.
+    name: Knock-out
+    title: Has-been pugilist
   
   moleman:
     name: The Mole Man
@@ -94,10 +107,6 @@ Entity:
   stinger: # Wasp-lady
     name: Stinger
     title: Waspish beatnick
-  
-  knockout: # Boxer.
-    name: Knock-out
-    title: Has-been pugilist
   
   # === BYSTANDERS ===
   

@@ -122,39 +122,9 @@ class EditLevel < World
 
     if holding? :left_mouse_button
       case @selector.tab
-        when :tiles
-          if @hover_tile
-            if @hover_tile.type != @selector.selected
-              @actions.do :set_tile_type, @hover_tile, @selector.selected
-            end
-          end
-
-        when :entities, :objects, :vehicles
-          klass = case @selector.tab
-                    when :entities then Objects::Entity
-                    when :objects then Objects::Static
-                    when :vehicles then Objects::Vehicle
-                  end
-
-          if @hover_tile
-            if @selector.selected == :erase
-              @actions.do :erase_object, @hover_tile unless @hover_tile.empty?
-            else
-              if @hover_tile.empty? or
-                  (@hover_tile.object and @hover_tile.object.type != @selector.selected)
-
-                @actions.do :place_object, @hover_tile, klass, @selector.selected
-              end
-            end
-          end
-
-        when :walls
-          if @hover_wall
-            if @hover_wall and @hover_wall.type != @selector.selected
-              @actions.do :set_wall_type, @hover_wall, @selector.selected
-            end
-          end
-
+        when :tiles                         then place_tile
+        when :entities, :objects, :vehicles then place_entity
+        when :walls                         then place_wall
         else
           raise @selector.tab
       end
@@ -162,6 +132,42 @@ class EditLevel < World
 
     @undo_button.enabled = @actions.can_undo?
     @redo_button.enabled = @actions.can_redo?
+  end
+
+  def place_wall
+    if @hover_wall
+      if @hover_wall and @hover_wall.type != @selector.selected
+        @actions.do :set_wall_type, @hover_wall, @selector.selected
+      end
+    end
+  end
+
+  def place_entity
+    klass = case @selector.tab
+              when :entities then Objects::Entity
+              when :objects then Objects::Static
+              when :vehicles then Objects::Vehicle
+            end
+
+    if @hover_tile
+      if @selector.selected == :erase
+        @actions.do :erase_object, @hover_tile unless @hover_tile.empty?
+      else
+        if @hover_tile.empty? or
+            (@hover_tile.object and @hover_tile.object.type != @selector.selected)
+
+          @actions.do :place_object, @hover_tile, klass, @selector.selected
+        end
+      end
+    end
+  end
+
+  def place_tile
+    if @hover_tile
+      if @hover_tile.type != @selector.selected
+        @actions.do :set_tile_type, @hover_tile, @selector.selected
+      end
+    end
   end
 
   def draw

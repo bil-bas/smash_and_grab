@@ -132,6 +132,22 @@
       :type: :sprint
       :skill: 2
 
+:yuri_blastin:
+  :faction: :baddies
+  :spritesheet_position: [6, 5]
+  :visible_sprite_height: 22
+  :movement_points: 6
+  :action_points: 2
+  :health_points: 6
+  :abilities:
+    -
+      :type: :melee
+      :skill: 1
+    -
+      :type: :ranged
+      :skill: 5
+      :max_range: 15
+
 # - Minions -
 
 # === GOODIES ===
@@ -243,6 +259,21 @@
       :type: :sprint
       :skill: 5
 
+:enormous_esme: # Giant.
+  :faction: :goodies
+  :spritesheet_position: [5, 5]
+  :visible_sprite_height: 36
+  :movement_points: 8
+  :action_points: 2
+  :health_points: 8
+  :abilities:
+    -
+      :type: :melee
+      :skill: 4
+    -
+      :type: :sprint
+      :skill: 2
+
 :femme_fatale2: # Woman in green dress.
   :faction: :goodies
   :spritesheet_position: [6, 1]
@@ -270,6 +301,20 @@
     -
       :type: :sprint
       :skill: 4
+
+:knockout: # Boxer.
+  :faction: :goodies
+  :spritesheet_position: [5, 1]
+  :movement_points: 8
+  :action_points: 2
+  :health_points: 8
+  :abilities:
+    -
+      :type: :melee
+      :skill: 4
+    -
+      :type: :sprint
+      :skill: 2
 
 :moleman:
   :faction: :goodies
@@ -326,20 +371,6 @@
     -
       :type: :sprint
       :skill: 3
-
-:knockout: # Boxer.
-  :faction: :goodies
-  :spritesheet_position: [5, 1]
-  :movement_points: 8
-  :action_points: 2
-  :health_points: 8
-  :abilities:
-    -
-      :type: :melee
-      :skill: 4
-    -
-      :type: :sprint
-      :skill: 2
 
 # === BYSTANDERS ===
 

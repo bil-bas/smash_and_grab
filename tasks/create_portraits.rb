@@ -6,9 +6,9 @@ PORTRAIT_IMAGES = [
 desc "Process images (cut out a portrait of each character)"
 task create_portraits: :outline_images do
   require 'texplay'
-  require_relative '../lib/texplay_ext/color'
-  require_relative '../lib/texplay_ext/image'
-  require_relative '../lib/texplay_ext/window'
+  require_relative '../lib/smash_and_grab/texplay_ext/color'
+  require_relative '../lib/smash_and_grab/texplay_ext/image'
+  require_relative '../lib/smash_and_grab/texplay_ext/window'
 
   puts "=== Creating portraits ===\n\n"
 
