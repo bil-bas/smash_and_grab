@@ -20,7 +20,7 @@ Entity:
     title: Scheming Femme Fatale
   
   radioactive_gorilla:
-    name: Atomape
+    name: Atom Ape
     title: Radioactive gorrila
   
   robot:
@@ -36,7 +36,7 @@ Entity:
     title: Invisible man
   
   professor_goggles:
-    name: Professor Goggles
+    name: Prof. Goggles
     title: Demented scientist
   
   # - Minions -
