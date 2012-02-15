@@ -22,23 +22,24 @@ class Entity < WorldObject
   SPRITE_WIDTH, SPRITE_HEIGHT = 66, 66
   PORTRAIT_WIDTH, PORTRAIT_HEIGHT = 36, 36
 
-  STATS_BACKGROUND_COLOR = Color::BLACK
-  STATS_HP_COLOR = Color.rgb(0, 200, 0)
-  STATS_MP_COLOR = Color::rgb(50, 50, 255)
+  STATS_BACKGROUND_COLOR = Color.rgba 0, 0, 0, 180
+  STATS_HP_COLOR = Color.rgb 0, 200, 0
+  STATS_MP_COLOR = Color::rgb 50, 50, 255
   STATS_AP_COLOR = Color::YELLOW
-  STATS_WIDTH = 12.0
+  STATS_EP_COLOR = Color::RED
+  PIP_WIDTH, PIP_SEP_WIDTH = 1.5, 0.5
+  STATS_WIDTH = PIP_WIDTH * 5 + PIP_SEP_WIDTH * 4
   STATS_HALF_WIDTH = STATS_WIDTH / 2
-  PIP_WIDTH, PIP_SEP_WIDTH = 2, 0.5
   STATS_USED_SATURATION = 0.5
 
-  ACTOR_NAME_COLOR = Color.rgb(50, 200, 50)
-  TARGET_NAME_COLOR = Color.rgb(50, 200, 50)
+  ACTOR_NAME_COLOR = Color.rgb 50, 200, 50
+  TARGET_NAME_COLOR = Color.rgb 50, 200, 50
   DAMAGE_NUMBER_COLOR = Color::RED
 
-  COLOR_ACTIVE = Color::rgb(255, 255, 255)
+  COLOR_ACTIVE = Color::rgb 255, 255, 255
   COLOR_ACTIVE_NO_MOVE = STATS_AP_COLOR
   COLOR_ACTIVE_NO_ACTION = STATS_MP_COLOR
-  COLOR_ACTIVE_FINISHED = Color.rgb(70, 70, 70)
+  COLOR_ACTIVE_FINISHED = Color.rgb 70, 70, 70
   COLOR_INACTIVE = Color::BLACK
 
   class << self
@@ -51,11 +52,11 @@ class Entity < WorldObject
   event :ended_turn
   event :started_turn
 
-  attr_reader :faction, :movement_points, :action_points, :health_points, :type, :portrait,
-              :max_movement_points, :max_action_points, :max_health_points, :default_faction_type
-
-  alias_method :hp, :health_points
-  alias_method :max_hp, :max_health_points
+  attr_reader :faction, :type, :portrait, :default_faction_type
+  attr_reader :movement_points, :max_movement_points,
+              :action_points, :max_action_points,
+              :health_points, :max_health_points,
+              :energy_points, :max_energy_points
 
   def minimap_color; @faction.minimap_color; end
   def active?; @faction.active?; end
@@ -73,14 +74,26 @@ class Entity < WorldObject
     @action_points
   end
 
-  alias_method :max_mp, :max_movement_points
-  alias_method :max_ap, :max_action_points
+  def energy_points=(energy_points)
+    @energy_points = energy_points
+    publish :changed
+    @energy_points
+  end
+
+  alias_method :hp, :health_points
+  alias_method :max_hp, :max_health_points
 
   alias_method :mp, :movement_points
-  alias_method :ap, :action_points
-
   alias_method :mp=, :movement_points=
+  alias_method :max_mp, :max_movement_points
+
+  alias_method :ap, :action_points
   alias_method :ap=, :action_points=
+  alias_method :max_ap, :max_action_points
+
+  alias_method :ep, :energy_points
+  alias_method :ep=, :energy_points=
+  alias_method :max_ep, :max_energy_points
 
   def to_s; "<#{self.class.name}/#{@type}##{id} #{tile ? grid_position : "[off-map]"}>"; end
   def alive?; @health_points > 0 and @tile; end
@@ -117,6 +130,13 @@ class Entity < WorldObject
 
     @max_health_points = config[:health_points]
     @health_points = data[:health_points] || @max_health_points
+
+    @max_energy_points = if @max_action_points == 2
+                           1
+                         else
+                           0
+                         end
+    @energy_points = data[:energy_points] || @max_energy_points
 
     # Load other abilities of the entity from config.
     @abilities = {}
@@ -268,6 +288,7 @@ class Entity < WorldObject
     @health_points = max_hp # Has to be done directly or you could take damage or heal from it :D
     self.mp = max_mp
     self.ap = max_ap
+    self.ep = max_ep # Only set to full at start of game.
   end
 
   def start_turn
@@ -312,7 +333,7 @@ class Entity < WorldObject
   def draw_stat_pips(value, max, color, y)
     # Draw a background which appears between and underneath the pips.
     width = (max - 1) * PIP_SEP_WIDTH + max * PIP_WIDTH
-    $window.pixel.draw 0, y, 0, width, 1 + PIP_SEP_WIDTH, STATS_BACKGROUND_COLOR
+    $window.pixel.draw -PIP_SEP_WIDTH, y - PIP_SEP_WIDTH, 0, width + PIP_SEP_WIDTH * 2, 1 + PIP_SEP_WIDTH * 2, STATS_BACKGROUND_COLOR
 
     # Draw the pips themselves.
     max.times do |i|
@@ -356,9 +377,19 @@ class Entity < WorldObject
         draw_stat_pips(ap, max_ap, STATS_AP_COLOR, 3)
       end
 
+      # Energy counts down from the right.
+      if max_ep > 0
+        pips_width = PIP_WIDTH * 5 + PIP_SEP_WIDTH * 4
+        $window.translate pips_width, 0 do
+          $window.scale -1, 1 do
+            draw_stat_pips ep, max_ep, STATS_EP_COLOR, 3
+          end
+        end
+      end
+
       # Movement points. Just use a bar, since they aren't so critical and could be up to 20.
       if active?
-        $window.pixel.draw 0, 4.5, 0, STATS_WIDTH, 1.5, STATS_BACKGROUND_COLOR
+        $window.pixel.draw -PIP_SEP_WIDTH, 4, 0, STATS_WIDTH + PIP_SEP_WIDTH * 2, 1 + PIP_SEP_WIDTH * 2, STATS_BACKGROUND_COLOR
         used_color = STATS_MP_COLOR.dup
         used_color.red *= STATS_USED_SATURATION
         used_color.blue *= STATS_USED_SATURATION
@@ -366,7 +397,7 @@ class Entity < WorldObject
         $window.pixel.draw 0, 4.5, 0, STATS_WIDTH, 1, used_color
 
         width = alive? ? STATS_WIDTH * mp : 0
-        $window.pixel.draw 0, 4.5, 0, width / [mp, max_mp].max, 1, STATS_MP_COLOR if active?
+        $window.pixel.draw 0, 4 + PIP_SEP_WIDTH, 0, width / [mp, max_mp].max, 1, STATS_MP_COLOR if active?
       end
     end
 
@@ -583,10 +614,11 @@ class Entity < WorldObject
         :class => CLASS,
         type: type,
         id: id,
-        health: health_points,
-        contents_id: contents ? contents.id : nil,
+        health_points: health_points,
         movement_points: movement_points,
         action_points: action_points,
+        energy_points: energy_points,
+        contents_id: contents ? contents.id : nil,
         facing: factor_x > 0 ? :right : :left,
     }
 

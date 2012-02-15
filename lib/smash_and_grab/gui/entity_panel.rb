@@ -65,9 +65,10 @@ module SmashAndGrab
       def create_details_sub_panel
         @details_sub_panel = Fidgit::Horizontal.new padding: 0, spacing: 0 do
           vertical padding: 0, spacing: 1, width: 160 do
-            @health = label "", font_height: 20
-            @movement_points = label "", font_height: 20
-            @action_points = label "", font_height: 20
+            @health = label "", font_height: 16
+            @movement_points = label "", font_height: 16
+            @action_points = label "", font_height: 16
+            @energy_points = label "", font_height: 16
           end
 
           grid num_columns: 4, spacing: 4, padding: 0 do
@@ -105,6 +106,7 @@ module SmashAndGrab
         @health.text = "HP: #{entity.hp} / #{entity.max_hp}"
         @movement_points.text = "MP: #{entity.mp} / #{entity.max_mp}"
         @action_points.text = "AP: #{entity.ap} / #{entity.max_ap}"
+        @energy_points.text = "EP: #{entity.ep} / #{entity.max_ep}"
 
         if entity.has_ability? :sprint
           @movement_points.text += " + #{entity.ability(:sprint).movement_bonus}"
