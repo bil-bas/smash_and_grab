@@ -116,8 +116,8 @@ Credits
 
 Many thanks to:
 
-* Kaiserbill and SiliconEidolon for epic brainstorming sessions.
-* Kaiserbill, SiliconEidolon and Tomislav Uzelac and for play-testing and feedback.
+* Michael Margerison and SiliconEidolon for epic brainstorming sessions.
+* kyrylo, Michael Margerison, SiliconEidolon and Tomislav Uzelac and for play-testing and feedback.
 
 Third party tools and assets used
 ---------------------------------
