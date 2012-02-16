@@ -129,7 +129,7 @@ class EditorSelector < Fidgit::Vertical
 
   protected
   def list_window(list_type)
-    erase_name = (list_type == :walls) ? :none : :erase
+    erase_name = [:tiles, :walls].include?(list_type) ? :none : :erase
 
     buttons = group do
       vertical padding: 1 do
