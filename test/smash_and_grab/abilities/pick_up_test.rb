@@ -23,7 +23,7 @@ describe SmashAndGrab::Abilities::PickUp do
     JSON.parse(subject.to_json).symbolize.should.equal(
         type: :pick_up,
         skill: 0,
-        action_cost: 1
+        cost: { action_points: 1 },
     )
   end
 
@@ -36,7 +36,7 @@ describe SmashAndGrab::Abilities::PickUp do
     subject.action_data(@object).should.equal(
         ability: :pick_up,
         skill: 0,
-        action_cost: 1,
+        cost: { action_points: 1 },
 
         owner_id: 12,
         target_id: 13,
@@ -51,7 +51,7 @@ describe SmashAndGrab::Abilities::PickUp do
       mock(@entity).action_points = 0
       mock(@entity).pick_up @object
 
-      subject.do action_cost: 1, target_id: 13, target_position: [1, 2]
+      subject.do cost: { action_points: 1 }, target_id: 13, target_position: [1, 2]
     end
   end
 
@@ -62,7 +62,7 @@ describe SmashAndGrab::Abilities::PickUp do
       mock(@entity).action_points = 1
       mock(@entity).drop @tile
 
-      subject.undo action_cost: 1, target_id: 13, target_position: [1, 2]
+      subject.undo cost: { action_points: 1 }, target_id: 13, target_position: [1, 2]
     end
   end
 end

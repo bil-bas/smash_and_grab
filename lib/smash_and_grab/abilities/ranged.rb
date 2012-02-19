@@ -13,7 +13,7 @@ module SmashAndGrab::Abilities
 
     def initialize(owner, data)
       data = {
-          action_cost: 1,
+          cost: { action_points: 1 },
           min_range: 2 # Can't fire at adjacent (melee) squares.
       }.merge data
 

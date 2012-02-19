@@ -18,7 +18,7 @@ module SmashAndGrab::Abilities
     end
 
     def initialize(owner, data)
-      super(owner, data.merge(action_cost: 1))
+      super(owner, data.merge(cost: { action_points: 1 }))
       @damage_types = data[:damage_types] || raise(ArgumentError, "no :damage_types specified")
     end
 

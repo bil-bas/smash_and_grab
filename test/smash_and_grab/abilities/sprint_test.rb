@@ -16,8 +16,8 @@ describe SmashAndGrab::Abilities::Sprint do
   end
 
   should "be initialized" do
-    stub(@entity).max_action_points.returns 2
-    stub(@entity).action_points.returns 2
+    stub(@entity).max_action_points.returns 1
+    stub(@entity).action_points.returns 1
     stub(@entity).max_movement_points.returns 5
     stub(@entity).movement_points.returns 5
 
@@ -28,25 +28,24 @@ describe SmashAndGrab::Abilities::Sprint do
     subject.activate?.should.equal true
     subject.deactivate?.should.equal false
 
-    subject.action_cost.should.equal 2
+    subject.action_cost.should.equal 1
   end
 
   should "serialize to json correctly" do
     JSON.parse(subject.to_json).symbolize.should.equal(
       type: :sprint,
       skill: 3,
-      action_cost: :all,
+      cost: { action_points: 1 },
     )
   end
 
   should "generate appropriate action_data" do
     mock(@entity).id.returns 12
     mock(@entity).max_movement_points.returns 11
-    mock(@entity).max_action_points.returns 2
     subject.action_data.should.equal(
       ability: :sprint,
       skill: 3,
-      action_cost: 2,
+      cost: { action_points: 1 },
 
       owner_id: 12,
       movement_bonus: 5
@@ -67,14 +66,14 @@ describe SmashAndGrab::Abilities::Sprint do
   [:do, :undo].each do |meth|
     describe "##{meth}" do
       should "toggle on to increase movement points and decrease action points" do
-        stub(@entity).max_action_points.returns 2
-        stub(@entity).action_points.returns 2
+        stub(@entity).max_action_points.returns 1
+        stub(@entity).action_points.returns 1
         stub(@entity).max_movement_points.returns 5
         stub(@entity).movement_points.returns 5
 
         mock(@entity).action_points = 0
         mock(@entity).movement_points = 10
-        subject.send meth, action_cost: 2, movement_bonus: 5
+        subject.send meth, cost: { action_points: 1 }, movement_bonus: 5
 
         subject.activate?.should.equal false
         subject.deactivate?.should.equal true
@@ -85,14 +84,14 @@ describe SmashAndGrab::Abilities::Sprint do
         subject.instance_variable_set :@active, true
 
         # Now deactivate.
-        stub(@entity).max_action_points.returns 2
+        stub(@entity).max_action_points.returns 1
         stub(@entity).action_points.returns 0
         stub(@entity).max_movement_points.returns 5
         stub(@entity).movement_points.returns 10
 
-        mock(@entity).action_points = 2
+        mock(@entity).action_points = 1
         mock(@entity).movement_points = 5
-        subject.send meth, action_cost: 2, movement_bonus: 5
+        subject.send meth, cost: { action_points: 1 }, movement_bonus: 5
 
         stub(@entity).action_points.returns 2
         stub(@entity).movement_points.returns 5

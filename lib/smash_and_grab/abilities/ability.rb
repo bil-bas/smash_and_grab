@@ -7,7 +7,7 @@ module SmashAndGrab::Abilities
 
     def use?; true; end
     def can_be_undone?; true; end
-    def action_cost; @action_cost == :all ? owner.max_action_points : @action_cost; end
+    def action_cost; @cost[:action_points] || 0; end
     def type; Inflector.underscore(Inflector.demodulize(self.class.name)).to_sym; end
 
     def tip
@@ -29,7 +29,7 @@ module SmashAndGrab::Abilities
       @owner = owner
 
       @skill = data[:skill] || raise(ArgumentError ,"No skill value for #{owner} #{self.class.name}")
-      @action_cost = data[:action_cost] || raise(ArgumentError, "No action_cost for #{owner} #{self.class.name}")
+      @cost = data[:cost] || {} # Defaults to being a free skill.
     end
 
     public
@@ -42,7 +42,7 @@ module SmashAndGrab::Abilities
       {
           type: type,
           skill: skill,
-          action_cost: @action_cost,
+          cost: @cost,
       }
     end
 
@@ -52,21 +52,37 @@ module SmashAndGrab::Abilities
       {
           ability: type,
           skill: skill,
-          action_cost: action_cost,
+          cost: @cost,
           owner_id: owner.id
       }
     end
 
     def do(data)
-      owner.action_points -= data[:action_cost] if data[:action_cost] > 0
+      owner_spend data[:cost]
     end
 
     def undo(data)
-      owner.action_points += data[:action_cost] if data[:action_cost] > 0
+      owner_refund data[:cost]
     end
 
     def to_s
-      "<#{self.class.name} owner=#{owner} skill=#{skill} cost=#{@action_cost.inspect}>"
+      "<#{self.class.name} owner=#{owner} skill=#{skill} cost=#{@cost.inspect}>"
+    end
+
+    protected
+    def owner_spend(cost)
+      return unless cost
+      cost.each do |point_type, amount|
+        owner.send(:"#{point_type}=", owner.send(point_type) - amount)
+      end
+    end
+
+    protected
+    def owner_refund(cost)
+      return unless cost
+      cost.each do |point_type, amount|
+        owner.send(:"#{point_type}=", owner.send(point_type) + amount)
+      end
     end
   end
 
@@ -113,13 +129,13 @@ module SmashAndGrab::Abilities
 
     protected
     def activate(data)
-      owner.action_points -= action_cost
+      owner_spend data[:cost]
       @active = true
     end
 
     protected
     def deactivate(data)
-      owner.action_points += action_cost
+      owner_refund data[:cost]
       @active = false
     end
   end

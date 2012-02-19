@@ -28,7 +28,7 @@ describe SmashAndGrab::Abilities::Move do
     JSON.parse(subject.to_json).symbolize.should.equal(
         type: :move,
         skill: 0, # TODO: Irrelevant for move?
-        action_cost: 0 # TODO: Irrelevant for move? Not sure; perhaps some entities can move OR attack?
+        cost: {} # TODO: Irrelevant for move? Not sure; perhaps some entities can move OR attack?
     )
   end
 
@@ -42,7 +42,7 @@ describe SmashAndGrab::Abilities::Move do
     subject.action_data(path).should.equal(
         ability: :move,
         skill: 0, # TODO: Irrelevant for move?
-        action_cost: 0, # TODO: Irrelevant for move? Not sure; perhaps some entities can move OR attack?
+        cost: {}, # TODO: Irrelevant for move? Not sure; perhaps some entities can move OR attack?
   
         owner_id: 12,
         movement_cost: 3,
@@ -74,14 +74,14 @@ describe SmashAndGrab::Abilities::Move do
   describe "#do" do
     should "move the entity forwards" do
       mock(entity).move tile_positions, 4
-      subject.do action_cost: 0, path: tile_positions, movement_cost: 4
+      subject.do cost: {}, path: tile_positions, movement_cost: 4
     end
   end
 
   describe "#undo" do
     should "move the entity backwards" do
       mock(entity).move tile_positions.reverse, -4
-      subject.undo action_cost: 0, path: tile_positions, movement_cost: 4
+      subject.undo cost: {}, path: tile_positions, movement_cost: 4
     end
   end
 end

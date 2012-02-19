@@ -10,7 +10,7 @@ module SmashAndGrab::Abilities
     end
 
     def initialize(owner, data)
-      super(owner, data.merge(action_cost: 1, skill: NON_SKILL))
+      super(owner, data.merge(cost: { action_points: 1 }, skill: NON_SKILL))
     end
 
     def action_data(object)

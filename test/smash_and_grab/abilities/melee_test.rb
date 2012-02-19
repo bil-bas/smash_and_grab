@@ -29,7 +29,7 @@ describe SmashAndGrab::Abilities::Melee do
     JSON.parse(subject.to_json).symbolize.should.equal(
         type: :melee,
         skill: 5,
-        action_cost: 1,
+        cost: { action_points: 1 },
         damage_types: [:blunt]
     )
   end
@@ -45,7 +45,7 @@ describe SmashAndGrab::Abilities::Melee do
     subject.action_data(@enemy).should.equal(
         ability: :melee,
         skill: 5,
-        action_cost: 1,
+        cost: { action_points: 1 },
 
         owner_id: 12,
         target_id: 13,
@@ -61,7 +61,7 @@ describe SmashAndGrab::Abilities::Melee do
       mock(@entity).action_points = 0
       mock(@entity).make_attack @enemy, @effects
 
-      subject.do action_cost: 1, target_id: 13, effects: @effects #, target_position: [1, 2]
+      subject.do cost: { action_points: 1 }, target_id: 13, effects: @effects #, target_position: [1, 2]
     end
   end
 
@@ -73,7 +73,7 @@ describe SmashAndGrab::Abilities::Melee do
       mock(@entity).action_points = 1
       mock(@entity).make_attack @enemy, @effects
 
-      subject.undo action_cost: 1, target_id: 13, effects: @effects, target_position: [1, 2]
+      subject.undo cost: { action_points: 1 }, target_id: 13, effects: @effects, target_position: [1, 2]
     end
 
     should "give action points, health and return to map (if target dead)" do
@@ -89,7 +89,7 @@ describe SmashAndGrab::Abilities::Melee do
       stub(@entity).action_points.returns 0
       mock(@entity).action_points = 1
 
-      subject.undo action_cost: 1, target_id: 13, effects: @effects, target_position: [1, 2]
+      subject.undo cost: { action_points: 1 }, target_id: 13, effects: @effects, target_position: [1, 2]
     end
   end
 end

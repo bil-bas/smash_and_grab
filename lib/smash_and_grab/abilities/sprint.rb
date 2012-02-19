@@ -3,7 +3,7 @@ require_relative "ability"
 module SmashAndGrab::Abilities
   class Sprint < ToggleAbility
     def initialize(owner, data)
-      super(owner, data.merge(action_cost: :all))
+      super(owner, data.merge(cost: { action_points: 1 }))
 
       owner.subscribe :ended_turn do
         @active = false

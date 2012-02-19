@@ -29,7 +29,7 @@ describe SmashAndGrab::Abilities::Ranged do
     JSON.parse(subject.to_json).symbolize.should.equal(
         type: :ranged,
         skill: 5,
-        action_cost: 1,
+        cost: { action_points: 1 },
         min_range: 2,
         max_range: 5,
         damage_types: [:impaling, :fire],
@@ -47,7 +47,7 @@ describe SmashAndGrab::Abilities::Ranged do
     subject.action_data(@enemy).should.equal(
         ability: :ranged,
         skill: 5,
-        action_cost: 1,
+        cost: { action_points: 1 },
 
         owner_id: 12,
         target_id: 13,
@@ -63,7 +63,7 @@ describe SmashAndGrab::Abilities::Ranged do
       mock(@entity).action_points = 0
       mock(@entity).make_attack(@enemy, @effects)
 
-      subject.do action_cost: 1, target_id: 13, effects: @effects #, target_position: [1, 2]
+      subject.do cost: { action_points: 1 }, target_id: 13, effects: @effects #, target_position: [1, 2]
     end
   end
 
@@ -76,7 +76,7 @@ describe SmashAndGrab::Abilities::Ranged do
       mock(@entity).make_attack @enemy, @effects
 
 
-      subject.undo action_cost: 1, target_id: 13, effects: @effects, target_position: [1, 2]
+      subject.undo cost: { action_points: 1 }, target_id: 13, effects: @effects, target_position: [1, 2]
     end
 
     should "give action points, health and return to map (if target dead)" do
@@ -94,7 +94,7 @@ describe SmashAndGrab::Abilities::Ranged do
       stub(@entity).action_points.returns 0
       mock(@entity).action_points = 1
 
-      subject.undo action_cost: 1, target_id: 13, effects: @effects, target_position: [1, 2]
+      subject.undo cost: { action_points: 1 }, target_id: 13, effects: @effects, target_position: [1, 2]
     end
   end
 end
