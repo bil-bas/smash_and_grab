@@ -16,14 +16,14 @@ describe SmashAndGrab::Abilities::Drop do
     subject.owner.should.equal @entity
     subject.can_be_undone?.should.be.true
     subject.skill.should.equal 0
-    subject.action_cost.should.equal 1
+    subject.action_cost.should.equal 0
   end
 
   should "serialize to json correctly" do
     JSON.parse(subject.to_json).symbolize.should.equal(
         type: :drop,
         skill: 0,
-        cost: { action_points: 1 }
+        cost: {}
     )
   end
 
@@ -35,7 +35,7 @@ describe SmashAndGrab::Abilities::Drop do
     subject.action_data.should.equal(
         ability: :drop,
         skill: 0,
-        cost: { action_points: 1 },
+        cost: {},
 
         owner_id: 12,
         target_id: 13,
@@ -45,12 +45,10 @@ describe SmashAndGrab::Abilities::Drop do
 
   describe "#do" do
     should "remove action points and drop object onto the tile" do
-      stub(@entity).action_points.returns 1
       mock(@entity).map.stub!.tile_at_grid(1, 2).returns @tile
-      mock(@entity).action_points = 0
       mock(@entity).drop @tile
 
-      subject.do cost: { action_points: 1 }, target_id: 13, target_position: [1, 2]
+      subject.do  target_id: 13, target_position: [1, 2]
     end
   end
 
@@ -59,10 +57,9 @@ describe SmashAndGrab::Abilities::Drop do
       stub(@object).tile.returns @tile
       stub(@entity).map.stub!.object_by_id(13).returns @object
       stub(@entity).action_points.returns 0
-      mock(@entity).action_points = 1
       mock(@entity).pick_up @object
 
-      subject.undo cost: { action_points: 1 }, target_id: 13, target_position: [1, 2]
+      subject.undo target_id: 13, target_position: [1, 2]
     end
   end
 end
