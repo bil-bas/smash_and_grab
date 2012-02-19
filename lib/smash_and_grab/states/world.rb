@@ -105,8 +105,12 @@ class World < Fidgit::GuiState
 
     assign_entities_to_factions
 
-    # Make sure that every entity has picked up the object they had before.
-    map.factions.each {|f| f.entities.each {|e| e.setup_contents } }
+    map.factions.each do |f|
+      f.entities.each do |e|
+        e.setup_contents # Make sure that every entity has picked up the object they had before.
+        e.start_game if map.actions.empty? # Set original stats if loading from start.
+      end
+    end
 
     create_gui
     create_minimap
