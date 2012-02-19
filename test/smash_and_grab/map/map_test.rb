@@ -7,10 +7,11 @@ describe SmashAndGrab::Map do
             "class" => "entity",
             "type" => "professor_goggles",
             "id" => 0,
-            "health" => 5,
+            "health_points" => 5,
             "contents_id" => nil,
             "movement_points" => 7,
-            "action_points" => 2,
+            "action_points" => 1,
+            "energy_points" => 2,
             "facing" => "left",
             "tile" => [
                 1,

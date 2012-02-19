@@ -12,10 +12,16 @@ module SmashAndGrab::Abilities
 
     def tip
       if skill > NON_SKILL
-       "#{SKILL_LEVEL_DESCRIPTIONS[skill - 1]} #{type.capitalize} (#{'*' * skill})"
+       "#{SKILL_LEVEL_DESCRIPTIONS[skill - 1]} #{type.capitalize} #{skill_pips}"
       else
         type.capitalize
       end
+    end
+
+    # Used in tip to show what dice will be rolled (or just indication of skill for a skill not based on dice).
+    def skill_pips
+      # TODO: use a nicer symbol for this.
+      "*" * skill
     end
 
     protected

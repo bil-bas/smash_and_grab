@@ -2,6 +2,8 @@ require_relative "ability"
 
 module SmashAndGrab::Abilities
   class Ranged < TargetedAbility
+    include SmashAndGrab::CombatDice
+
     attr_reader :min_range, :max_range
 
     def can_be_undone?; false; end
@@ -17,6 +19,7 @@ module SmashAndGrab::Abilities
 
       @min_range = data[:min_range]
       @max_range = data[:max_range] || raise(ArgumentError, "no :max_range specified")
+      @damage_types = data[:damage_types] || raise(ArgumentError, "no :damage_types specified")
 
       super(owner, data)
     end
@@ -29,30 +32,27 @@ module SmashAndGrab::Abilities
       super.merge(
           min_range: @min_range,
           max_range: @max_range,
+          damage_types: @damage_types
       )
     end
 
     def action_data(target)
       super(target.tile).merge!(
-          damage: random_damage
+          effects: roll_dice(skill, @damage_types, target)
       )
     end
 
-    def random_damage
-      # 0..skill as damage in a bell-ish curve.
-      skill.times.find_all { rand(6) + 1 <= 2 }.size # 2 potential hits on each d6.
-    end
 
     def do(data)
       super(data)
 
-      owner.make_ranged_attack(target(data), data[:damage])
+      owner.make_attack(target(data), data[:effects])
     end
 
     def undo(data)
       target = target(data)
       target.tile = owner.map.tile_at_grid(data[:target_position]) unless target.tile
-      owner.make_ranged_attack(target(data), -data[:damage])
+      #owner.make_ranged_attack(target(data), -data[:damage])
 
       super(data)
     end

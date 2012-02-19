@@ -63,6 +63,10 @@ class Entity < WorldObject
   def active?; @faction.active?; end
   def inactive?; @faction.inactive?; end
 
+  # TODO: Implement these sensibly.
+  def vulnerability_to(type); 0; end
+  def resistance_to(type); 0; end
+
   def movement_points=(movement_points)
     @movement_points = movement_points
     publish :changed
@@ -124,20 +128,16 @@ class Entity < WorldObject
 
     raise @type unless image
 
-    @max_movement_points = config[:movement_points]
+    @max_movement_points = config[:movement_points] || raise("No configured movement points")
     @movement_points = data[:movement_points] || @max_movement_points
 
-    @max_action_points = config[:action_points]
+    @max_action_points = config[:action_points] || raise("No configured action points")
     @action_points = data[:action_points] || @max_action_points
 
-    @max_health_points = config[:health_points]
+    @max_health_points = config[:health_points] || raise("No configured health points")
     @health_points = data[:health_points] || @max_health_points
 
-    @max_energy_points = if @max_action_points == 2
-                           1
-                         else
-                           0
-                         end
+    @max_energy_points = config[:energy_points] || raise("No configured energy points")
     @energy_points = data[:energy_points] || @max_energy_points
 
     # Load other abilities of the entity from config.
@@ -210,7 +210,9 @@ class Entity < WorldObject
 
   # Called from GameActions::Ability
   # Also used to un-melee :)
-  def make_melee_attack(target, damage)
+  def make_attack(target, effects)
+    damage = effects.value
+
     add_activity do
       if damage == 0 # Missed
         face target
@@ -218,7 +220,7 @@ class Entity < WorldObject
         delay 0.1
         self.z -= 10
 
-        parent.publish :game_info, "#{colorized_name} swung at #{target.colorized_name}, but missed"
+        parent.publish :game_info, "#{colorized_name} attacked #{target.colorized_name}, but missed"
         missed target
 
       elsif damage > 0 # do => wound
@@ -229,14 +231,14 @@ class Entity < WorldObject
 
         # Can be dead at this point if there were 2-3 attackers of opportunity!
         if target.alive?
-          parent.publish :game_info, "#{colorized_name} smashed #{target.colorized_name} for {#{DAMAGE_NUMBER_COLOR.colorize damage}}"
+          parent.publish :game_info, "#{colorized_name} hit #{target.colorized_name} for #{effects}"
           target.hp -= damage
 
           target.color = Color.rgb(255, 100, 100)
           delay 0.1
           target.color = Color::WHITE
         else
-          parent.publish :game_info, "#{colorized_name} kicked #{target.colorized_name} while they were down"
+          parent.publish :game_info, "#{colorized_name} attacked #{target.colorized_name} while they were down"
         end
       else # undo => heal
         target.color = Color.rgb(255, 100, 100)
@@ -253,37 +255,6 @@ class Entity < WorldObject
 
   def missed(target)
     FloatingText.new("Miss!", color: Color::YELLOW, x: target.x, y: target.y - target.height / 3, zorder: target.y - 0.01)
-  end
-
-  def make_ranged_attack(target, damage)
-    add_activity do
-      if damage == 0
-        face target
-
-        parent.publish :game_info, "#{colorized_name} shot at #{target.colorized_name}, but missed"
-
-        missed target
-      elsif damage > 0 # do => wound
-        face target
-
-        # Can be dead at this point if there were 2-3 attackers of opportunity!
-        if target.alive?
-          parent.publish :game_info, "#{colorized_name} shot #{target.colorized_name} for {#{DAMAGE_NUMBER_COLOR.colorize damage}}"
-          target.hp -= damage
-
-          target.color = Color.rgb(255, 100, 100)
-          delay 0.1
-          target.color = Color::WHITE
-        else
-          parent.publish :game_info, "#{colorized_name} shot #{target.colorized_name} while they were down"
-        end
-      else # undo => heal
-        target.color = Color.rgb(255, 100, 100)
-        delay 0.1
-        target.hp -= damage
-        target.color = Color::WHITE
-      end
-    end
   end
 
   def start_game
@@ -374,17 +345,16 @@ class Entity < WorldObject
           draw_stat_pips([hp,  5].min, 5, STATS_HP_COLOR, 1.5)
       end
 
-      # Action points. Cannot have > 5 AP!
-      if max_ap > 0
-        draw_stat_pips(ap, max_ap, STATS_AP_COLOR, 3)
+      if max_ep > 0
+        draw_stat_pips ep, max_ep, STATS_EP_COLOR, 3
       end
 
       # Energy counts down from the right.
-      if max_ep > 0
+      if max_ap > 0
         pips_width = PIP_WIDTH * 5 + PIP_SEP_WIDTH * 4
         $window.translate pips_width, 0 do
           $window.scale -1, 1 do
-            draw_stat_pips ep, max_ep, STATS_EP_COLOR, 3
+            draw_stat_pips(ap, max_ap, STATS_AP_COLOR, 3)
           end
         end
       end

@@ -7,9 +7,10 @@ describe SmashAndGrab::Abilities::Melee do
     @enemy = Object.new
     @map = Object.new
     @tile = SmashAndGrab::Tile.new(:grass, nil, 1, 2)
+    @effects = SmashAndGrab::CombatEffects.new [[:blunt, 5]]
   end
 
-  subject { SmashAndGrab::Abilities.ability @entity, type: :melee, action_cost: 1, skill: 5 }
+  subject { SmashAndGrab::Abilities.ability @entity, type: :melee, skill: 5, damage_types: [:blunt] }
 
   behaves_like SmashAndGrab::Abilities::Ability
 
@@ -28,7 +29,8 @@ describe SmashAndGrab::Abilities::Melee do
     JSON.parse(subject.to_json).symbolize.should.equal(
         type: :melee,
         skill: 5,
-        action_cost: 1
+        action_cost: 1,
+        damage_types: [:blunt]
     )
   end
 
@@ -36,8 +38,10 @@ describe SmashAndGrab::Abilities::Melee do
     stub(@entity).id.returns 12
     stub(@enemy).id.returns 13
     stub(@enemy).tile.returns @tile
+    stub(@enemy).vulnerability_to(anything).returns 0
+    stub(@enemy).resistance_to(anything).returns 0
     stub(@tile).object.returns @enemy
-    stub(subject).random_damage.returns 5
+    stub(subject).rand(is_a(Range)) {|range| range.max }
     subject.action_data(@enemy).should.equal(
         ability: :melee,
         skill: 5,
@@ -46,20 +50,8 @@ describe SmashAndGrab::Abilities::Melee do
         owner_id: 12,
         target_id: 13,
         target_position: [1, 2],
-        damage: 5
+        effects: @effects,
     )
-  end
-
-  describe "#random_damage" do
-    should "never give a value greater than skill" do
-      stub(subject).rand(is_a(Integer)) {|x| x - 1 }
-      subject.random_damage == 5
-    end
-
-    should "never give a value less than 1" do
-      stub(subject).rand(is_a(Integer)) { 0 }
-      subject.random_damage == 0
-    end
   end
 
   describe "#do" do
@@ -67,9 +59,9 @@ describe SmashAndGrab::Abilities::Melee do
       stub(@entity).map.stub!.object_by_id(13).returns @enemy
       stub(@entity).action_points.returns 1
       mock(@entity).action_points = 0
-      mock(@entity).make_melee_attack(@enemy, 5)
+      mock(@entity).make_attack @enemy, @effects
 
-      subject.do action_cost: 1, target_id: 13, damage: 5 #, target_position: [1, 2]
+      subject.do action_cost: 1, target_id: 13, effects: @effects #, target_position: [1, 2]
     end
   end
 
@@ -79,15 +71,15 @@ describe SmashAndGrab::Abilities::Melee do
       stub(@entity).map.stub!.object_by_id(13).returns @enemy
       stub(@entity).action_points.returns 0
       mock(@entity).action_points = 1
-      mock(@entity).make_melee_attack(@enemy, -5)
+      mock(@entity).make_attack @enemy, @effects
 
-      subject.undo action_cost: 1, target_id: 13, damage: 5, target_position: [1, 2]
+      subject.undo action_cost: 1, target_id: 13, effects: @effects, target_position: [1, 2]
     end
 
     should "give action points, health and return to map (if target dead)" do
       stub(@enemy).tile.returns nil
       mock(@enemy).tile = @tile
-      mock(@entity).make_melee_attack(@enemy, -5)
+      mock(@entity).make_attack @enemy, @effects
 
       stub(@entity).map do
         stub(@map).object_by_id(13).returns @enemy
@@ -97,7 +89,7 @@ describe SmashAndGrab::Abilities::Melee do
       stub(@entity).action_points.returns 0
       mock(@entity).action_points = 1
 
-      subject.undo action_cost: 1, target_id: 13, damage: 5, target_position: [1, 2]
+      subject.undo action_cost: 1, target_id: 13, effects: @effects, target_position: [1, 2]
     end
   end
 end

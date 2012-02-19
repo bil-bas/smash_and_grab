@@ -1,0 +1,124 @@
+---
+
+:blunt:
+  :affects: :health_points
+  :magnitude: 1
+  :duration: :instant
+  :spritesheet_column: 0
+  :sides:
+    - 0
+    - 0
+    - 0
+    - 1
+    - 1
+    - 1
+
+:cosmic:
+  :affects: :special
+  :magnitude: 1
+  :duration: :special
+  :spritesheet_column: 8
+  :sides:
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 3
+
+
+:electric:
+  :affects: :health_points
+  :magnitude: 1
+  :duration: :instant
+  :spritesheet_column: 3
+  :sides:
+    - 0
+    - 0
+    - 0
+    - 1
+    - 1
+    - 1
+
+
+:fire:
+  :affects: :health_points
+  :magnitude: 1
+  :duration: :over_time
+  :spritesheet_column: 1
+  :sides:
+    - 0
+    - 0
+    - 0
+    - 1
+    - 1
+    - 2
+
+
+:hold:
+  :affects: :movement_points
+  :magnitude: 4
+  :duration: :delayed
+  :spritesheet_column: 6
+  :sides:
+    - 0
+    - 0
+    - 0
+    - 1
+    - 1
+    - 2
+
+:impaling:
+  :affects: :health_points
+  :magnitude: 1
+  :duration: :instant
+  :spritesheet_column: 4
+  :sides:
+    - 0
+    - 0
+    - 0
+    - 0
+    - 1
+    - 2
+
+
+:knockback:
+  :affects: :special
+  :magnitude: 1
+  :duration: :instant
+  :spritesheet_column: 7
+  :sides:
+    - 0
+    - 0
+    - 1
+    - 1
+    - 2
+    - 2
+
+
+:mental:
+  :affects: :action_points
+  :magnitude: 1
+  :duration: :delayed
+  :spritesheet_column: 5
+  :sides:
+    - 0
+    - 0
+    - 0
+    - 0
+    - 1
+    - 1
+
+
+:poison:
+  :affects: :health_points
+  :magnitude: 1
+  :duration: :over_time
+  :spritesheet_column: 2
+  :sides:
+    - 0
+    - 0
+    - 1
+    - 1
+    - 1
+    - 1

@@ -17,7 +17,7 @@ module SmashAndGrab
 
         @scroll_window = scroll_window width: 420, height: 72, padding: 0 do
           # TODO: Text-area "editable(?)" seem broken. They don't prevent editing while also allowing copy/pasting.
-          @text = text_area width: 400, font_height: 14, editable: false
+          @text = text_area width: 400, font_height: 16, editable: false
         end
 
         @scroll_window.background_color = @text.background_color

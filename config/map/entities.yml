@@ -11,16 +11,22 @@
   :faction: :baddies
   :spritesheet_position: [5, 4]
   :movement_points: 10
-  :action_points: 2
+  :action_points: 1
   :health_points: 6
+  :energy_points: 2
   :abilities:
     -
       :type: :melee
       :skill: 3
+      :damage_types:
+        - :blunt
     -
       :type: :ranged
       :skill: 2
       :max_range: 5
+      :damage_types:
+        - :impaling
+        - :poison
     -
       :type: :sprint
       :skill: 4
@@ -31,16 +37,22 @@
   :spritesheet_position: [7, 3]
   :visible_sprite_height: 28
   :movement_points: 6
-  :action_points: 2
+  :action_points: 1
   :health_points: 4
+  :energy_points: 2
   :abilities:
     -
       :type: :melee
       :skill: 1
+      :damage_types:
+        - :blunt
     -
       :type: :ranged
       :skill: 4
       :max_range: 2
+      :damage_types:
+        - :poison
+        - :fire
     -
       :type: :sprint
       :skill: 1
@@ -49,12 +61,15 @@
   :faction: :baddies
   :spritesheet_position: [7, 1]
   :movement_points: 8
-  :action_points: 2
+  :action_points: 1
   :health_points: 5
+  :energy_points: 2
   :abilities:
     -
       :type: :melee
       :skill: 2
+      :damage_types:
+        - :blunt
     -
       :type: :sprint
       :skill: 2
@@ -64,12 +79,16 @@
   :spritesheet_position: [1, 4]
   :visible_sprite_height: 34
   :movement_points: 8
-  :action_points: 2
+  :action_points: 1
   :health_points: 9
+  :energy_points: 2
   :abilities:
     -
       :type: :melee
       :skill: 4
+      :damage_types:
+        - :blunt
+        - :cosmic
     -
       :type: :sprint
       :skill: 1
@@ -79,23 +98,30 @@
   :spritesheet_position: [0, 4]
   :visible_sprite_height: 36
   :movement_points: 5
-  :action_points: 2
+  :action_points: 1
   :health_points: 10
+  :energy_points: 2
   :abilities:
     -
       :type: :melee
       :skill: 5
+      :damage_types:
+        - :impaling
+        - :blunt
 
 :artist:
   :faction: :baddies
   :spritesheet_position: [3, 2]
   :movement_points: 8
-  :action_points: 2
+  :action_points: 1
   :health_points: 5
+  :energy_points: 2
   :abilities:
     -
       :type: :melee
       :skill: 2
+      :damage_types:
+        - :blunt
     -
       :type: :sprint
       :skill: 3
@@ -104,12 +130,15 @@
   :faction: :baddies
   :spritesheet_position: [7, 4]
   :movement_points: 7
-  :action_points: 2
+  :action_points: 1
   :health_points: 5
+  :energy_points: 2
   :abilities:
     -
       :type: :melee
       :skill: 2
+      :damage_types:
+        - :blunt
     -
       :type: :sprint
       :skill: 3
@@ -118,16 +147,22 @@
   :faction: :baddies
   :spritesheet_position: [2, 4]
   :movement_points: 7
-  :action_points: 2
+  :action_points: 1
   :health_points: 5
+  :energy_points: 2
   :abilities:
     -
       :type: :melee
       :skill: 2
+      :damage_types:
+        - :blunt
     -
       :type: :ranged
       :skill: 4
       :max_range: 10
+      :damage_types:
+        - :impaling
+        - :fire
     -
       :type: :sprint
       :skill: 2
@@ -137,16 +172,22 @@
   :spritesheet_position: [6, 5]
   :visible_sprite_height: 22
   :movement_points: 6
-  :action_points: 2
+  :action_points: 1
   :health_points: 6
+  :energy_points: 2
   :abilities:
     -
       :type: :melee
       :skill: 1
+      :damage_types:
+        - :blunt
     -
       :type: :ranged
       :skill: 5
       :max_range: 15
+      :damage_types:
+        - :cosmic
+        - :hold
 
 # - Minions -
 
@@ -160,14 +201,19 @@
   :movement_points: 8
   :action_points: 1
   :health_points: 4
+  :energy_points: 0
   :abilities:
     -
       :type: :melee
       :skill: 1
+      :damage_types:
+        - :blunt
     -
       :type: :ranged
       :skill: 2
       :max_range: 6
+      :damage_types:
+        - :impaling
     -
       :type: :sprint
       :skill: 2
@@ -178,14 +224,19 @@
   :movement_points: 8
   :action_points: 1
   :health_points: 4
+  :energy_points: 0
   :abilities:
     -
       :type: :melee
       :skill: 2
+      :damage_types:
+        - :blunt
     -
       :type: :ranged
       :skill: 2
       :max_range: 8
+      :damage_types:
+        - :impaling
     -
       :type: :sprint
       :skill: 2
@@ -196,14 +247,19 @@
   :movement_points: 8
   :action_points: 1
   :health_points: 4
+  :energy_points: 0
   :abilities:
     -
       :type: :melee
       :skill: 2
+      :damage_types:
+        - :blunt
     -
       :type: :ranged
       :skill: 2
       :max_range: 8
+      :damage_types:
+        - :impaling
     -
       :type: :sprint
       :skill: 2
@@ -214,15 +270,20 @@
   :movement_points: 8
   :action_points: 1
   :health_points: 4
+  :energy_points: 0
   :abilities:
     -
       :type: :melee
       :skill: 1
+      :damage_types:
+        - :blunt
     -
       :type: :ranged
       :skill: 3
       :min_range: 3
       :max_range: 9
+      :damage_types:
+        - :impaling
     -
       :type: :sprint
       :skill: 2
@@ -233,15 +294,21 @@
   :movement_points: 6
   :action_points: 1
   :health_points: 4
+  :energy_points: 0
   :abilities:
     -
       :type: :melee
       :skill: 1
+      :damage_types:
+        - :blunt
     -
       :type: :ranged
       :skill: 4
       :min_range: 4
       :max_range: 8
+      :damage_types:
+        - :blunt
+        - :knockback
 
 # - Superheroes -
 
@@ -249,12 +316,15 @@
   :faction: :goodies
   :spritesheet_position: [4, 1]
   :movement_points: 10
-  :action_points: 2
+  :action_points: 1
   :health_points: 5
+  :energy_points: 2
   :abilities:
     -
       :type: :melee
       :skill: 3
+      :damage_types:
+        - :impaling
     -
       :type: :sprint
       :skill: 5
@@ -264,12 +334,16 @@
   :spritesheet_position: [5, 5]
   :visible_sprite_height: 36
   :movement_points: 8
-  :action_points: 2
+  :action_points: 1
   :health_points: 8
+  :energy_points: 2
   :abilities:
     -
       :type: :melee
       :skill: 4
+      :damage_types:
+        - :blunt
+        - :knockback
     -
       :type: :sprint
       :skill: 2
@@ -278,12 +352,15 @@
   :faction: :goodies
   :spritesheet_position: [6, 1]
   :movement_points: 8
-  :action_points: 2
+  :action_points: 1
   :health_points: 5
+  :energy_points: 2
   :abilities:
     -
       :type: :melee
       :skill: 2
+      :damage_types:
+        - :blunt
     -
       :type: :sprint
       :skill: 2
@@ -292,12 +369,21 @@
   :faction: :goodies
   :spritesheet_position: [2, 2]
   :movement_points: 10
-  :action_points: 2
+  :action_points: 1
   :health_points: 6
+  :energy_points: 2
   :abilities:
     -
       :type: :melee
-      :skill: 4
+      :skill: 3
+      :damage_types:
+        - :blunt
+    -
+      :type: :ranged
+      :skill: 3
+      :max_range: 8
+      :damage_types:
+        - :blunt
     -
       :type: :sprint
       :skill: 4
@@ -306,12 +392,15 @@
   :faction: :goodies
   :spritesheet_position: [5, 1]
   :movement_points: 8
-  :action_points: 2
+  :action_points: 1
   :health_points: 8
+  :energy_points: 2
   :abilities:
     -
       :type: :melee
       :skill: 4
+      :damage_types:
+        - :blunt
     -
       :type: :sprint
       :skill: 2
@@ -320,12 +409,15 @@
   :faction: :goodies
   :spritesheet_position: [0, 2]
   :movement_points: 7
-  :action_points: 2
+  :action_points: 1
   :health_points: 7
+  :energy_points: 2
   :abilities:
     -
       :type: :melee
       :skill: 2
+      :damage_types:
+        - :impaling
     -
       :type: :sprint
       :skill: 1
@@ -334,12 +426,15 @@
   :faction: :goodies
   :spritesheet_position: [0, 5]
   :movement_points: 8
-  :action_points: 2
+  :action_points: 1
   :health_points: 7
+  :energy_points: 2
   :abilities:
     -
       :type: :melee
       :skill: 3
+      :damage_types:
+        - :blunt
     -
       :type: :sprint
       :skill: 2
@@ -348,12 +443,15 @@
   :faction: :goodies
   :spritesheet_position: [3, 1]
   :movement_points: 8
-  :action_points: 2
+  :action_points: 1
   :health_points: 10
+  :energy_points: 2
   :abilities:
     -
       :type: :melee
       :skill: 4
+      :damage_types:
+        - :blunt
     -
       :type: :sprint
       :skill: 3
@@ -362,12 +460,23 @@
   :faction: :goodies
   :spritesheet_position: [1, 2]
   :movement_points: 8
-  :action_points: 2
+  :action_points: 1
   :health_points: 6
+  :energy_points: 2
   :abilities:
     -
       :type: :melee
       :skill: 3
+      :damage_types:
+        - :impaling
+        - :poison
+    -
+      :type: :ranged
+      :skill: 2
+      :max_range: 5
+      :damage_types:
+        - :impaling
+        - :poison
     -
       :type: :sprint
       :skill: 3
@@ -383,6 +492,7 @@
   :movement_points: 7
   :action_points: 0
   :health_points: 1
+  :energy_points: 0
   :abilities: []
 
 :editor:
@@ -391,6 +501,7 @@
   :movement_points: 6
   :action_points: 0
   :health_points: 2
+  :energy_points: 0
   :abilities: []
 
 :photographer:
@@ -399,6 +510,7 @@
   :movement_points: 8
   :action_points: 0
   :health_points: 2
+  :energy_points: 0
   :abilities: []
 
 :reporter:
@@ -407,6 +519,7 @@
   :movement_points: 8
   :action_points: 0
   :health_points: 2
+  :energy_points: 0
   :abilities: []
 
 # - Other innocents and children
@@ -417,6 +530,7 @@
   :movement_points: 8
   :action_points: 0
   :health_points: 2
+  :energy_points: 0
   :abilities: []
 
 :boy_with_slingshot:
@@ -426,6 +540,7 @@
   :movement_points: 7
   :action_points: 0
   :health_points: 2
+  :energy_points: 0
   :abilities: []
 
 :girl_with_balloon:
@@ -435,4 +550,5 @@
   :movement_points: 7
   :action_points: 0
   :health_points: 2
+  :energy_points: 0
   :abilities: []
