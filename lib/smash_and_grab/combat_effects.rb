@@ -7,7 +7,7 @@ module SmashAndGrab
         @type, @value = type, value
       end
 
-      def affect(target)
+      def affect(target, origin_tile)
         return if value == 0
 
         config = CombatDice.config[type]
@@ -27,7 +27,7 @@ module SmashAndGrab
           # Gain (or extend) a status.
           target.add_status config[:status], value
         elsif type == :knockback
-          # TODO: Implement this!
+          target.knock_back value, origin_tile
         else
           raise type
         end
@@ -48,8 +48,8 @@ module SmashAndGrab
       @effects << Effect.new(type, value)
     end
 
-    def affect(target)
-      @effects.each {|e| e.affect target }
+    def affect(target, origin_tile)
+      @effects.each {|e| e.affect target, origin_tile }
     end
 
     def missed?; @effects.all? {|e| e.value == 0 }; end

@@ -227,7 +227,7 @@ class Entity < WorldObject
         if target.alive?
           parent.publish :game_info, "#{colorized_name} hit #{target.colorized_name} for #{effects}"
 
-          effects.affect target
+          effects.affect target, tile
 
           target.color = Color.rgb(255, 100, 100)
           delay 0.1
@@ -236,6 +236,72 @@ class Entity < WorldObject
           parent.publish :game_info, "#{colorized_name} attacked #{target.colorized_name} while they were down"
         end
       end
+    end
+  end
+
+  # Get knocked back a number of tiles in a direction from the origin of the effect.
+  def knock_back(distance, origin_tile)
+    # Work out which direction to actually get pushed in.
+    direction = if origin_tile.x > x
+                  if origin_tile.y > y
+                    :up
+                  elsif origin_tile.y < y
+                    :left
+                  else # Directly right of me on the screen.
+                    [:up, :left].sample
+                  end
+                elsif origin_tile.x < x
+                  if origin_tile.y > y
+                    :right
+                  elsif origin_tile.y < y
+                    :down
+                  else # Directly left of me on the screen.
+                    [:right, :down].sample
+                  end
+                else # same x
+                  if origin_tile.y < y # Directly above me on the screen.
+                    [:down, :left].sample
+                  elsif origin_tile.y > y # Directly below me on the screen.
+                    [:up, :right].sample
+                  else # Knocked back by myself!
+                    [:left, :right, :up, :down].sample
+                  end
+                end
+
+    # Actually get pushed.
+    add_activity do
+      self.z += 5
+
+      distance.times do
+        wall = tile.wall(direction)
+        if wall
+          destination = wall.destination(tile)
+          if destination and destination.empty?
+            # Actually get knocked back.
+            #trigger_zoc_melees tile
+            self.tile = destination
+            #trigger_overwatches tile
+          else
+            # Hurt self and possibly the thing we bump into.
+            self.hp -= 1 unless resistance_to(:blunt) > 0
+
+            if destination and destination.object.respond_to? :hp=
+              bumped_into = destination.object
+              log.info "#{self.name} was knocked back into #{bumped_into}"
+              bumped_into.hp -= 1 unless bumped_into.resistance_to(:blunt) > 0
+            end
+          end
+        else
+          # Fell off the edge of the map.
+          self.hp -= 1 unless resistance_to(:blunt) > 0
+        end
+
+        break unless alive?
+
+        delay 0.05
+      end
+
+      self.z -= 5
     end
   end
 
