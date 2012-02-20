@@ -1,5 +1,8 @@
 ---
 
+# Tick is run once per turn, except stunned which
+# also runs tick when applied, if target has an action.
+
 :burning:
   :tick:
     :health_points: -2

@@ -82,9 +82,10 @@ require_folder("history", %w[editor_action_history game_action_history])
 SmashAndGrab::Log.log.debug { "Scripts loaded in #{"%.3f" % (Time.now - t)} s" }
 
 t = Time.now
+
+SmashAndGrab::FONT_NAME = "UnmaskedBB.ttf"
 SmashAndGrab::GameWindow.new
 SmashAndGrab::Log.log.debug { "Window created in #{"%.3f" % (Time.now - t)} s" }
-SmashAndGrab::FONT_NAME = "UnmaskedBB.ttf"
 
 unless defined?(Ocra) or defined?(Bacon)
   SmashAndGrab::Log.log.info { "Game window opened" }

@@ -1,3 +1,5 @@
+# - encoding: utf-8 -
+
 module SmashAndGrab::Mixins
   module RollsDice
     SPRITE_WIDTH, SPRITE_HEIGHT = 16, 16
@@ -6,7 +8,6 @@ module SmashAndGrab::Mixins
     NUM_DAMAGE_TYPES = 9
 
     class << self
-      def sprites; @sprites ||= SmashAndGrab::SpriteSheet["combat_dice.png", SPRITE_WIDTH, SPRITE_HEIGHT, NUM_DAMAGE_TYPES]; end
       def config; @config ||= YAML.load_file(File.expand_path("config/map/combat_dice.yml", EXTRACT_PATH)); end
 
       # Register the all dice types and sides for use in text.
@@ -14,14 +15,31 @@ module SmashAndGrab::Mixins
       def create_text_entities
         return if defined? @created_entities
         @created_entities = true
-        config.each do |type, config|
-          # 0..2 coming up on the dice
-          (0..2).each do |side|
-            Gosu::register_entity "#{type.to_s[0, 1]}#{side}", sprites[config[:spritesheet_column], side]
-          end
 
-          # 1 on the dice (general type of damage).
-          Gosu::register_entity "#{type.to_s[0, 1]}", sprites[config[:spritesheet_column], 1]
+        elements = config.keys.sort_by {|k| config[k][:spritesheet_column] }
+
+        # 0..2 coming up on the dice
+        (0..2).each do |side|
+          sprites = SmashAndGrab::SpriteSheet["dice#{side}.png", SPRITE_WIDTH, SPRITE_HEIGHT]
+          elements.each.with_index do |element, i|
+            Gosu::register_entity "#{element.to_s[0, 1]}#{side}", sprites[i]
+          end
+        end
+
+        # General dice.
+        sprites = SmashAndGrab::SpriteSheet["elements.png", SPRITE_WIDTH, SPRITE_HEIGHT]
+        elements.each.with_index do |element, i|
+          Gosu::register_entity "#{element.to_s[0, 1]}", sprites[i]
+        end
+
+        sprites = SmashAndGrab::SpriteSheet["resistances.png", SPRITE_WIDTH, SPRITE_HEIGHT]
+        elements.each.with_index do |element, i|
+          Gosu::register_entity "#{element.to_s[0, 1]}r", sprites[i]
+        end
+
+        sprites = SmashAndGrab::SpriteSheet["vulnerabilities.png", SPRITE_WIDTH, SPRITE_HEIGHT]
+        elements.each.with_index do |element, i|
+          Gosu::register_entity "#{element.to_s[0, 1]}v", sprites[i]
         end
       end
     end
@@ -30,10 +48,10 @@ module SmashAndGrab::Mixins
     def skill_pips
       case @damage_types.size
         when 1
-          "&#{@damage_types[0][0, 1]};" * skill
+          "&#{@damage_types[0][0, 1]}1;" * skill
         when 2
-          "&#{@damage_types[0][0, 1]};" * skill.fdiv(2).ceil +
-              "&#{@damage_types[1][0, 1]};" * skill.fdiv(2).floor
+          "&#{@damage_types[0][0, 1]}1;" * skill.fdiv(2).ceil +
+              "&#{@damage_types[1][0, 1]}1;" * skill.fdiv(2).floor
         else
           raise "must use one or two combat types"
       end

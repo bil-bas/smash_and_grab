@@ -119,8 +119,8 @@
         - :impaling
         - :blunt
   :resistances:
-    :mental: Inf
-    :poison: Inf
+    :mental: .inf
+    :poison: .inf
   :vulnerabilities:
     :electric: 2
 

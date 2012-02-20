@@ -1,3 +1,5 @@
+# - encoding: utf-8 -
+
 module SmashAndGrab
 class GameWindow < Chingu::Window
   attr_reader :pixel
@@ -26,6 +28,7 @@ class GameWindow < Chingu::Window
     self.cursor = false
 
     SmashAndGrab::Mixins::RollsDice.create_text_entities
+    Font[FONT_NAME, 16]["∞"] = Image["infinity16.png"]
 
     push_game_state States::MainMenu
   end

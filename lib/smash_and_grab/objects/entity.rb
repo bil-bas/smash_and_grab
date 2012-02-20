@@ -1,3 +1,5 @@
+# - encoding: utf-8 -
+
 require 'set'
 require 'fiber'
 
@@ -73,6 +75,10 @@ class Entity < WorldObject
   end
   def resistance_to(type)
     @resistances[type] || 0
+  end
+  def resistances_and_vulnerabilities_string
+    @resistances.map {|r, n| "#{n == Float::INFINITY ? "∞" : n}&#{r[0, 1]}r; " }.join +
+        @vulnerabilities.map {|v, n| "-#{n}&#{v[0, 1]}v; " }.join
   end
 
   def movement_points=(movement_points)

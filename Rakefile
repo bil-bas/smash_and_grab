@@ -12,6 +12,7 @@ CLOBBER.include("doc/**/*")
 
 require_relative 'tasks/outline_images'
 require_relative 'tasks/create_portraits'
+require_relative 'tasks/create_dice'
 
 Releasy::Project.new do
   name "Smash and Grab"
