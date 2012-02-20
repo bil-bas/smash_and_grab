@@ -59,37 +59,45 @@ Font.factor_rendered = 1.0 / Font.factor_stored
 include Chingu
 
 SmashAndGrab::Log.log.debug { "Gems loaded in #{"%.3f" % (Time.now - t)} s" }
-t = Time.now
 
-# Setup Chingu's autoloading media directories.
-media_dir = File.expand_path('media', EXTRACT_PATH)
-Image.autoload_dirs.unshift File.join(media_dir, 'images')
-Sample.autoload_dirs.unshift File.join(media_dir, 'sounds')
-Song.autoload_dirs.unshift File.join(media_dir, 'music')
-Font.autoload_dirs.unshift File.join(media_dir, 'fonts')
+module SmashAndGrab
+  t = Time.now
 
-require_folder "std_ext", %w[array hash]
+  # Setup Chingu's autoloading media directories.
+  media_dir = File.expand_path('media', EXTRACT_PATH)
+  Image.autoload_dirs.unshift File.join(media_dir, 'images')
+  Sample.autoload_dirs.unshift File.join(media_dir, 'sounds')
+  Song.autoload_dirs.unshift File.join(media_dir, 'music')
+  Font.autoload_dirs.unshift File.join(media_dir, 'fonts')
 
-# Include other files.
-require_folder("", %w[version sprite_sheet z_order z_order_recorder game_window mouse_selection combat_effects])
-require_folder("map", %w[tile wall map])
-require_folder("objects", %w[static entity vehicle])
-require_folder("gui", %w[minimap editor_selector entity_summary info_panel])
-require_folder("states", %w[edit_level play_level main_menu])
-require_folder("players", %w[ai human remote])
-require_folder("history", %w[editor_action_history game_action_history])
+  require_folder "std_ext", %w[array hash]
 
-SmashAndGrab::Log.log.debug { "Scripts loaded in #{"%.3f" % (Time.now - t)} s" }
+  # Include other files.
+  require_folder("", %w[version sprite_sheet z_order z_order_recorder game_window mouse_selection combat_effects])
+  require_folder("map", %w[tile wall map])
+  require_folder("objects", %w[static entity vehicle])
+  require_folder("gui", %w[minimap editor_selector entity_summary info_panel])
+  require_folder("states", %w[edit_level play_level main_menu])
+  require_folder("players", %w[ai human remote])
+  require_folder("history", %w[editor_action_history game_action_history])
 
-t = Time.now
+  Log.log.debug { "Scripts loaded in #{"%.3f" % (Time.now - t)} s" }
 
-SmashAndGrab::FONT_NAME = "UnmaskedBB.ttf"
-SmashAndGrab::GameWindow.new
-SmashAndGrab::Log.log.debug { "Window created in #{"%.3f" % (Time.now - t)} s" }
+  FONT_NAME = "UnmaskedBB.ttf"
+  module FontHeight
+    SMALL = 12
+    MEDIUM = 16
+    LARGE = 20
+  end
 
-unless defined?(Ocra) or defined?(Bacon)
-  SmashAndGrab::Log.log.info { "Game window opened" }
-  $window.show
+  t = Time.now
+  GameWindow.new
+  Log.log.debug { "Window created in #{"%.3f" % (Time.now - t)} s" }
 
-  SmashAndGrab::Log.log.info { "Game window closed" }
+  unless defined?(Ocra) or defined?(Bacon)
+    Log.log.info { "Game window opened" }
+    $window.show
+
+    Log.log.info { "Game window closed" }
+  end
 end

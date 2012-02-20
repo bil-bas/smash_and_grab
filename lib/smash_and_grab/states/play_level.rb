@@ -112,18 +112,18 @@ class PlayLevel < World
 
       # Button box.
       @button_box = vertical parent: container, padding: 4, spacing: 8, width: 150, background_color: Color::BLACK do
-        @turn_label = label " ", font_height: 14
+        @turn_label = label " ", font_height: FontHeight::SMALL
 
         @end_turn_button = button "End turn" do
           end_turn
         end
 
         horizontal padding: 0 do
-          @undo_button = button "Undo", padding_h: 4, font_height: 16 do
+          @undo_button = button "Undo", padding_h: 4, font_height: FontHeight::MEDIUM do
             undo_action
           end
 
-          @redo_button = button "Redo", padding_h: 4, font_height: 16 do
+          @redo_button = button "Redo", padding_h: 4, font_height: FontHeight::MEDIUM do
             redo_action
           end
         end

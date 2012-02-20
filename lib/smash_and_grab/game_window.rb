@@ -2,6 +2,7 @@
 
 module SmashAndGrab
 class GameWindow < Chingu::Window
+  include Log
   attr_reader :pixel
 
   def initialize
@@ -28,7 +29,14 @@ class GameWindow < Chingu::Window
     self.cursor = false
 
     SmashAndGrab::Mixins::RollsDice.create_text_entities
-    Font[FONT_NAME, 16]["∞"] = Image["infinity16.png"]
+    Font[FONT_NAME, FontHeight::MEDIUM]["∞"] = Image["infinity16.png"]
+
+    t = Time.now
+    chars = (('a'..'z').to_a + ('A'..'Z').to_a + (0..9).to_a).join
+    [FontHeight::SMALL, FontHeight::MEDIUM, FontHeight::LARGE].each do |size|
+      Font[FONT_NAME, size].text_width chars
+    end
+    log.debug { "Fonts pre-loaded in #{"%.3f" % (Time.now - t)}s" }
 
     push_game_state States::MainMenu
   end

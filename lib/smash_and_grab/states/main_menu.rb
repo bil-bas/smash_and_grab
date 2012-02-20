@@ -28,7 +28,7 @@ class MainMenu < Fidgit::GuiState
         image_frame Objects::Entity.sprites[3, 1], factor: 4
 
         vertical align: :center do
-          options = { width: 200, justify: :center }
+          options = { width: 200, justify: :center, font_height: FontHeight::LARGE }
           button "Single Player", options do
             push_game_state States::PlayLevel.new(GAME_FILE, Players::Human.new, Players::AI.new)
           end

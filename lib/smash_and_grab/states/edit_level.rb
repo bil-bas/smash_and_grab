@@ -39,11 +39,11 @@ class EditLevel < World
 
       @button_box = vertical parent: container, padding: 4, spacing: 8, background_color: Color::BLACK do
         horizontal padding: 0 do
-          @undo_button = button "Undo", padding_h: 4, font_height: 16 do
+          @undo_button = button "Undo", padding_h: 4, font_height: FontHeight::MEDIUM do
             undo_action
           end
 
-          @redo_button = button "Redo", padding_h: 4, font_height: 16 do
+          @redo_button = button "Redo", padding_h: 4, font_height: FontHeight::MEDIUM do
             redo_action
           end
         end

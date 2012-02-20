@@ -14,7 +14,7 @@ class EntitySummary < Fidgit::Vertical
 
     super options
 
-    @name = label "", font_height: 15
+    @name = label "", font_height: FontHeight::SMALL
 
     @box = horizontal padding: 0, spacing: 4 do
       @portrait = image_frame nil, background_color: Color::GRAY,

@@ -22,7 +22,7 @@ module SmashAndGrab
           # TODO: Clicking on portrait should center.
           @portrait = image_frame @entity.image, padding: 0, background_color: Color::GRAY
           @info_toggle = toggle_button "Bio", value: @info_shown, tip: "Show/hide biography",
-                                       font_height: 14, align_h: :center do |_, value|
+                                       font_height: FontHeight::SMALL, align_h: :center do |_, value|
             @info_shown = value
             publish :info_toggled, value
             switch_sub_panel
@@ -30,7 +30,7 @@ module SmashAndGrab
         end
 
         vertical padding: 0, spacing: 1.5 do
-          @name = label @entity.name, font_height: 20, color: Color::WHITE
+          @name = label @entity.name, font_height: FontHeight::LARGE, color: Color::WHITE
           label TITLE_COLOR.colorize("#{entity.title} - #{@entity.faction.colorized_name}"), font_height: 12
           @sub_panel_container = vertical spacing: 0, padding: 0
         end
@@ -58,7 +58,7 @@ module SmashAndGrab
           text = nil
           scroll = scroll_window width: 350, height: 68 do
             text = text_area text: "#{@entity.name} once ate a pomegranate, but it took all day and all night... " * 5,
-                                  width: 330, font_height: 14, editable: false
+                                  width: 330, font_height: FontHeight::SMALL, editable: false
           end
           scroll.background_color = text.background_color
         end
@@ -67,15 +67,15 @@ module SmashAndGrab
       def create_details_sub_panel
         @details_sub_panel = Fidgit::Horizontal.new padding: 0, spacing: 0 do
           vertical padding: 0, spacing: 1, width: 160 do
-            @health = label "", font_height: 12
-            @movement_points = label "", font_height: 12
-            @energy_points = label "", font_height: 12
-            @action_points = label "", font_height: 12
-            @resistances = label "", font_height: 16
+            @health = label "", font_height: FontHeight::SMALL
+            @movement_points = label "", font_height: FontHeight::SMALL
+            @energy_points = label "", font_height: FontHeight::SMALL
+            @action_points = label "", font_height: FontHeight::SMALL
+            @resistances = label "", font_height: FontHeight::MEDIUM
           end
 
           grid num_columns: 4, spacing: 4, padding: 0 do
-            button_options = { font_height: 20, width: 28, height: 28, padding: 0, padding_left: 8 }
+            button_options = { font_height: FontHeight::LARGE, width: 28, height: 28, padding: 0, padding_left: 8 }
 
             @ability_buttons = {}
 
