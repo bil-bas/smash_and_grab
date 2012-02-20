@@ -107,6 +107,19 @@ class WorldObject < GameObject
   def busy?; false; end
   def active?; false; end
 
+  def to_json(*a)
+    to_hash.to_json *a
+  end
+
+  def to_hash
+    {
+        :class => self.class::CLASS,
+        type: type,
+        id: id,
+        tile: tile ? grid_position : nil,
+    }
+  end
+
   def destroy
     map.remove self
     self.tile = nil

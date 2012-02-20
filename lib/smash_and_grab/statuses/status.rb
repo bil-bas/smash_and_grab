@@ -36,6 +36,10 @@ module SmashAndGrab::Statuses
       @started_turn_handler.unsubscribe
       @owner.remove_status self
     end
+
+    def to_json(*a)
+      { type: type, duration: duration }.to_json(*a)
+    end
   end
 
   # On fire! You'll die quite quickly :)

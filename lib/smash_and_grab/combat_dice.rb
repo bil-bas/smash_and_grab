@@ -61,6 +61,7 @@ module SmashAndGrab
     protected
     def roll_typed_dice(level, type, target)
       max = level + target.vulnerability_to(type)
+
       effective = [max - target.resistance_to(type), 0].max
 
       # Work out what the results actually are.

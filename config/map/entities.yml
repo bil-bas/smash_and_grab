@@ -30,6 +30,10 @@
     -
       :type: :sprint
       :skill: 4
+  :resistances:
+    :impaling: 1
+  :vulnerabilities:
+    :hold: 1
 
 
 :octobrain: # Scientist with giant brain.
@@ -56,6 +60,8 @@
     -
       :type: :sprint
       :skill: 1
+  :vulnerabilities:
+    :mental: 1
 
 :femme_fatale: # Woman in red dress.
   :faction: :baddies
@@ -92,6 +98,10 @@
     -
       :type: :sprint
       :skill: 1
+  :resistances:
+    :cosmic: 2
+  :vulnerabilities:
+    :fire: 2
 
 :robot:
   :faction: :baddies
@@ -108,6 +118,11 @@
       :damage_types:
         - :impaling
         - :blunt
+  :resistances:
+    :mental: Inf
+    :poison: Inf
+  :vulnerabilities:
+    :electric: 2
 
 :artist:
   :faction: :baddies
@@ -166,6 +181,8 @@
     -
       :type: :sprint
       :skill: 2
+  :resistances:
+    :electric: 1
 
 :yuri_blastin:
   :faction: :baddies
@@ -188,6 +205,9 @@
       :damage_types:
         - :cosmic
         - :hold
+  :resistances:
+    :blunt: 1
+    :knockback: 1
 
 # - Minions -
 
@@ -328,6 +348,10 @@
     -
       :type: :sprint
       :skill: 5
+  :resistances:
+    :impaling: 1
+  :vulnerabilities:
+    :knockback: 1
 
 :enormous_esme: # Giant.
   :faction: :goodies
@@ -347,6 +371,9 @@
     -
       :type: :sprint
       :skill: 2
+
+  :resistances:
+    :knockback: 2
 
 :femme_fatale2: # Woman in green dress.
   :faction: :goodies
@@ -404,6 +431,10 @@
     -
       :type: :sprint
       :skill: 2
+  :resistances:
+    :blunt: 1
+  :vulnerabilities:
+    :mental: 1
 
 :moleman:
   :faction: :goodies
@@ -438,6 +469,8 @@
     -
       :type: :sprint
       :skill: 2
+  :resistances:
+    :mental: 1
 
 :spandexman: # Guy in red spandex.
   :faction: :goodies
@@ -455,6 +488,10 @@
     -
       :type: :sprint
       :skill: 3
+  :resistances:
+    :impaling: 2
+  :vulnerabilities:
+    :cosmic: 2
 
 :stinger: # Wasp-lady
   :faction: :goodies
@@ -480,6 +517,10 @@
     -
       :type: :sprint
       :skill: 3
+  :resistances:
+    :poison: 1
+  :vulnerabilities:
+    :crushing: 1
 
 # === BYSTANDERS ===
 

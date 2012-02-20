@@ -38,15 +38,6 @@ class Static < WorldObject
     raise @type unless @image
   end
 
-  def to_json(*a)
-    {
-        :class => CLASS,
-        type: @type,
-        id: id,
-        tile: tile ? grid_position : nil,
-    }.to_json(*a)
-  end
-
   def draw
     # Without a tile, it has probably been picked up.
     super if tile

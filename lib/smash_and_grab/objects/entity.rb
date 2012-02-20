@@ -66,8 +66,12 @@ class Entity < WorldObject
   def inactive?; @faction.inactive?; end
 
   # TODO: Implement these sensibly.
-  def vulnerability_to(type); 0; end
-  def resistance_to(type); 0; end
+  def vulnerability_to(type)
+    @vulnerabilities[type] || 0
+  end
+  def resistance_to(type)
+    @resistances[type] || 0
+  end
 
   def movement_points=(movement_points)
     @movement_points = movement_points
@@ -130,6 +134,7 @@ class Entity < WorldObject
 
     raise @type unless image
 
+    # Basic stats.
     @max_movement_points = config[:movement_points] || raise("No configured movement points")
     @movement_points = data[:movement_points] || @max_movement_points
 
@@ -141,6 +146,10 @@ class Entity < WorldObject
 
     @max_energy_points = config[:energy_points] || raise("No configured energy points")
     @energy_points = data[:energy_points] || @max_energy_points
+
+    # Resistances and vulnerabilities.
+    @resistances = config[:resistances] || {}
+    @vulnerabilities = config[:vulnerabilities] || {}
 
     # Load other abilities of the entity from config.
     @abilities = {}
@@ -633,26 +642,15 @@ class Entity < WorldObject
     alive? and has_ability?(name) and ap >= ability(name).action_cost and ability(name).use?
   end
 
-  def to_json(*a)
-    to_hash.to_json
-  end
-
   def to_hash
-    data = {
-        :class => CLASS,
-        type: type,
-        id: id,
+    super.merge!(
         health_points: health_points,
         movement_points: movement_points,
         action_points: action_points,
         energy_points: energy_points,
         contents_id: contents ? contents.id : nil,
         facing: factor_x > 0 ? :right : :left,
-    }
-
-    data[:tile] = grid_position if tile
-
-    data
+    )
   end
 end
 end
