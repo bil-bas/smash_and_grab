@@ -9,6 +9,7 @@ require_relative "floating_text"
 require_relative "../mixins/line_of_sight"
 require_relative "../mixins/pathfinding"
 require_relative "../mixins/has_contents"
+require_relative "../mixins/has_status"
 
 module SmashAndGrab
 module Objects
@@ -16,6 +17,7 @@ class Entity < WorldObject
   include Mixins::LineOfSight
   include Mixins::Pathfinding
   include Mixins::HasContents
+  include Mixins::HasStatus
 
   CLASS = :entity
 
@@ -209,30 +211,23 @@ class Entity < WorldObject
   alias_method :hp=, :health_points=
 
   # Called from GameActions::Ability
-  # Also used to un-melee :)
   def make_attack(target, effects)
-    damage = effects.value
-
     add_activity do
-      if damage == 0 # Missed
-        face target
-        self.z += 10
-        delay 0.1
-        self.z -= 10
+      face target
+      self.z += 10
+      delay 0.1
+      self.z -= 10
 
+      if effects.missed?
         parent.publish :game_info, "#{colorized_name} attacked #{target.colorized_name}, but missed"
         missed target
 
-      elsif damage > 0 # do => wound
-        face target
-        self.z += 10
-        delay 0.1
-        self.z -= 10
-
+      else
         # Can be dead at this point if there were 2-3 attackers of opportunity!
         if target.alive?
           parent.publish :game_info, "#{colorized_name} hit #{target.colorized_name} for #{effects}"
-          target.hp -= damage
+
+          effects.affect target
 
           target.color = Color.rgb(255, 100, 100)
           delay 0.1
@@ -240,15 +235,6 @@ class Entity < WorldObject
         else
           parent.publish :game_info, "#{colorized_name} attacked #{target.colorized_name} while they were down"
         end
-      else # undo => heal
-        target.color = Color.rgb(255, 100, 100)
-        delay 0.1
-        target.hp -= damage
-        target.color = Color::WHITE
-
-        self.z += 10
-        delay 0.1
-        self.z -= 10
       end
     end
   end
@@ -582,6 +568,10 @@ class Entity < WorldObject
   end
 
   def to_json(*a)
+    to_hash.to_json
+  end
+
+  def to_hash
     data = {
         :class => CLASS,
         type: type,
@@ -596,7 +586,7 @@ class Entity < WorldObject
 
     data[:tile] = grid_position if tile
 
-    data.to_json(*a)
+    data
   end
 end
 end

@@ -2,8 +2,6 @@
 
 :blunt:
   :affects: :health_points
-  :magnitude: 1
-  :duration: :instant
   :spritesheet_column: 0
   :sides:
     - 0
@@ -14,9 +12,7 @@
     - 1
 
 :cosmic:
-  :affects: :special
-  :magnitude: 1
-  :duration: :special
+  :affects: :energy_points
   :spritesheet_column: 8
   :sides:
     - 0
@@ -24,13 +20,11 @@
     - 0
     - 0
     - 0
-    - 3
+    - 1
 
 
 :electric:
   :affects: :health_points
-  :magnitude: 1
-  :duration: :instant
   :spritesheet_column: 3
   :sides:
     - 0
@@ -42,36 +36,30 @@
 
 
 :fire:
-  :affects: :health_points
-  :magnitude: 1
-  :duration: :over_time
+  :status: :burning
   :spritesheet_column: 1
   :sides:
     - 0
     - 0
     - 0
+    - 0
     - 1
     - 1
-    - 2
 
 
 :hold:
-  :affects: :movement_points
-  :magnitude: 4
-  :duration: :delayed
+  :status: :held
   :spritesheet_column: 6
   :sides:
     - 0
     - 0
     - 0
+    - 0
     - 1
     - 1
-    - 2
 
 :impaling:
   :affects: :health_points
-  :magnitude: 1
-  :duration: :instant
   :spritesheet_column: 4
   :sides:
     - 0
@@ -83,9 +71,7 @@
 
 
 :knockback:
-  :affects: :special
-  :magnitude: 1
-  :duration: :instant
+  # Special effect
   :spritesheet_column: 7
   :sides:
     - 0
@@ -97,23 +83,19 @@
 
 
 :mental:
-  :affects: :action_points
-  :magnitude: 1
-  :duration: :delayed
+  :status: :confused
   :spritesheet_column: 5
   :sides:
     - 0
     - 0
     - 0
     - 0
-    - 1
+    - 0
     - 1
 
 
 :poison:
-  :affects: :health_points
-  :magnitude: 1
-  :duration: :over_time
+  :status: :poisoned
   :spritesheet_column: 2
   :sides:
     - 0
