@@ -5,7 +5,7 @@ module SmashAndGrab::Abilities
     def use?; super and owner.action_points == 0; end
 
     def initialize(owner, data)
-      super(owner, data.merge(cost: { energy_points: 1 }, skill: 0))
+      super(owner, data.merge(cost: { energy_points: 1 }, skill: NON_SKILL))
     end
 
     def tip
