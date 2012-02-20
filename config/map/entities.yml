@@ -435,6 +435,10 @@
       :skill: 2
     -
       :type: :flurry
+    -
+      :type: :second_wind
+      :skill: 3
+
   :resistances:
     :blunt: 1
   :vulnerabilities:
@@ -492,6 +496,10 @@
     -
       :type: :sprint
       :skill: 3
+    -
+      :type: :second_wind
+      :skill: 3
+
   :resistances:
     :impaling: 2
   :vulnerabilities:

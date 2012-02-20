@@ -81,10 +81,13 @@ module SmashAndGrab
 
             label_options = button_options.merge border_thickness: 2, border_color: Color.rgba(255, 255, 255, 100)
 
-            used_skills = []
-            [:melee, :ranged, :sprint, :drop, :flurry].each do |ability_name|
+            extra_skills = []
+            # First four are always arranged on the top row in static positions.
+            # Any others are just arranged in the second row.
+            [:melee, :ranged, :sprint, :drop, :flurry, :second_wind].each.with_index do |ability_name, i|
               if @entity.has_ability? ability_name
-                used_skills << ability_name
+                extra_skills << ability_name if i >= 4
+
                 ability = @entity.ability ability_name
                 @ability_buttons[ability_name] = button("#{ability_name.to_s[0].upcase}#{ability.skill}",
                                                         button_options.merge(tip: ability.tip)) do
@@ -94,11 +97,11 @@ module SmashAndGrab
                   end
                 end
               else
-                label "", label_options
+                label "", label_options if i < 4
               end
             end
 
-            (8 - used_skills.size).times do |i|
+            (4 - extra_skills.size).times do |i|
                label "", label_options
             end
           end
