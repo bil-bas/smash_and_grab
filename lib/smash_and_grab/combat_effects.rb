@@ -10,7 +10,7 @@ module SmashAndGrab
       def affect(target, origin_tile)
         return if value == 0
 
-        config = CombatDice.config[type]
+        config = Mixins::RollsDice.config[type]
         if config[:affects]
           # Directly affect stat(s) right now.
           stat_affected = config[:affects]

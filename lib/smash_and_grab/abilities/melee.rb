@@ -1,9 +1,10 @@
 require_relative "ability"
+require_relative "../mixins/rolls_dice"
 
 # Melee skill is required to even move (it is plain "move" if you have no actions) :)
 module SmashAndGrab::Abilities
   class Melee < TouchAbility
-    include SmashAndGrab::CombatDice
+    include SmashAndGrab::Mixins::RollsDice
 
     def can_be_undone?; false; end
 

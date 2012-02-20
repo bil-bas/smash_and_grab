@@ -1,8 +1,9 @@
 require_relative "ability"
+require_relative "../mixins/rolls_dice"
 
 module SmashAndGrab::Abilities
   class Ranged < TargetedAbility
-    include SmashAndGrab::CombatDice
+    include SmashAndGrab::Mixins::RollsDice
 
     attr_reader :min_range, :max_range
 

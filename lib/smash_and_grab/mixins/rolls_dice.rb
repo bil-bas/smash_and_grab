@@ -1,12 +1,12 @@
-module SmashAndGrab
-  module CombatDice
+module SmashAndGrab::Mixins
+  module RollsDice
     SPRITE_WIDTH, SPRITE_HEIGHT = 16, 16
 
     # Blunt, Cosmic, Electric, Fire, Hold, Impaling, Knock-back, Mental & Poison.
     NUM_DAMAGE_TYPES = 9
 
     class << self
-      def sprites; @sprites ||= SpriteSheet["combat_dice.png", SPRITE_WIDTH, SPRITE_HEIGHT, NUM_DAMAGE_TYPES]; end
+      def sprites; @sprites ||= SmashAndGrab::SpriteSheet["combat_dice.png", SPRITE_WIDTH, SPRITE_HEIGHT, NUM_DAMAGE_TYPES]; end
       def config; @config ||= YAML.load_file(File.expand_path("config/map/combat_dice.yml", EXTRACT_PATH)); end
 
       # Register the all dice types and sides for use in text.
@@ -43,7 +43,7 @@ module SmashAndGrab
     # Return might then be [[:fire, 2], [:fire, 0], [:mental, 1]], which translates as 2 DoT and lose one action.
     #
     def roll_dice(level, types, target)
-      effects = CombatEffects.new
+      effects = SmashAndGrab::CombatEffects.new
 
       case types.size
         when 1
@@ -74,7 +74,7 @@ module SmashAndGrab
     protected
     # @return [Integer] Result.
     def roll_die(type)
-      rolls = CombatDice.config[type][:sides]
+      rolls = RollsDice.config[type][:sides]
       rolls[rand(0..5)]
     end
   end

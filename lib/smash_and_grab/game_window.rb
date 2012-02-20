@@ -25,7 +25,7 @@ class GameWindow < Chingu::Window
 
     self.cursor = false
 
-    CombatDice.create_text_entities
+    SmashAndGrab::Mixins::RollsDice.create_text_entities
 
     push_game_state States::MainMenu
   end

@@ -10,6 +10,7 @@ require_relative "../mixins/line_of_sight"
 require_relative "../mixins/pathfinding"
 require_relative "../mixins/has_contents"
 require_relative "../mixins/has_status"
+require_relative "../mixins/rolls_dice"
 
 module SmashAndGrab
 module Objects
@@ -18,6 +19,7 @@ class Entity < WorldObject
   include Mixins::Pathfinding
   include Mixins::HasContents
   include Mixins::HasStatus
+  include Mixins::RollsDice
 
   CLASS = :entity
 
@@ -281,8 +283,8 @@ class Entity < WorldObject
     add_activity do
       self.z += 5
 
-      distance.times do
-        wall = tile.wall(direction)
+      distance.downto(1).each do |distance_remaining|
+        wall = tile && tile.wall(direction)
         if wall
           destination = wall.destination(tile)
           if destination and destination.empty?
@@ -292,20 +294,27 @@ class Entity < WorldObject
             #trigger_overwatches tile
           else
             # Hurt self and possibly the thing we bump into.
-            self.hp -= 1 unless resistance_to(:blunt) > 0
+            effects = roll_dice distance_remaining, [:blunt], self
+            effects.affect self, tile
+            parent.publish :game_info, "#{colorized_name} was knocked back and took #{effects}"
 
             if destination and destination.object.respond_to? :hp=
               bumped_into = destination.object
-              log.info "#{self.name} was knocked back into #{bumped_into}"
-              bumped_into.hp -= 1 unless bumped_into.resistance_to(:blunt) > 0
+              log.info "#{self.name} was knocked back into #{bumped_into.name}"
+              effects = roll_dice distance_remaining, [:blunt], bumped_into
+              effects.affect bumped_into, tile
+              parent.publish :game_info, "#{bumped_into.colorized_name} was bashed into by #{colorized_name} and took #{effects}"
             end
+
+            break
           end
         else
-          # Fell off the edge of the map.
-          self.hp -= 1 unless resistance_to(:blunt) > 0
+          # Fall off the edge of the map :)
+          effects = roll_dice distance_remaining, [:blunt], self
+          effects.affect self, tile
+          parent.publish :game_info, "#{colorized_name} was knocked back and took #{effects}"
+          break
         end
-
-        break unless alive?
 
         delay 0.05
       end
