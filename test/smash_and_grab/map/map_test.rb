@@ -7,6 +7,7 @@ describe SmashAndGrab::Map do
             "class" => "entity",
             "type" => "professor_goggles",
             "id" => 0,
+            "statuses" => [],
             "health_points" => 5,
             "contents_id" => nil,
             "movement_points" => 7,

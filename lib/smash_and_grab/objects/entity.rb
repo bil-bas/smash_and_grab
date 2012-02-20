@@ -663,7 +663,6 @@ class Entity < WorldObject
         movement_points: movement_points,
         action_points: action_points,
         energy_points: energy_points,
-        contents_id: contents ? contents.id : nil,
         facing: factor_x > 0 ? :right : :left,
     )
   end

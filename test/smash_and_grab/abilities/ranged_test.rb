@@ -7,7 +7,7 @@ describe SmashAndGrab::Abilities::Ranged do
     @enemy = Object.new
     @map = Object.new
     @tile = SmashAndGrab::Tile.new(:grass, nil, 1, 2)
-    @effects = SmashAndGrab::CombatEffects.new [[:impaling, 6], [:fire, 4]]
+    @effects = SmashAndGrab::CombatEffects.new [[:impaling, 6], [:fire, 2]]
   end
 
   subject { SmashAndGrab::Abilities.ability @entity, type: :ranged, skill: 5, max_range: 5, damage_types: [:impaling, :fire] }

@@ -33,6 +33,10 @@ module SmashAndGrab
         publish :changed
         nil
       end
+
+      def to_hash
+        super.merge! contents_id: contents ? contents.id : nil
+      end
     end
   end
 end

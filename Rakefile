@@ -16,6 +16,7 @@ namespace :gem do
   Bundler::GemHelper.install_tasks
 end
 task "gem:build" => :gemspec
+task "gem:install" => :gemspec
 
 desc "Generate Yard docs."
 task :yard do
