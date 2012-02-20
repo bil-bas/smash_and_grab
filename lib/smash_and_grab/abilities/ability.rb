@@ -5,7 +5,12 @@ module SmashAndGrab::Abilities
     NON_SKILL = 0
     SKILL_LEVEL_DESCRIPTIONS = %w[Fair Good Excellent Heroic Legendary]
 
-    def use?; true; end
+    def use?
+      @cost.all? do |points, required|
+        @owner.send(points) >= required
+      end
+    end
+
     def can_be_undone?; true; end
     def action_cost; @cost[:action_points] || 0; end
     def type; Inflector.underscore(Inflector.demodulize(self.class.name)).to_sym; end

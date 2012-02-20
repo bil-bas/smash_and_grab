@@ -30,6 +30,8 @@
     -
       :type: :sprint
       :skill: 4
+    -
+      :type: :flurry
   :resistances:
     :impaling: 1
   :vulnerabilities:
@@ -431,6 +433,8 @@
     -
       :type: :sprint
       :skill: 2
+    -
+      :type: :flurry
   :resistances:
     :blunt: 1
   :vulnerabilities:
