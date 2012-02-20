@@ -1,0 +1,25 @@
+---
+
+:burning:
+  :tick:
+    :health_points: -2
+
+:held:
+  :tick:
+    :movement_points: -Inf
+
+:irradiated:
+  :tick: # Have energy left, so use that.
+    :energy_points: -1
+  :fail: # No energy left, so like poisoning.
+    :movement_points: -2
+    :health_points: -1
+
+:poisoned:
+  :tick:
+    :movement_points: -2
+    :health_points: -1
+
+:stunned:
+  :tick:
+    :action_points: -Inf

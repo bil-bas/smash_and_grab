@@ -12,14 +12,18 @@ module SmashAndGrab::Statuses
     attr_reader :duration, :owner
     def type; @type ||= Inflector.underscore(Inflector.demodulize(self.class.name)).to_sym; end
 
+    class << self
+      def config; @config ||= YAML.load_file(File.expand_path("config/map/statuses.yml", EXTRACT_PATH)); end
+    end
+
     def initialize(owner, duration)
       @owner, @duration = owner, duration
 
       @started_turn_handler = @owner.subscribe :started_turn do
-        @duration -= 1
         tick
-        destroy if @duration <= 0
       end
+
+      setup
 
       log.info { "#{owner.name} gained #{type.inspect} for #{duration} turn(s)" }
     end
@@ -29,7 +33,20 @@ module SmashAndGrab::Statuses
       @duration += duration
     end
 
-    def tick; end
+    def setup; end
+
+    def reduce_points(points_group)
+      Status.config[type][points_group].each do |stat, amount|
+        @owner.send :"#{stat}=", @owner.send(stat) + amount
+      end
+    end
+
+
+    def tick
+      reduce_points :tick
+      @duration -= 1
+      destroy if @duration <= 0
+    end
 
     def destroy
       log.info { "#{owner.name} recovered from #{type.inspect}" }
@@ -44,30 +61,31 @@ module SmashAndGrab::Statuses
 
   # On fire! You'll die quite quickly :)
   class Burning < Status
-    def tick
-      @owner.health_points -= 2
-    end
   end
 
   # Poisoned, so you slowly die and can't move as fast.
   class Poisoned < Status
-    def tick
-      @owner.health_points -= 1
-      @owner.movement_points -= 2
-    end
   end
 
   # Held so you can't move.
   class Held < Status
+  end
+
+  class Irradiated < Status
     def tick
-      @owner.movement_points = 0
+      # If the entity is out of energy, then lose other points instead.
+      reduce_points :fail if owner.energy_points == 0
+
+      super
     end
   end
 
   # Confused so you can't use any abilities.
-  class Confused < Status
-    def tick
-      @owner.action_points = 0
+  class Stunned < Status
+    def setup
+      # Special case is that if you are stunned when you still have actions left, then lose them
+      # and use up a turn of effect.
+      tick if owner.action_points > 0
     end
   end
 end

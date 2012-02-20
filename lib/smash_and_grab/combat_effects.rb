@@ -16,13 +16,7 @@ module SmashAndGrab
           stat_affected = config[:affects]
           current_value = target.send stat_affected
 
-          # If the entity is out of actions or energy, then lose health instead.
-          if current_value < value and stat_affected != :health_points
-            target.send :"#{stat_affected}=", 0
-            target.health_points -= value - current_value
-          else
-            target.send :"#{stat_affected}=", current_value - value
-          end
+          target.send :"#{stat_affected}=", current_value - value
         elsif config[:status]
           # Gain (or extend) a status.
           target.add_status config[:status], value

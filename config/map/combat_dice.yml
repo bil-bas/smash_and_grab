@@ -12,14 +12,14 @@
     - 1
 
 :cosmic:
-  :affects: :energy_points
+  :status: :irradiated
   :spritesheet_column: 8
   :sides:
     - 0
     - 0
     - 0
     - 0
-    - 0
+    - 1
     - 1
 
 
@@ -83,7 +83,7 @@
 
 
 :mental:
-  :status: :confused
+  :status: :stunned
   :spritesheet_column: 5
   :sides:
     - 0
