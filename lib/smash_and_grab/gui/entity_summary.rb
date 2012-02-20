@@ -39,7 +39,7 @@ class EntitySummary < Fidgit::Vertical
 
   public
   def update_details(entity)
-    self.tip = "HP: #{entity.hp} / #{entity.max_hp}; MP: #{entity.mp} / #{entity.max_mp}; AP: #{entity.ap} / #{entity.max_ap}"
+    self.tip = "HP: #{entity.hp} / #{entity.max_hp}; MP: #{entity.mp} / #{entity.max_mp}; EP: #{entity.ep} / #{entity.max_ep}; AP: #{entity.ap} / #{entity.max_ap}"
 
     @portrait.image = entity.portrait
     @name.color = entity.alive? ? Color::WHITE : Color::GRAY
@@ -55,7 +55,7 @@ class EntitySummary < Fidgit::Vertical
   def entity=(entity)
     @entity = entity
 
-    @name.text = " " + @entity.name[0...13]
+    @name.text = @entity.name
     @entity.subscribe :changed, &method(:update_details)
 
     update_details @entity
