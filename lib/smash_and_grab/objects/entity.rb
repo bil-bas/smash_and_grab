@@ -190,7 +190,7 @@ class Entity < WorldObject
     # Number like entities (e.g. Cop #1, Cop #2, but leave unique people with their standard name)
     unless @name
       @name = super
-      similar = self.class.all.find_all {|e| e.type == type }
+      similar = self.class.instances.find_all {|e| e.type == type }
       if similar.size > 1
         @name += " ##{similar.index(self) + 1}"
       end

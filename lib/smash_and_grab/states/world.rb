@@ -174,6 +174,23 @@ class World < Fidgit::GuiState
     puts ex.backtrace
     exit
   end
+
+  def finalize
+    super
+
+    Objects::Entity.destroy_all
+    Objects::Static.destroy_all
+    Objects::Vehicle.destroy_all
+    Objects::WorldObject.destroy_all # Shouldn't instantiate this, but let's be paranoid.
+    Objects::FloatingText.destroy_all
+
+    Factions::Faction.destroy_all
+    Tile.destroy_all
+    Wall.destroy_all
+
+    MouseSelection.destroy_all
+    Fidgit::Cursor.destroy_all
+  end
   
   def draw
     start_at = Time.now
